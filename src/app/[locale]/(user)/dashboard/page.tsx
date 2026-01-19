@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { Header, Main, MainHeader } from '@/shared/blocks/dashboard';
 import { Crumb } from '@/shared/types/blocks/common';
+import { OverviewContent } from '@/shared/blocks/dashboard/overview-content';
 
 export default async function DashboardOverviewPage({
   params,
@@ -23,7 +24,7 @@ export default async function DashboardOverviewPage({
       <Main>
         <MainHeader title={t('title')} />
         <div className="p-6">
-          <p className="text-muted-foreground">Dashboard overview coming soon...</p>
+          <OverviewContent />
         </div>
       </Main>
     </>
