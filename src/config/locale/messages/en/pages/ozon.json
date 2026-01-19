@@ -1,29 +1,31 @@
 {
   "metadata": {
-    "title": "Ozon Image Downloader",
-    "description": "Download Ozon product images in bulk"
+    "title": "AI E-commerce Image Optimizer - Ozon Product Image Enhancement Tool",
+    "description": "Batch optimize and enhance Ozon product images with AI technology to boost conversion rates"
   },
   "page": {
-    "title": "Ozon Image Downloader",
+    "title": "AI E-commerce Image Optimizer",
     "sections": {
       "hero": {
         "id": "hero",
-        "title": "Ozon Image Downloader",
-        "description": "Bulk download Ozon product images to Cloudflare R2 storage"
+        "title": "AI-Powered Ozon Product Image Optimization",
+        "description": "One-click batch download and intelligent image optimization to enhance visual appeal and conversion rates"
       }
     }
   },
   "messages": {
-    "crumb": "Ozon Downloader",
-    "title": "Ozon Image Downloader",
-    "credentials_title": "Ozon Credentials",
-    "add_credential": "Add Credential",
+    "crumb": "AI Image Optimizer",
+    "title": "Ozon Product Image AI Optimization",
+    "subtitle": "Automatically enhance product image quality with AI technology, highlight selling points, and boost conversions",
+    "credentials_title": "Ozon Store Credentials",
+    "add_credential": "Add Store",
     "cancel": "Cancel",
-    "credential_name": "Credential Name",
+    "credential_name": "Store Name",
     "client_id": "Client ID",
     "api_key": "API Key",
     "save_credential": "Save Credential",
-    "no_credentials": "No credentials configured",
+    "no_credentials": "No stores configured",
+    "no_credentials_desc": "Please add your Ozon store credentials to get started",
     "select": "Select",
     "selected": "Selected",
     "delete": "Delete",
@@ -34,13 +36,26 @@
     "article_numbers": "Article Numbers (one per line, max 100)",
     "articles_placeholder": "123456\n789012\n345678",
     "articles_count": "{count} / 100 articles",
-    "start_download": "Start Download",
-    "processing": "Processing...",
-    "download_completed": "Download Completed",
-    "total_articles": "Total Articles",
+    "start_download": "Start Optimization",
+    "start_download_desc": "AI will automatically download and optimize your product images",
+    "processing": "AI is optimizing...",
+    "download_completed": "Optimization Complete",
+    "total_articles": "Total Products",
     "processed": "Processed",
     "total_images": "Total Images",
-    "success": "Success",
-    "failed": "Failed"
+    "success": "Optimization Successful",
+    "failed": "Optimization Failed",
+    "optimization_features": "AI Optimization Features",
+    "feature_enhance": "Smart Enhancement",
+    "feature_enhance_desc": "Automatically improve image clarity and color",
+    "feature_background": "Background Processing",
+    "feature_background_desc": "Intelligently remove or replace backgrounds",
+    "feature_compress": "Smart Compression",
+    "feature_compress_desc": "Reduce file size while maintaining quality",
+    "feature_watermark": "Watermark Addition",
+    "feature_watermark_desc": "Batch add branded watermarks",
+    "view_results": "View Results",
+    "download_all": "Download All",
+    "retry_failed": "Retry Failed"
   }
 }

@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "title": "ShipAny Template Two",
-    "description": "ShipAny is a NextJS boilerplate for building AI SaaS startups. Ship Fast with a variety of templates and components.",
-    "keywords": "shipany, shipany-boilerplate, shipany-template-two-demo"
+    "title": "Ozon Image Ai",
+    "description": "Ozon Image AI is a tool for downloading Ozon product images in bulk.",
+    "keywords": "ozon, ozon-image-ai, ozon-image-downloader"
   },
   "sign": {
     "sign_in_title": "Sign In",

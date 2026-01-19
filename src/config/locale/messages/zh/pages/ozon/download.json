@@ -1,46 +1,60 @@
 {
   "metadata": {
-    "title": "Ozon 图片下载器",
-    "description": "批量下载 Ozon 商品图片到 Cloudflare R2 存储"
+    "title": "AI 图片批量优化 - 下载与增强",
+    "description": "批量下载 Ozon 商品图片并使用 AI 技术进行智能优化"
   },
   "page": {
-    "title": "Ozon 图片下载器",
+    "title": "AI 图片优化",
     "sections": {
       "hero": {
         "id": "hero",
-        "title": "Ozon 图片下载器",
-        "description": "批量下载 Ozon 商品图片到 Cloudflare R2 存储"
+        "title": "AI 批量优化商品图片",
+        "description": "输入货号，AI 自动下载并优化您的商品图片"
       }
     }
   },
   "messages": {
-    "crumb": "Ozon 下载器",
-    "title": "Ozon 图片下载器",
-    "credentials_title": "Ozon 凭证",
-    "add_credential": "添加凭证",
+    "crumb": "批量优化",
+    "title": "批量下载与 AI 优化",
+    "description": "支持批量处理最多 100 个商品，AI 自动提升图片质量",
+    "credentials_title": "选择店铺",
+    "add_credential": "添加新店铺",
     "cancel": "取消",
-    "credential_name": "凭证名称",
-    "client_id": "Client ID",
-    "api_key": "API Key",
-    "save_credential": "保存凭证",
-    "no_credentials": "未配置凭证",
+    "credential_name": "店铺名称（如：主店铺）",
+    "client_id": "Ozon Client ID",
+    "api_key": "Ozon API Key",
+    "save_credential": "保存",
+    "no_credentials": "还没有配置店铺",
+    "no_credentials_hint": "请先添加您的 Ozon 店铺凭证",
     "select": "选择",
-    "selected": "已选择",
+    "selected": "已选",
     "delete": "删除",
-    "query_field": "查询字段",
-    "offer_id": "Offer ID (推荐)",
+    "query_field": "匹配方式",
+    "offer_id": "Offer ID（推荐，准确度最高）",
     "sku": "SKU",
-    "vendor_code": "Vendor Code",
-    "article_numbers": "货号列表 (每行一个，最多 100 个)",
+    "vendor_code": "货号",
+    "article_numbers": "商品货号（每行一个，最多 100 个）",
     "articles_placeholder": "123456\n789012\n345678",
-    "articles_count": "{count} / 100 个货号",
-    "start_download": "开始下载",
-    "processing": "处理中...",
-    "download_completed": "下载完成",
-    "total_articles": "总货号数",
+    "articles_count": "已输入 {count} 个",
+    "start_download": "开始 AI 优化",
+    "start_download_hint": "点击后 AI 将自动下载并优化所有图片",
+    "processing": "AI 正在处理中，请稍候...",
+    "processing_step": "正在下载并优化第 {current} / {total} 个商品",
+    "download_completed": "优化完成！",
+    "total_articles": "商品总数",
     "processed": "已处理",
-    "total_images": "总图片数",
-    "success": "成功",
-    "failed": "失败"
+    "total_images": "图片总数",
+    "success": "优化成功",
+    "failed": "优化失败",
+    "view_details": "查看详情",
+    "download_results": "下载优化结果",
+    "optimization_summary": "AI 优化摘要",
+    "enhanced_count": "已优化",
+    "original_count": "原图保留",
+    "space_saved": "节省空间",
+    "quality_improved": "质量提升",
+    "retry_all": "全部重试",
+    "clear": "清空",
+    "back_to_list": "返回列表"
   }
 }

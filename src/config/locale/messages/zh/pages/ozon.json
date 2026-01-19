@@ -1,29 +1,31 @@
 {
   "metadata": {
-    "title": "Ozon 图片下载器",
-    "description": "批量下载 Ozon 商品图片"
+    "title": "AI 电商图片优化 - Ozon 商品图片增强工具",
+    "description": "使用 AI 技术批量优化和增强 Ozon 商品图片，提升电商转化率"
   },
   "page": {
-    "title": "Ozon 图片下载器",
+    "title": "AI 电商图片优化",
     "sections": {
       "hero": {
         "id": "hero",
-        "title": "Ozon 图片下载器",
-        "description": "批量下载 Ozon 商品图片到 Cloudflare R2 存储"
+        "title": "AI 智能优化 Ozon 商品图片",
+        "description": "一键批量下载并智能优化商品图片，提升视觉效果和转化率"
       }
     }
   },
   "messages": {
-    "crumb": "Ozon 下载器",
-    "title": "Ozon 图片下载器",
-    "credentials_title": "Ozon 凭证",
-    "add_credential": "添加凭证",
+    "crumb": "AI 图片优化",
+    "title": "Ozon 商品图片 AI 优化",
+    "subtitle": "使用 AI 技术自动提升商品图片质量，增强卖点，提高转化率",
+    "credentials_title": "Ozon 店铺凭证",
+    "add_credential": "添加店铺",
     "cancel": "取消",
-    "credential_name": "凭证名称",
+    "credential_name": "店铺名称",
     "client_id": "Client ID",
     "api_key": "API Key",
     "save_credential": "保存凭证",
-    "no_credentials": "未配置凭证",
+    "no_credentials": "暂未配置店铺",
+    "no_credentials_desc": "请先添加您的 Ozon 店铺凭证以开始使用",
     "select": "选择",
     "selected": "已选择",
     "delete": "删除",
@@ -31,16 +33,29 @@
     "offer_id": "Offer ID (推荐)",
     "sku": "SKU",
     "vendor_code": "Vendor Code",
-    "article_numbers": "货号列表 (每行一个，最多 100 个)",
+    "article_numbers": "货号列表（每行一个，最多 100 个）",
     "articles_placeholder": "123456\n789012\n345678",
     "articles_count": "{count} / 100 个货号",
-    "start_download": "开始下载",
-    "processing": "处理中...",
-    "download_completed": "下载完成",
-    "total_articles": "总货号数",
+    "start_download": "开始优化",
+    "start_download_desc": "AI 将自动下载并优化您的商品图片",
+    "processing": "AI 正在优化中...",
+    "download_completed": "优化完成",
+    "total_articles": "总商品数",
     "processed": "已处理",
     "total_images": "总图片数",
-    "success": "成功",
-    "failed": "失败"
+    "success": "优化成功",
+    "failed": "优化失败",
+    "optimization_features": "AI 优化功能",
+    "feature_enhance": "智能增强",
+    "feature_enhance_desc": "自动提升图片清晰度和色彩",
+    "feature_background": "背景处理",
+    "feature_background_desc": "智能去除或替换背景",
+    "feature_compress": "智能压缩",
+    "feature_compress_desc": "在保持画质的同时压缩体积",
+    "feature_watermark": "水印添加",
+    "feature_watermark_desc": "批量添加品牌水印",
+    "view_results": "查看结果",
+    "download_all": "下载全部",
+    "retry_failed": "重试失败项"
   }
 }
