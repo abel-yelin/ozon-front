@@ -63,3 +63,6 @@ src/config/db/migrations*
 .source
 
 .chats
+
+# dev folder
+/dev
