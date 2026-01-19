@@ -38,4 +38,8 @@ export const envConfigs: ConfigMap = {
   version: packageJson.version,
   locale_detect_enabled:
     process.env.NEXT_PUBLIC_LOCALE_DETECT_ENABLED ?? 'false',
+  // Ozon Integration
+  python_api_url: process.env.PYTHON_API_URL ?? 'http://localhost:8000',
+  python_api_key: process.env.PYTHON_API_KEY ?? '',
+  credential_encryption_key: process.env.CREDENTIAL_ENCRYPTION_KEY ?? '',
 };

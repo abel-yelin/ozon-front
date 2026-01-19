@@ -89,6 +89,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "creem": "^0.3.37",
+    "crypto-js": "^4.2.0",
     "dotenv": "^17.2.0",
     "drizzle-orm": "^0.44.2",
     "embla-carousel-auto-scroll": "^8.6.0",

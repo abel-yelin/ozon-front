@@ -1,0 +1,46 @@
+{
+  "metadata": {
+    "title": "Ozon 图片下载器",
+    "description": "批量下载 Ozon 商品图片到 Cloudflare R2 存储"
+  },
+  "page": {
+    "title": "Ozon 图片下载器",
+    "sections": {
+      "hero": {
+        "id": "hero",
+        "title": "Ozon 图片下载器",
+        "description": "批量下载 Ozon 商品图片到 Cloudflare R2 存储"
+      }
+    }
+  },
+  "messages": {
+    "crumb": "Ozon 下载器",
+    "title": "Ozon 图片下载器",
+    "credentials_title": "Ozon 凭证",
+    "add_credential": "添加凭证",
+    "cancel": "取消",
+    "credential_name": "凭证名称",
+    "client_id": "Client ID",
+    "api_key": "API Key",
+    "save_credential": "保存凭证",
+    "no_credentials": "未配置凭证",
+    "select": "选择",
+    "selected": "已选择",
+    "delete": "删除",
+    "query_field": "查询字段",
+    "offer_id": "Offer ID (推荐)",
+    "sku": "SKU",
+    "vendor_code": "Vendor Code",
+    "article_numbers": "货号列表 (每行一个，最多 100 个)",
+    "articles_placeholder": "123456\n789012\n345678",
+    "articles_count": "{count} / 100 个货号",
+    "start_download": "开始下载",
+    "processing": "处理中...",
+    "download_completed": "下载完成",
+    "total_articles": "总货号数",
+    "processed": "已处理",
+    "total_images": "总图片数",
+    "success": "成功",
+    "failed": "失败"
+  }
+}

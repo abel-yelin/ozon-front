@@ -1,0 +1,46 @@
+{
+  "metadata": {
+    "title": "Ozon Image Downloader",
+    "description": "Bulk download Ozon product images to Cloudflare R2 storage"
+  },
+  "page": {
+    "title": "Ozon Image Downloader",
+    "sections": {
+      "hero": {
+        "id": "hero",
+        "title": "Ozon Image Downloader",
+        "description": "Bulk download Ozon product images to Cloudflare R2 storage"
+      }
+    }
+  },
+  "messages": {
+    "crumb": "Ozon Downloader",
+    "title": "Ozon Image Downloader",
+    "credentials_title": "Ozon Credentials",
+    "add_credential": "Add Credential",
+    "cancel": "Cancel",
+    "credential_name": "Credential Name",
+    "client_id": "Client ID",
+    "api_key": "API Key",
+    "save_credential": "Save Credential",
+    "no_credentials": "No credentials configured",
+    "select": "Select",
+    "selected": "Selected",
+    "delete": "Delete",
+    "query_field": "Query Field",
+    "offer_id": "Offer ID (Recommended)",
+    "sku": "SKU",
+    "vendor_code": "Vendor Code",
+    "article_numbers": "Article Numbers (one per line, max 100)",
+    "articles_placeholder": "123456\n789012\n345678",
+    "articles_count": "{count} / 100 articles",
+    "start_download": "Start Download",
+    "processing": "Processing...",
+    "download_completed": "Download Completed",
+    "total_articles": "Total Articles",
+    "processed": "Processed",
+    "total_images": "Total Images",
+    "success": "Success",
+    "failed": "Failed"
+  }
+}

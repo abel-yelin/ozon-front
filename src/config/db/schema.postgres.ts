@@ -2,6 +2,7 @@ import {
   boolean,
   index,
   integer,
+  json,
   pgSchema,
   pgTable,
   text,
@@ -553,5 +554,63 @@ export const chatMessage = table(
   (table) => [
     index('idx_chat_message_chat_id').on(table.chatId, table.status),
     index('idx_chat_message_user_id').on(table.userId, table.status),
+  ]
+);
+
+// ========================================
+// Ozon Integration Tables
+// ========================================
+
+export const ozonCredential = table(
+  'ozon_credential',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    encryptedData: text('encrypted_data').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [index('idx_ozon_credential_user').on(table.userId)]
+);
+
+export const ozonTask = table(
+  'ozon_task',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    credentialId: text('credential_id')
+      .notNull()
+      .references(() => ozonCredential.id, { onDelete: 'cascade' }),
+    articles: json('articles').notNull(),
+    field: text('field').notNull(),
+    status: text('status').notNull(),
+    progress: integer('progress').notNull().default(0),
+    result: json('result'),
+    errorMessage: text('error_message'),
+    totalArticles: integer('total_articles'),
+    processedArticles: integer('processed_articles'),
+    totalImages: integer('total_images'),
+    successImages: integer('success_images'),
+    failedImages: integer('failed_images'),
+    startedAt: timestamp('started_at'),
+    completedAt: timestamp('completed_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_ozon_task_user').on(table.userId),
+    index('idx_ozon_task_status').on(table.status),
+    index('idx_ozon_task_created').on(table.createdAt),
   ]
 );
