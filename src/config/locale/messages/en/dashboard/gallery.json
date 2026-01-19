@@ -1,5 +1,44 @@
 {
   "crumb_dashboard": "Dashboard",
   "crumb": "Gallery",
-  "title": "Image Gallery"
+  "title": "Image Gallery",
+  "description": "Browse and manage your downloaded images",
+  "no_images": "No images found",
+  "no_images_hint": "Download images from the Ozon Download page to see them here",
+  "filters": {
+    "title": "Filters",
+    "search": "Search images...",
+    "date_from": "From",
+    "date_to": "To",
+    "sort_by": "Sort by",
+    "sort_options": {
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "name_asc": "Name (A-Z)",
+      "name_desc": "Name (Z-A)"
+    },
+    "apply": "Apply filters",
+    "clear": "Clear filters"
+  },
+  "image": {
+    "download": "Download",
+    "delete": "Delete",
+    "view_original": "View original",
+    "copy_url": "Copy URL",
+    "size": "Size",
+    "dimensions": "Dimensions",
+    "uploaded": "Uploaded"
+  },
+  "bulk_actions": {
+    "select_all": "Select all",
+    "deselect_all": "Deselect all",
+    "download_selected": "Download selected",
+    "delete_selected": "Delete selected"
+  },
+  "delete_confirmation": {
+    "title": "Delete images",
+    "message": "Are you sure you want to delete {count} image(s)? This action cannot be undone.",
+    "confirm": "Delete",
+    "cancel": "Cancel"
+  }
 }

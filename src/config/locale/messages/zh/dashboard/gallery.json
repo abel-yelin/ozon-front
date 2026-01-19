@@ -1,5 +1,44 @@
 {
   "crumb_dashboard": "仪表盘",
   "crumb": "图片库",
-  "title": "图片库"
+  "title": "图片库",
+  "description": "浏览和管理您下载的图片",
+  "no_images": "暂无图片",
+  "no_images_hint": "请先从 Ozon 下载页面下载图片",
+  "filters": {
+    "title": "筛选",
+    "search": "搜索图片...",
+    "date_from": "起始日期",
+    "date_to": "结束日期",
+    "sort_by": "排序方式",
+    "sort_options": {
+      "newest": "最新优先",
+      "oldest": "最旧优先",
+      "name_asc": "名称 (A-Z)",
+      "name_desc": "名称 (Z-A)"
+    },
+    "apply": "应用筛选",
+    "clear": "清除筛选"
+  },
+  "image": {
+    "download": "下载",
+    "delete": "删除",
+    "view_original": "查看原图",
+    "copy_url": "复制链接",
+    "size": "大小",
+    "dimensions": "尺寸",
+    "uploaded": "上传时间"
+  },
+  "bulk_actions": {
+    "select_all": "全选",
+    "deselect_all": "取消全选",
+    "download_selected": "下载选中",
+    "delete_selected": "删除选中"
+  },
+  "delete_confirmation": {
+    "title": "删除图片",
+    "message": "确定要删除 {count} 张图片吗？此操作无法撤销。",
+    "confirm": "删除",
+    "cancel": "取消"
+  }
 }

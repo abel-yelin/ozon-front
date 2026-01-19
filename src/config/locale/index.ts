@@ -59,5 +59,6 @@ export const localeMessagesPaths = [
   'dashboard/ozon',
   'dashboard/credentials',
   'dashboard/tasks',
+  'dashboard/gallery',
   'dashboard/stats',
 ];
