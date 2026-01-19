@@ -54,4 +54,10 @@ export const localeMessagesPaths = [
   'pages/showcases',
   'pages/blog',
   'pages/updates',
+  'dashboard/sidebar',
+  'dashboard/overview',
+  'dashboard/ozon',
+  'dashboard/credentials',
+  'dashboard/tasks',
+  'dashboard/stats',
 ];

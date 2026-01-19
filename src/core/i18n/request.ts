@@ -8,6 +8,48 @@ import {
 
 import { routing } from './config';
 
+export async function loadAllMessages(locale: string) {
+  // Handle locale alias
+  if (locale === 'zh-CN') {
+    locale = 'zh';
+  }
+
+  try {
+    // Load all locale messages
+    const allMessages = await Promise.all(
+      localeMessagesPaths.map((path) => loadMessages(path, locale))
+    );
+
+    // Merge all locale messages
+    const messages: any = {};
+
+    localeMessagesPaths.forEach((path, index) => {
+      const localMessages = allMessages[index];
+
+      const keys = path.split('/');
+      let current = messages;
+
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) {
+          current[keys[i]] = {};
+        }
+        current = current[keys[i]];
+      }
+
+      current[keys[keys.length - 1]] = localMessages;
+    });
+
+    return messages;
+  } catch (e) {
+    // Fallback to default locale if there's an error
+    const fallbackMessages = await loadMessages(
+      localeMessagesRootPath,
+      defaultLocale
+    );
+    return fallbackMessages;
+  }
+}
+
 export async function loadMessages(
   path: string,
   locale: string = defaultLocale

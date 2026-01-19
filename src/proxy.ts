@@ -19,11 +19,12 @@ export async function proxy(request: NextRequest) {
     ? pathname.slice(locale.length + 1)
     : pathname;
 
-  // Only check authentication for admin routes
+  // Check authentication for protected routes
   if (
     pathWithoutLocale.startsWith('/admin') ||
     pathWithoutLocale.startsWith('/settings') ||
-    pathWithoutLocale.startsWith('/activity')
+    pathWithoutLocale.startsWith('/activity') ||
+    pathWithoutLocale.startsWith('/dashboard')
   ) {
     // Check if session cookie exists
     const sessionCookie = getSessionCookie(request);
@@ -51,11 +52,12 @@ export async function proxy(request: NextRequest) {
   intlResponse.headers.set('x-url', request.url);
 
   // Remove Set-Cookie from public pages to allow caching
-  // We exclude admin, settings, activity, and auth pages from this behavior
+  // We exclude admin, settings, activity, dashboard, and auth pages from this behavior
   if (
     !pathWithoutLocale.startsWith('/admin') &&
     !pathWithoutLocale.startsWith('/settings') &&
     !pathWithoutLocale.startsWith('/activity') &&
+    !pathWithoutLocale.startsWith('/dashboard') &&
     !pathWithoutLocale.startsWith('/sign-') &&
     !pathWithoutLocale.startsWith('/auth')
   ) {

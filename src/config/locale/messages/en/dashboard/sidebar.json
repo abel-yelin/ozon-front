@@ -12,29 +12,34 @@
   },
   "main_navs": [
     {
-      "title": "Overview",
-      "url": "/dashboard",
-      "icon": "LayoutDashboard"
-    },
-    {
-      "title": "Ozon Download",
-      "url": "/dashboard/ozon",
-      "icon": "Download"
-    },
-    {
-      "title": "Credentials",
-      "url": "/dashboard/credentials",
-      "icon": "Key"
-    },
-    {
-      "title": "Tasks",
-      "url": "/dashboard/tasks",
-      "icon": "ListTodo"
-    },
-    {
-      "title": "Statistics",
-      "url": "/dashboard/stats",
-      "icon": "BarChart3"
+      "title": "Dashboard",
+      "items": [
+        {
+          "title": "Overview",
+          "url": "/dashboard",
+          "icon": "LayoutDashboard"
+        },
+        {
+          "title": "Ozon Download",
+          "url": "/dashboard/ozon",
+          "icon": "Download"
+        },
+        {
+          "title": "Credentials",
+          "url": "/dashboard/credentials",
+          "icon": "Key"
+        },
+        {
+          "title": "Tasks",
+          "url": "/dashboard/tasks",
+          "icon": "ListTodo"
+        },
+        {
+          "title": "Statistics",
+          "url": "/dashboard/stats",
+          "icon": "BarChart3"
+        }
+      ]
     }
   ],
   "user": {
