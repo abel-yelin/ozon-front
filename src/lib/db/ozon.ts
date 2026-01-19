@@ -227,6 +227,77 @@ export class OzonDb {
       totalImages: tasks.reduce((sum: number, t: any) => sum + (t.successImages || 0), 0),
     };
   }
+
+  /**
+   * Get user summary statistics
+   */
+  async getUserSummary(userId: string) {
+    const tasks = await this.getUserTasks(userId, { limit: 100000 });
+
+    const totalDownloads = tasks.length;
+    const completedTasks = tasks.filter((t: any) => t.status === 'completed');
+    const failedTasks = tasks.filter((t: any) => t.status === 'failed');
+
+    const successRate = totalDownloads > 0
+      ? (completedTasks.length / totalDownloads) * 100
+      : 0;
+
+    const totalImages = tasks.reduce((sum: number, t: any) => sum + (t.successImages || 0), 0);
+    const failedImages = tasks.reduce((sum: number, t: any) => sum + (t.failedImages || 0), 0);
+
+    const credentials = await this.getUserCredentials(userId);
+    const activeCredentials = credentials.length;
+
+    return {
+      totalDownloads,
+      successRate: Math.round(successRate * 10) / 10,
+      failedDownloads: failedTasks.length,
+      totalImages,
+      activeCredentials,
+    };
+  }
+
+  /**
+   * Get daily download trends for specified period
+   */
+  async getDailyTrends(userId: string, days: number = 7) {
+    const tasks = await this.getUserTasks(userId, { limit: 100000 });
+
+    // Get date range
+    const now = new Date();
+    const startDate = new Date(now);
+    startDate.setDate(now.getDate() - days + 1);
+    startDate.setHours(0, 0, 0, 0);
+
+    // Filter tasks within date range and group by date
+    const dailyStats: Record<string, { tasks: number; images: number }> = {};
+
+    // Initialize all days with 0
+    for (let i = 0; i < days; i++) {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i);
+      const dateStr = date.toISOString().split('T')[0];
+      dailyStats[dateStr] = { tasks: 0, images: 0 };
+    }
+
+    // Fill in actual data
+    tasks.forEach((task: any) => {
+      if (task.completedAt) {
+        const dateStr = new Date(task.completedAt).toISOString().split('T')[0];
+        if (dailyStats[dateStr]) {
+          dailyStats[dateStr].tasks += 1;
+          dailyStats[dateStr].images += task.successImages || 0;
+        }
+      }
+    });
+
+    // Convert to array format
+    return Object.entries(dailyStats).map(([date, stats]) => ({
+      date,
+      tasks: stats.tasks,
+      images: stats.images,
+    }));
+  }
 }
 
 export const ozonDb = new OzonDb();
