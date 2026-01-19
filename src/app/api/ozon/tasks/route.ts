@@ -90,27 +90,35 @@ export async function POST(req: Request) {
         user_id: user.id,
       })
       .then(async (response) => {
+        const resultUpdate = response.data
+          ? {
+              result: response.data,
+              totalArticles: response.data.total_articles,
+              processedArticles: response.data.processed,
+              totalImages: response.data.total_images,
+              successImages: response.data.success_images,
+              failedImages: response.data.failed_images,
+            }
+          : {};
+
         if (response.success && response.data) {
           // Save successful result
           await ozonDb.updateTask(task.id, user.id, {
             status: 'completed',
             progress: 100,
-            result: response.data,
-            totalArticles: response.data.total_articles,
-            processedArticles: response.data.processed,
-            totalImages: response.data.total_images,
-            successImages: response.data.success_images,
-            failedImages: response.data.failed_images,
             completedAt: new Date(),
+            ...resultUpdate,
           });
-        } else {
-          // Save error
-          await ozonDb.updateTask(task.id, user.id, {
-            status: 'failed',
-            errorMessage: response.error || 'Download failed',
-            completedAt: new Date(),
-          });
+          return;
         }
+
+        // Save error (include any partial result for debugging)
+        await ozonDb.updateTask(task.id, user.id, {
+          status: 'failed',
+          errorMessage: response.error || 'Download failed',
+          completedAt: new Date(),
+          ...resultUpdate,
+        });
       })
       .catch(async (error) => {
         console.error('Download task error:', error);
