@@ -1,0 +1,50 @@
+{
+  "header": {
+    "brand": {
+      "title": "Ozon 仪表盘",
+      "logo": {
+        "src": "/logo.png",
+        "alt": "Ozon 仪表盘"
+      },
+      "url": "/dashboard"
+    },
+    "show_trigger": false
+  },
+  "main_navs": [
+    {
+      "title": "概览",
+      "url": "/dashboard",
+      "icon": "LayoutDashboard"
+    },
+    {
+      "title": "Ozon 下载",
+      "url": "/dashboard/ozon",
+      "icon": "Download"
+    },
+    {
+      "title": "凭证管理",
+      "url": "/dashboard/credentials",
+      "icon": "Key"
+    },
+    {
+      "title": "任务历史",
+      "url": "/dashboard/tasks",
+      "icon": "ListTodo"
+    },
+    {
+      "title": "使用统计",
+      "url": "/dashboard/stats",
+      "icon": "BarChart3"
+    }
+  ],
+  "user": {
+    "show_email": true,
+    "show_signout": true,
+    "signout_callback": "/"
+  },
+  "footer": {
+    "show_theme": true,
+    "show_locale": true
+  },
+  "variant": "inset"
+}
