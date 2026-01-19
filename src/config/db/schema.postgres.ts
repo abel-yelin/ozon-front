@@ -3,11 +3,14 @@ import {
   index,
   integer,
   json,
+  jsonb,
   pgSchema,
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
 import { envConfigs } from '@/config';
 
@@ -612,5 +615,174 @@ export const ozonTask = table(
     index('idx_ozon_task_user').on(table.userId),
     index('idx_ozon_task_status').on(table.status),
     index('idx_ozon_task_created').on(table.createdAt),
+  ]
+);
+
+// ========================================
+// AI Playground Tables
+// ========================================
+
+export const aiJob = table(
+  'ai_job',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    type: text('type').notNull(), // 'background_replacement', 'batch_optimization', etc.
+    status: text('status').notNull(), // 'pending', 'processing', 'completed', 'failed'
+    config: jsonb('config').notNull(), // { backgroundPrompt, quality, etc. }
+    sourceImageUrls: jsonb('source_image_urls').notNull(), // string[]
+    resultImageUrls: jsonb('result_image_urls').$type<string[]>(), // string[] | null
+    progress: integer('progress').notNull().default(0), // 0-100
+    errorMessage: text('error_message'),
+    startedAt: timestamp('started_at'),
+    completedAt: timestamp('completed_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_ai_job_user_status').on(table.userId, table.status),
+    index('idx_ai_job_type_status').on(table.type, table.status),
+    index('idx_ai_job_created_at').on(table.createdAt),
+  ]
+);
+
+export const aiJobLog = table(
+  'ai_job_log',
+  {
+    id: text('id').primaryKey(),
+    jobId: text('job_id')
+      .notNull()
+      .references(() => aiJob.id, { onDelete: 'cascade' }),
+    level: text('level').notNull(), // 'info', 'warning', 'error'
+    message: text('message').notNull(),
+    metadata: jsonb('metadata'), // Additional context
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    index('idx_ai_job_log_job_id').on(table.jobId),
+    index('idx_ai_job_log_created_at').on(table.createdAt),
+  ]
+);
+
+export const aiWorkflowState = table(
+  'ai_workflow_state',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    state: text('state').notNull(), // 'pending', 'approved', 'archived'
+    imagePairs: jsonb('image_pairs').notNull(), // Array of { sourceUrl, resultUrl, approved }
+    config: jsonb('config').notNull(), // Workflow config
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_ai_workflow_state_user_state').on(table.userId, table.state),
+    uniqueIndex('idx_ai_workflow_state_user_name').on(table.userId, table.name),
+  ]
+);
+
+export const aiImagePair = table(
+  'ai_image_pair',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    workflowStateId: text('workflow_state_id').references(() => aiWorkflowState.id, { onDelete: 'set null' }),
+    jobId: text('job_id').references(() => aiJob.id, { onDelete: 'set null' }),
+    sourceUrl: text('source_url').notNull(),
+    resultUrl: text('result_url'),
+    approved: boolean('approved').notNull().default(false),
+    archived: boolean('archived').notNull().default(false),
+    metadata: jsonb('metadata'), // { dimensions, size, processingTime, etc. }
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_ai_image_pair_user').on(table.userId),
+    index('idx_ai_image_pair_workflow').on(table.workflowStateId),
+    index('idx_ai_image_pair_approved').on(table.approved),
+    index('idx_ai_image_pair_archived').on(table.archived),
+  ]
+);
+
+export const aiPromptTemplate = table(
+  'ai_prompt_template',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    type: text('type').notNull(), // 'background_replacement', 'batch_optimization', etc.
+    template: text('template').notNull(), // Prompt template with placeholders
+    isDefault: boolean('is_default').notNull().default(false),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_ai_prompt_template_user_type').on(table.userId, table.type),
+    uniqueIndex('idx_ai_prompt_template_user_name').on(table.userId, table.name),
+  ]
+);
+
+export const aiUserSetting = table(
+  'ai_user_setting',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .unique()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    defaultQuality: text('default_quality').notNull().default('standard'), // 'low', 'standard', 'high'
+    defaultFormat: text('default_format').notNull().default('png'), // 'png', 'jpg', 'webp'
+    autoApprove: boolean('auto_approve').notNull().default(false),
+    batchSize: integer('batch_size').notNull().default(10),
+    notificationEnabled: boolean('notification_enabled').notNull().default(true),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_ai_user_setting_user').on(table.userId),
+  ]
+);
+
+export const aiDownloadQueue = table(
+  'ai_download_queue',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    imagePairId: text('image_pair_id')
+      .notNull()
+      .references(() => aiImagePair.id, { onDelete: 'cascade' }),
+    status: text('status').notNull(), // 'pending', 'processing', 'completed', 'failed'
+    downloadUrl: text('download_url'),
+    expiresAt: timestamp('expires_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_ai_download_queue_user_status').on(table.userId, table.status),
+    index('idx_ai_download_queue_image').on(table.imagePairId),
+    index('idx_ai_download_queue_expires').on(table.expiresAt),
   ]
 );

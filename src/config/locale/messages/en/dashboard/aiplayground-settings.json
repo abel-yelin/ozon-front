@@ -1,0 +1,58 @@
+{
+  "crumb_dashboard": "Dashboard",
+  "crumb": "Settings",
+  "title": "AI Playground Settings",
+  "description": "Configure your AI processing preferences",
+  "sections": {
+    "general": "General Settings",
+    "processing": "Processing Defaults",
+    "notifications": "Notifications",
+    "templates": "Prompt Templates"
+  },
+  "general": {
+    "default_quality": "Default Quality",
+    "default_format": "Default Output Format",
+    "auto_approve": "Auto-Approve Results",
+    "auto_approve_desc": "Automatically approve all processed images",
+    "batch_size": "Default Batch Size",
+    "batch_size_desc": "Number of images to process in each batch"
+  },
+  "processing": {
+    "quality_low": "Low - Fast processing, smaller files",
+    "quality_standard": "Standard - Balanced quality and speed",
+    "quality_high": "High - Best quality, slower processing",
+    "format_png": "PNG - Lossless, larger files",
+    "format_jpg": "JPEG - Lossy, smaller files",
+    "format_webp": "WebP - Modern, efficient"
+  },
+  "notifications": {
+    "enabled": "Enable Notifications",
+    "enabled_desc": "Get notified when jobs complete or fail",
+    "job_completed": "Job Completed",
+    "job_failed": "Job Failed"
+  },
+  "templates": {
+    "title": "Prompt Templates",
+    "description": "Save and reuse your favorite prompts",
+    "add": "Add Template",
+    "edit": "Edit Template",
+    "delete": "Delete Template",
+    "name": "Template Name",
+    "type": "Type",
+    "prompt": "Prompt",
+    "is_default": "Set as Default",
+    "confirm_delete": "Are you sure you want to delete this template?"
+  },
+  "actions": {
+    "save": "Save Settings",
+    "reset": "Reset to Defaults"
+  },
+  "success": {
+    "saved": "Settings saved successfully"
+  },
+  "tabs": {
+    "background_replacement": "Background Templates",
+    "batch_optimization": "Optimization Presets",
+    "image_enhancement": "Enhancement Profiles"
+  }
+}

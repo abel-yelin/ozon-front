@@ -1,0 +1,87 @@
+{
+  "crumb_dashboard": "仪表盘",
+  "crumb": "AI游乐场",
+  "title": "AI游乐场",
+  "description": "使用AI处理和增强图像",
+  "tabs": {
+    "process": "处理",
+    "review": "审核",
+    "history": "历史",
+    "settings": "设置"
+  },
+  "job_types": {
+    "title": "任务类型",
+    "background_replacement": "背景替换",
+    "background_replacement_desc": "使用AI生成的场景替换图像背景",
+    "batch_optimization": "批量优化",
+    "batch_optimization_desc": "优化多张图像以供网页使用",
+    "image_enhancement": "图像增强",
+    "image_enhancement_desc": "使用AI放大和降噪提升图像质量"
+  },
+  "upload": {
+    "title": "上传图像",
+    "drag_drop": "拖放图像到这里",
+    "browse": "浏览文件",
+    "max_files": "最多{max}个文件",
+    "supported_formats": "支持: PNG、JPEG、WebP",
+    "clear_all": "清除全部",
+    "selected_count": "已选择{count}个"
+  },
+  "config": {
+    "title": "配置",
+    "quality": "质量",
+    "quality_low": "低 - 快速处理",
+    "quality_standard": "标准 - 平衡",
+    "quality_high": "高 - 最佳质量",
+    "format": "输出格式",
+    "format_png": "PNG",
+    "format_jpg": "JPEG",
+    "format_webp": "WebP",
+    "background_prompt": "背景提示词",
+    "background_prompt_placeholder": "描述您想要的背景...",
+    "negative_prompt": "负面提示词",
+    "negative_prompt_placeholder": "描述要避免的内容...",
+    "batch_size": "批处理大小",
+    "maintain_aspect": "保持宽高比",
+    "max_size": "最大尺寸（像素）"
+  },
+  "actions": {
+    "submit": "开始处理",
+    "cancel": "取消任务",
+    "retry": "重试",
+    "download": "下载",
+    "download_all": "全部下载",
+    "preview": "预览",
+    "approve": "批准",
+    "reject": "拒绝",
+    "archive": "归档",
+    "delete": "删除",
+    "edit": "编辑"
+  },
+  "status": {
+    "pending": "等待中",
+    "processing": "处理中",
+    "completed": "已完成",
+    "failed": "失败",
+    "progress": "完成{progress}%"
+  },
+  "errors": {
+    "no_images": "请至少上传一张图像",
+    "submit_failed": "提交任务失败",
+    "upload_failed": "上传图像失败",
+    "api_unavailable": "AI服务当前不可用",
+    "invalid_config": "无效配置"
+  },
+  "success": {
+    "job_submitted": "任务提交成功",
+    "job_completed": "任务完成成功",
+    "images_approved": "图像已批准",
+    "settings_saved": "设置已保存"
+  },
+  "workflow": {
+    "pending": "待审核",
+    "approved": "已批准",
+    "archived": "已归档",
+    "state": "工作流状态"
+  }
+}

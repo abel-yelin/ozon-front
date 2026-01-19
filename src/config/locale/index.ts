@@ -61,4 +61,8 @@ export const localeMessagesPaths = [
   'dashboard/tasks',
   'dashboard/gallery',
   'dashboard/stats',
+  'dashboard/aiplayground',
+  'dashboard/aiplayground-review',
+  'dashboard/aiplayground-history',
+  'dashboard/aiplayground-settings',
 ];

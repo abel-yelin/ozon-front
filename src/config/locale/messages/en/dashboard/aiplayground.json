@@ -1,0 +1,87 @@
+{
+  "crumb_dashboard": "Dashboard",
+  "crumb": "AI Playground",
+  "title": "AI Playground",
+  "description": "Process and enhance images with AI",
+  "tabs": {
+    "process": "Process",
+    "review": "Review",
+    "history": "History",
+    "settings": "Settings"
+  },
+  "job_types": {
+    "title": "Job Type",
+    "background_replacement": "Background Replacement",
+    "background_replacement_desc": "Replace image backgrounds with AI-generated scenes",
+    "batch_optimization": "Batch Optimization",
+    "batch_optimization_desc": "Optimize multiple images for web use",
+    "image_enhancement": "Image Enhancement",
+    "image_enhancement_desc": "Enhance image quality with AI upscaling and denoising"
+  },
+  "upload": {
+    "title": "Upload Images",
+    "drag_drop": "Drag and drop images here",
+    "browse": "Browse Files",
+    "max_files": "Maximum {max} files",
+    "supported_formats": "Supported: PNG, JPEG, WebP",
+    "clear_all": "Clear All",
+    "selected_count": "{count} selected"
+  },
+  "config": {
+    "title": "Configuration",
+    "quality": "Quality",
+    "quality_low": "Low - Fast processing",
+    "quality_standard": "Standard - Balanced",
+    "quality_high": "High - Best quality",
+    "format": "Output Format",
+    "format_png": "PNG",
+    "format_jpg": "JPEG",
+    "format_webp": "WebP",
+    "background_prompt": "Background Prompt",
+    "background_prompt_placeholder": "Describe the background you want...",
+    "negative_prompt": "Negative Prompt",
+    "negative_prompt_placeholder": "Describe what to avoid...",
+    "batch_size": "Batch Size",
+    "maintain_aspect": "Maintain Aspect Ratio",
+    "max_size": "Maximum Size (px)"
+  },
+  "actions": {
+    "submit": "Start Processing",
+    "cancel": "Cancel Job",
+    "retry": "Retry",
+    "download": "Download",
+    "download_all": "Download All",
+    "preview": "Preview",
+    "approve": "Approve",
+    "reject": "Reject",
+    "archive": "Archive",
+    "delete": "Delete",
+    "edit": "Edit"
+  },
+  "status": {
+    "pending": "Pending",
+    "processing": "Processing",
+    "completed": "Completed",
+    "failed": "Failed",
+    "progress": "{progress}% Complete"
+  },
+  "errors": {
+    "no_images": "Please upload at least one image",
+    "submit_failed": "Failed to submit job",
+    "upload_failed": "Failed to upload image",
+    "api_unavailable": "AI service is currently unavailable",
+    "invalid_config": "Invalid configuration"
+  },
+  "success": {
+    "job_submitted": "Job submitted successfully",
+    "job_completed": "Job completed successfully",
+    "images_approved": "Images approved",
+    "settings_saved": "Settings saved"
+  },
+  "workflow": {
+    "pending": "Pending Review",
+    "approved": "Approved",
+    "archived": "Archived",
+    "state": "Workflow State"
+  }
+}

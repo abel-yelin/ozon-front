@@ -1,0 +1,58 @@
+{
+  "crumb_dashboard": "仪表盘",
+  "crumb": "设置",
+  "title": "AI游乐场设置",
+  "description": "配置您的AI处理偏好",
+  "sections": {
+    "general": "常规设置",
+    "processing": "处理默认值",
+    "notifications": "通知",
+    "templates": "提示词模板"
+  },
+  "general": {
+    "default_quality": "默认质量",
+    "default_format": "默认输出格式",
+    "auto_approve": "自动批准结果",
+    "auto_approve_desc": "自动批准所有处理后的图像",
+    "batch_size": "默认批处理大小",
+    "batch_size_desc": "每批处理的图像数量"
+  },
+  "processing": {
+    "quality_low": "低 - 快速处理，文件较小",
+    "quality_standard": "标准 - 质量和速度平衡",
+    "quality_high": "高 - 最佳质量，处理较慢",
+    "format_png": "PNG - 无损，文件较大",
+    "format_jpg": "JPEG - 有损，文件较小",
+    "format_webp": "WebP - 现代高效"
+  },
+  "notifications": {
+    "enabled": "启用通知",
+    "enabled_desc": "任务完成或失败时收到通知",
+    "job_completed": "任务已完成",
+    "job_failed": "任务失败"
+  },
+  "templates": {
+    "title": "提示词模板",
+    "description": "保存并重用您喜欢的提示词",
+    "add": "添加模板",
+    "edit": "编辑模板",
+    "delete": "删除模板",
+    "name": "模板名称",
+    "type": "类型",
+    "prompt": "提示词",
+    "is_default": "设为默认",
+    "confirm_delete": "确定要删除此模板吗？"
+  },
+  "actions": {
+    "save": "保存设置",
+    "reset": "重置为默认值"
+  },
+  "success": {
+    "saved": "设置保存成功"
+  },
+  "tabs": {
+    "background_replacement": "背景模板",
+    "batch_optimization": "优化预设",
+    "image_enhancement": "增强配置"
+  }
+}

@@ -40,6 +40,11 @@
           "icon": "Image"
         },
         {
+          "title": "AI Playground",
+          "url": "/dashboard/aiplayground",
+          "icon": "Sparkles"
+        },
+        {
           "title": "Statistics",
           "url": "/dashboard/stats",
           "icon": "BarChart3"

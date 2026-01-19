@@ -40,6 +40,11 @@
           "icon": "Image"
         },
         {
+          "title": "AI游乐场",
+          "url": "/dashboard/aiplayground",
+          "icon": "Sparkles"
+        },
+        {
           "title": "使用统计",
           "url": "/dashboard/stats",
           "icon": "BarChart3"

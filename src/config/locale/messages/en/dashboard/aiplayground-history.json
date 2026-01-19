@@ -1,0 +1,61 @@
+{
+  "crumb_dashboard": "Dashboard",
+  "crumb": "History",
+  "title": "Job History",
+  "description": "View your past AI processing jobs",
+  "filters": {
+    "title": "Filters",
+    "search": "Search jobs...",
+    "status": "Status",
+    "type": "Job Type",
+    "date_from": "From",
+    "date_to": "To",
+    "apply": "Apply",
+    "clear": "Clear"
+  },
+  "status": {
+    "all": "All Status",
+    "pending": "Pending",
+    "processing": "Processing",
+    "completed": "Completed",
+    "failed": "Failed"
+  },
+  "type": {
+    "all": "All Types",
+    "background_replacement": "Background Replacement",
+    "batch_optimization": "Batch Optimization",
+    "image_enhancement": "Image Enhancement"
+  },
+  "job_card": {
+    "type": "Type",
+    "status": "Status",
+    "images": "{count} images",
+    "created": "Created {time}",
+    "completed": "Completed {time}",
+    "duration": "Duration {time}",
+    "view": "View Details",
+    "retry": "Retry",
+    "delete": "Delete"
+  },
+  "details": {
+    "title": "Job Details",
+    "job_id": "Job ID",
+    "type": "Type",
+    "status": "Status",
+    "created_at": "Created At",
+    "started_at": "Started At",
+    "completed_at": "Completed At",
+    "duration": "Duration",
+    "config": "Configuration",
+    "source_images": "Source Images",
+    "result_images": "Result Images",
+    "error": "Error",
+    "logs": "Logs",
+    "close": "Close"
+  },
+  "empty": {
+    "title": "No Jobs Found",
+    "description": "You haven't submitted any jobs yet.",
+    "button": "Create First Job"
+  }
+}

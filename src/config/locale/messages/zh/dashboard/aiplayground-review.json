@@ -1,0 +1,41 @@
+{
+  "crumb_dashboard": "仪表盘",
+  "crumb": "审核",
+  "title": "审核结果",
+  "description": "审核并批准处理后的图像",
+  "filter": {
+    "title": "筛选",
+    "all": "全部",
+    "pending": "待审核",
+    "approved": "已批准",
+    "archived": "已归档"
+  },
+  "bulk_actions": {
+    "title": "批量操作",
+    "select_all": "全选",
+    "deselect_all": "取消全选",
+    "approve_selected": "批准选中",
+    "archive_selected": "归档选中",
+    "download_selected": "下载选中"
+  },
+  "image_card": {
+    "source": "原图",
+    "result": "结果",
+    "approve": "批准",
+    "reject": "拒绝",
+    "download": "下载",
+    "compare": "对比"
+  },
+  "comparison": {
+    "title": "对比图像",
+    "source": "原图",
+    "result": "结果图",
+    "slider": "拖动滑块对比",
+    "close": "关闭"
+  },
+  "empty": {
+    "title": "无待审核图像",
+    "description": "所有图像已审核。提交新任务以处理更多图像。",
+    "button": "前往处理"
+  }
+}

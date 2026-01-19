@@ -1,0 +1,41 @@
+{
+  "crumb_dashboard": "Dashboard",
+  "crumb": "Review",
+  "title": "Review Results",
+  "description": "Review and approve processed images",
+  "filter": {
+    "title": "Filter",
+    "all": "All",
+    "pending": "Pending",
+    "approved": "Approved",
+    "archived": "Archived"
+  },
+  "bulk_actions": {
+    "title": "Bulk Actions",
+    "select_all": "Select All",
+    "deselect_all": "Deselect All",
+    "approve_selected": "Approve Selected",
+    "archive_selected": "Archive Selected",
+    "download_selected": "Download Selected"
+  },
+  "image_card": {
+    "source": "Source",
+    "result": "Result",
+    "approve": "Approve",
+    "reject": "Reject",
+    "download": "Download",
+    "compare": "Compare"
+  },
+  "comparison": {
+    "title": "Compare Images",
+    "source": "Source Image",
+    "result": "Result Image",
+    "slider": "Drag slider to compare",
+    "close": "Close"
+  },
+  "empty": {
+    "title": "No Images to Review",
+    "description": "All images have been reviewed. Submit a new job to process more images.",
+    "button": "Go to Process"
+  }
+}
