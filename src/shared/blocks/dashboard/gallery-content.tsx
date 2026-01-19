@@ -45,15 +45,37 @@ export function GalleryContent() {
     }
   }
 
-  const filteredImages = useMemo(() => {
-    if (!search) return images;
-    const query = search.toLowerCase();
-    return images.filter((image) => {
-      return (
-        image.article.toLowerCase().includes(query) ||
-        image.taskId.toLowerCase().includes(query)
-      );
-    });
+  const groupedImages = useMemo(() => {
+    const grouped = new Map<string, GalleryImage[]>();
+    for (const image of images) {
+      const key = image.article || 'unknown';
+      const current = grouped.get(key);
+      if (current) {
+        current.push(image);
+      } else {
+        grouped.set(key, [image]);
+      }
+    }
+
+    let groups = Array.from(grouped.entries()).map(([article, items]) => ({
+      article,
+      images: items,
+    }));
+
+    if (search) {
+      const query = search.toLowerCase();
+      groups = groups.filter((group) => {
+        if (group.article.toLowerCase().includes(query)) {
+          return true;
+        }
+
+        return group.images.some((image) =>
+          image.taskId.toLowerCase().includes(query)
+        );
+      });
+    }
+
+    return groups;
   }, [images, search]);
 
   if (loading) {
@@ -93,7 +115,7 @@ export function GalleryContent() {
         </Card>
       )}
 
-      {filteredImages.length === 0 ? (
+      {groupedImages.length === 0 ? (
         <Card>
           <CardContent className="p-12 text-center">
             <SmartIcon
@@ -107,30 +129,77 @@ export function GalleryContent() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredImages.map((image) => (
-            <Card key={image.url} className="overflow-hidden">
-              <a
-                href={image.url}
-                target="_blank"
-                rel="noreferrer"
-                className="block"
-              >
-                <img
-                  src={image.url}
-                  alt={image.article}
-                  className="h-48 w-full object-cover"
-                  loading="lazy"
-                />
-              </a>
-              <CardContent className="space-y-1 p-4">
-                <div className="text-sm font-medium">{image.article}</div>
-                <div className="text-xs text-muted-foreground">
-                  Task {image.taskId.slice(0, 8)}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {groupedImages.map((group) => {
+            const [mainImage, ...restImages] = group.images;
+            return (
+              <Card key={group.article} className="h-full">
+                <CardContent className="p-6">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <div className="text-lg font-semibold">
+                        {group.article}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {group.images.length} images
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm" asChild>
+                      <a
+                        href={mainImage.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <SmartIcon name="ExternalLink" className="mr-2 h-4 w-4" />
+                        Open main image
+                      </a>
+                    </Button>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 md:grid-cols-[2fr_1fr]">
+                    <a
+                      href={mainImage.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block overflow-hidden rounded-lg border bg-muted/20"
+                    >
+                      <img
+                        src={mainImage.url}
+                        alt={group.article}
+                        className="h-72 w-full object-cover"
+                        loading="lazy"
+                      />
+                    </a>
+
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-2">
+                      {restImages.length === 0 ? (
+                        <div className="flex h-full items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
+                          No additional images
+                        </div>
+                      ) : (
+                        restImages.map((image) => (
+                          <a
+                            key={image.url}
+                            href={image.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="block overflow-hidden rounded-lg border bg-muted/20"
+                          >
+                            <img
+                              src={image.url}
+                              alt={group.article}
+                              className="h-28 w-full object-cover"
+                              loading="lazy"
+                            />
+                          </a>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>
