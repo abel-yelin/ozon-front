@@ -5,7 +5,7 @@ import { ozonDb } from '@/lib/db/ozon';
 // GET - Get single task details
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUserInfo();
@@ -13,7 +13,8 @@ export async function GET(
       return respErr('Unauthorized, please sign in');
     }
 
-    const task = await ozonDb.getTask(params.id, user.id);
+    const { id } = await params;
+    const task = await ozonDb.getTask(id, user.id);
 
     if (!task) {
       return respErr('Task not found');
@@ -29,7 +30,7 @@ export async function GET(
 // DELETE - Delete task
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUserInfo();
@@ -37,7 +38,8 @@ export async function DELETE(
       return respErr('Unauthorized, please sign in');
     }
 
-    await ozonDb.deleteTask(params.id, user.id);
+    const { id } = await params;
+    await ozonDb.deleteTask(id, user.id);
 
     return respData({ success: true });
   } catch (error) {
