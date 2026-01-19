@@ -134,7 +134,7 @@ export function GalleryContent() {
             const [mainImage, ...restImages] = group.images;
             return (
               <Card key={group.article} className="h-full">
-                <CardContent className="p-6">
+                <CardContent className="p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
                       <div className="text-lg font-semibold">
@@ -156,7 +156,7 @@ export function GalleryContent() {
                     </Button>
                   </div>
 
-                  <div className="mt-4 grid gap-3 md:grid-cols-[2fr_1fr]">
+                  <div className="mt-3 grid gap-3 md:grid-cols-[2fr_1fr]">
                     <a
                       href={mainImage.url}
                       target="_blank"
@@ -166,18 +166,18 @@ export function GalleryContent() {
                       <img
                         src={mainImage.url}
                         alt={group.article}
-                        className="h-72 w-full object-cover"
+                        className="h-44 w-full object-cover"
                         loading="lazy"
                       />
                     </a>
 
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-2">
+                    <div className="grid grid-cols-3 gap-2">
                       {restImages.length === 0 ? (
                         <div className="flex h-full items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
                           No additional images
                         </div>
                       ) : (
-                        restImages.map((image) => (
+                        restImages.slice(0, 6).map((image) => (
                           <a
                             key={image.url}
                             href={image.url}
@@ -188,7 +188,7 @@ export function GalleryContent() {
                             <img
                               src={image.url}
                               alt={group.article}
-                              className="h-28 w-full object-cover"
+                              className="h-20 w-full object-cover"
                               loading="lazy"
                             />
                           </a>
