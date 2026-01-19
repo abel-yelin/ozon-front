@@ -1,5 +1,11 @@
-import { OzonDownload } from '@/shared/blocks/ozon/download';
+import { redirect } from '@/core/i18n/navigation';
 
-export default function OzonDownloadPage() {
-  return <OzonDownload />;
+export default async function OzonDownloadRedirectPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
+  redirect({ href: '/dashboard/ozon', locale });
 }
