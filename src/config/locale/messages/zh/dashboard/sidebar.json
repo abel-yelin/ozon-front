@@ -35,6 +35,11 @@
           "icon": "ListTodo"
         },
         {
+          "title": "图片库",
+          "url": "/dashboard/gallery",
+          "icon": "Image"
+        },
+        {
           "title": "使用统计",
           "url": "/dashboard/stats",
           "icon": "BarChart3"

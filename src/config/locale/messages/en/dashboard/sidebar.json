@@ -35,6 +35,11 @@
           "icon": "ListTodo"
         },
         {
+          "title": "Gallery",
+          "url": "/dashboard/gallery",
+          "icon": "Image"
+        },
+        {
           "title": "Statistics",
           "url": "/dashboard/stats",
           "icon": "BarChart3"
