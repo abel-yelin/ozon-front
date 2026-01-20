@@ -786,3 +786,86 @@ export const aiDownloadQueue = table(
     index('idx_ai_download_queue_expires').on(table.expiresAt),
   ]
 );
+
+// ========================================
+// AI Prompt Template Library Tables
+// ========================================
+
+export const aiPromptGroup = table(
+  'ai_prompt_group',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    description: text('description'),
+    isSystemDefault: boolean('is_system_default').notNull().default(false),
+    isActive: boolean('is_active').notNull().default(true),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_ai_prompt_group_user').on(table.userId),
+    index('idx_ai_prompt_group_active').on(table.isActive),
+  ]
+);
+
+export const aiPromptTemplateV2 = table(
+  'ai_prompt_template_v2',
+  {
+    id: text('id').primaryKey(),
+    promptGroupId: text('prompt_group_id')
+      .notNull()
+      .references(() => aiPromptGroup.id, { onDelete: 'cascade' }),
+    templateKey: text('template_key').notNull(), // 'common_cn', 'main_en', etc.
+    templateContent: text('template_content').notNull(),
+    language: text('language').notNull(), // 'cn', 'en'
+    category: text('category'), // 'common', 'main', 'secondary', 'opt_*'
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_ai_prompt_template_v2_group').on(table.promptGroupId),
+    index('idx_ai_prompt_template_v2_key').on(table.templateKey),
+    uniqueIndex('idx_ai_prompt_template_v2_unique').on(
+      table.promptGroupId,
+      table.templateKey
+    ),
+  ]
+);
+
+export const aiUserPromptPreference = table(
+  'ai_user_prompt_preference',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .unique()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    activePromptGroupId: text('active_prompt_group_id').references(
+      () => aiPromptGroup.id,
+      { onDelete: 'set null' }
+    ),
+    professionalModeEnabled: boolean('professional_mode_enabled')
+      .notNull()
+      .default(false),
+    useEnglish: boolean('use_english').notNull().default(false),
+    defaultTemperature: integer('default_temperature'), // Scaled 0-100
+    targetWidth: integer('target_width'),
+    targetHeight: integer('target_height'),
+    imageFormat: text('image_format').notNull().default('png'),
+    quality: integer('quality').notNull().default(90),
+    preserveOriginal: boolean('preserve_original').notNull().default(true),
+    additionalSettings: jsonb('additional_settings'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_ai_user_prompt_preference_user').on(table.userId),
+  ]
+);
