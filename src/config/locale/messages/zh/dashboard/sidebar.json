@@ -55,6 +55,16 @@
           "icon": "BarChart3"
         }
       ]
+    },
+    {
+      "title": "管理",
+      "items": [
+        {
+          "title": "提示词组",
+          "url": "/dashboard/admin/prompt-groups",
+          "icon": "FileCode"
+        }
+      ]
     }
   ],
   "user": {

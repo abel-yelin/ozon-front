@@ -55,6 +55,16 @@
           "icon": "BarChart3"
         }
       ]
+    },
+    {
+      "title": "Admin",
+      "items": [
+        {
+          "title": "Prompt Groups",
+          "url": "/dashboard/admin/prompt-groups",
+          "icon": "FileCode"
+        }
+      ]
     }
   ],
   "user": {
