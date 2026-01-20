@@ -232,10 +232,8 @@ export function PromptGroupsAdmin() {
   };
 
   const handleEdit = async (group: PromptGroup) => {
-    console.log('Edit button clicked for group:', group);
     try {
       const res = await fetch(`/api/ai-playground/prompt-groups/${group.id}`);
-      console.log('Response status:', res.status);
 
       if (!res.ok) {
         console.error('Failed to fetch group:', res.statusText);
@@ -243,10 +241,8 @@ export function PromptGroupsAdmin() {
       }
 
       const data = await res.json();
-      console.log('Fetched group data:', data);
 
       if (data.code === 0) {
-        console.log('Setting selected group and opening dialog');
         setSelectedGroup(data.data.group);
         setDialogOpen(true);
       } else {
@@ -361,23 +357,14 @@ export function PromptGroupsAdmin() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          console.log('Edit button clicked');
-                          handleEdit(group);
-                        }}
+                        onClick={() => handleEdit(group)}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleDelete(group.id);
-                        }}
+                        onClick={() => handleDelete(group.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
