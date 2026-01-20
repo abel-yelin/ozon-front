@@ -2,6 +2,7 @@ import { respData, respErr } from '@/shared/lib/resp';
 import { getUserInfo } from '@/shared/models/user';
 import { aiPlaygroundDb } from '@/lib/db/ai-playground';
 import { getFileNameFromUrl, getStemFromFilename, isMainStem } from '@/shared/lib/image-studio';
+import { getUserGalleryImages } from '@/shared/services/gallery';
 
 // GET /api/image-studio/folders
 export async function GET() {
@@ -12,26 +13,49 @@ export async function GET() {
     }
 
     const workflowStates = await aiPlaygroundDb.getUserWorkflowStates(user.id, { limit: 500 });
+    const stateByName = new Map(workflowStates.map((s) => [s.name, s]));
     const allPairs = await aiPlaygroundDb.getUserImagePairs(user.id, { limit: 10000 });
-    const pairsByWorkflow = new Map<string, typeof allPairs>();
+    const pairBySource = new Map(allPairs.map((p) => [p.sourceUrl, p]));
+    const galleryImages = await getUserGalleryImages(user.id, { limit: 500 });
 
-    for (const pair of allPairs) {
-      const workflowId = pair.workflowStateId;
-      if (!workflowId) continue;
-      const list = pairsByWorkflow.get(workflowId) || [];
-      list.push(pair);
-      pairsByWorkflow.set(workflowId, list);
+    const grouped = new Map<string, typeof galleryImages>();
+    for (const image of galleryImages) {
+      const list = grouped.get(image.article) || [];
+      list.push(image);
+      grouped.set(image.article, list);
     }
 
-    const folders = workflowStates.map((state) => {
-      const pairs = pairsByWorkflow.get(state.id) || [];
+    const folders = [];
+    for (const [article, images] of grouped.entries()) {
+      let state = stateByName.get(article);
+      if (!state) {
+        state = await aiPlaygroundDb.createWorkflowState({
+          userId: user.id,
+          name: article,
+          state: 'pending',
+          imagePairs: [],
+          config: {},
+        });
+        stateByName.set(article, state);
+      }
+
       const inputStems = new Set<string>();
       const outputStems = new Set<string>();
-      for (const pair of pairs) {
-        const inputName = getFileNameFromUrl(pair.sourceUrl);
+      let thumbnailUrl = "";
+      let hasMain = false;
+
+      for (const image of images) {
+        const inputName = getFileNameFromUrl(image.url);
         const stem = getStemFromFilename(inputName);
         if (stem) inputStems.add(stem);
-        if (pair.resultUrl) {
+        if (!thumbnailUrl && image.url) {
+          thumbnailUrl = image.url;
+        }
+        if (stem && isMainStem(stem)) {
+          hasMain = true;
+        }
+        const pair = pairBySource.get(image.url);
+        if (pair?.resultUrl) {
           const outputName = getFileNameFromUrl(pair.resultUrl);
           const outputStem = getStemFromFilename(outputName) || stem;
           if (outputStem) outputStems.add(outputStem);
@@ -52,8 +76,8 @@ export async function GET() {
 
       const reviewStatus = state.state === 'approved' ? 'approved' : 'pending';
 
-      return {
-        sku: state.name,
+      folders.push({
+        sku: article,
         archived: state.state === 'archived',
         generated: outputStems.size > 0,
         status,
@@ -61,8 +85,10 @@ export async function GET() {
         input_count: inputStems.size,
         output_count: outputStems.size,
         workflow_state_id: state.id,
-      };
-    });
+        thumbnail_url: thumbnailUrl || null,
+        has_main: hasMain,
+      });
+    }
 
     return respData({ folders });
   } catch (error) {

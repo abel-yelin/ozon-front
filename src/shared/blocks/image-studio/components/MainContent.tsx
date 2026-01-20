@@ -10,7 +10,6 @@ import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
 import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import { Checkbox } from '@/shared/components/ui/checkbox';
-import { ImageComparison } from './ImageComparison';
 import { EmptyState } from './EmptyState';
 import {
   Play,
@@ -24,10 +23,7 @@ export function MainContent() {
   const {
     currentSKU,
     currentImagePairs,
-    batchProgress,
     startBatch,
-    cancelBatch,
-    downloadBatch,
     openModal,
   } = useImageStudio();
 
@@ -115,20 +111,20 @@ export function MainContent() {
                         onClick={() =>
                           openModal('image-edit', {
                             sku: currentSKU.article,
-                            filename: pair.inputImage.filename,
-                            imageUrl: pair.inputImage.url,
+                            filename: pair.inputName || pair.stem,
+                            imageUrl: pair.inputUrl,
                             sourceType: 'input',
                             pairId: pair.id,
                           })
                         }
                       >
                         <img
-                          src={pair.inputImage.url}
-                          alt={pair.inputImage.filename}
+                          src={pair.inputUrl}
+                          alt={pair.inputName || pair.stem}
                           className="h-full w-full object-contain"
                         />
                       </div>
-                      <p className="text-sm text-gray-600">{pair.inputImage.filename}</p>
+                      <p className="text-sm text-gray-600">{pair.inputName || pair.stem}</p>
                     </div>
 
                     {/* Output Panel */}
@@ -154,17 +150,17 @@ export function MainContent() {
                         onClick={() =>
                           openModal('image-edit', {
                             sku: currentSKU.article,
-                            filename: pair.outputImage?.filename || pair.inputImage.filename,
-                            imageUrl: pair.outputImage?.url || null,
+                            filename: pair.outputName || pair.inputName || pair.stem,
+                            imageUrl: pair.outputUrl || null,
                             sourceType: 'output',
                             pairId: pair.id,
                           })
                         }
                       >
-                        {pair.outputImage ? (
+                        {pair.outputUrl ? (
                           <img
-                            src={pair.outputImage.url}
-                            alt={pair.outputImage.filename}
+                            src={pair.outputUrl}
+                            alt={pair.outputName || pair.inputName || pair.stem}
                             className="h-full w-full object-contain"
                           />
                         ) : (
@@ -174,7 +170,7 @@ export function MainContent() {
                         )}
                       </div>
                       <p className="text-sm text-gray-600">
-                        {pair.outputImage?.filename || '等待生成...'}
+                        {pair.outputName || '等待生成...'}
                       </p>
                     </div>
                   </div>
@@ -182,10 +178,9 @@ export function MainContent() {
                   {/* Status Indicators */}
                   <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3">
                     <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span>状态: {pair.status === 'completed' ? '已完成' : pair.status === 'processing' ? '处理中' : '待处理'}</span>
-                      {pair.processingTime && (
-                        <span>耗时: {pair.processingTime}ms</span>
-                      )}
+                      <span>
+                        状态: {pair.status === 'done' ? '已完成' : pair.status === 'processing' ? '处理中' : pair.status === 'failed' ? '异常' : '待处理'}
+                      </span>
                     </div>
                     <Button
                       variant="outline"

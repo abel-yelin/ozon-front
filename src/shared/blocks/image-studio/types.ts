@@ -7,6 +7,11 @@ export interface SKU {
   isApproved: boolean;
   thumbnail: string;
   createdAt: string;
+  archived?: boolean;
+  reviewStatus?: 'approved' | 'pending' | '';
+  inputCount?: number;
+  outputCount?: number;
+  workflowStateId?: string;
 }
 
 export type SKUStatus = 'not_generated' | 'main_generated' | 'done';
@@ -14,9 +19,12 @@ export type SKUStatus = 'not_generated' | 'main_generated' | 'done';
 // Image pair for before/after comparison
 export interface ImagePair {
   id: string;
-  type: 'main' | 'secondary';
-  original: Image;
-  generated: Image | null;
+  stem: string;
+  isMain: boolean;
+  inputUrl: string;
+  outputUrl: string | null;
+  inputName?: string;
+  outputName?: string;
   status: ImageStatus;
 }
 

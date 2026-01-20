@@ -23,8 +23,8 @@ interface ImageComparisonProps {
 }
 
 export function ImageComparison({ pair }: ImageComparisonProps) {
-  const { openModal, downloadImage, regenerateImage } = useImageStudio();
-  const [showGenerated, setShowGenerated] = useState(!!pair.generated);
+  const { openModal, downloadImage } = useImageStudio();
+  const [showGenerated, setShowGenerated] = useState(Boolean(pair.outputUrl));
 
   const statusColors = {
     pending: 'bg-neutral-100 text-neutral-700',
@@ -50,7 +50,7 @@ export function ImageComparison({ pair }: ImageComparisonProps) {
       <div className="flex items-center justify-between border-b border-neutral-200 bg-neutral-50 px-4 py-3">
         <div className="flex items-center gap-3">
           <Badge variant="outline" className="text-xs">
-            {pair.type === 'main' ? 'Main Image' : 'Secondary'}
+            {pair.isMain ? 'Main Image' : 'Secondary'}
           </Badge>
           <Badge className={`text-xs ${statusColors[pair.status]}`}>
             {statusLabels[pair.status]}
@@ -62,13 +62,13 @@ export function ImageComparison({ pair }: ImageComparisonProps) {
             variant="ghost"
             size="sm"
             onClick={() => setShowGenerated(!showGenerated)}
-            disabled={!pair.generated}
+            disabled={!pair.outputUrl}
           >
             <Eye className="mr-1 h-4 w-4" />
             {showGenerated ? 'Show Original' : 'Show Generated'}
           </Button>
 
-          {pair.generated && (
+          {pair.outputUrl && (
             <Button
               variant="ghost"
               size="sm"
@@ -99,15 +99,15 @@ export function ImageComparison({ pair }: ImageComparisonProps) {
 
       {/* Image Display */}
       <div className="relative aspect-square w-full bg-neutral-100">
-        {showGenerated && pair.generated ? (
+        {showGenerated && pair.outputUrl ? (
           <img
-            src={pair.generated.url}
+            src={pair.outputUrl}
             alt="Generated"
             className="h-full w-full object-contain"
           />
         ) : (
           <img
-            src={pair.original.url}
+            src={pair.inputUrl}
             alt="Original"
             className="h-full w-full object-contain"
           />
@@ -116,26 +116,20 @@ export function ImageComparison({ pair }: ImageComparisonProps) {
         {/* Overlay info */}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-4 py-2">
           <p className="text-xs text-white">
-            {showGenerated && pair.generated
-              ? `${pair.generated.width}x${pair.generated.height}`
-              : `${pair.original.width}x${pair.original.height}`}
+            {showGenerated && pair.outputUrl
+              ? pair.outputName || 'Generated'
+              : pair.inputName || 'Original'}
           </p>
-          {pair.generated?.prompt && showGenerated && (
-            <p className="mt-1 line-clamp-2 text-xs text-white/80">
-              {pair.generated.prompt}
-            </p>
-          )}
         </div>
       </div>
 
-      {/* Prompt display (if available) */}
-      {pair.original.prompt && (
+      {pair.outputUrl ? (
         <div className="border-t border-neutral-200 bg-neutral-50 px-4 py-2">
           <p className="text-xs text-neutral-600">
-            <span className="font-medium">Prompt:</span> {pair.original.prompt}
+            <span className="font-medium">Output:</span> {pair.outputName || pair.stem}
           </p>
         </div>
-      )}
+      ) : null}
     </Card>
   );
 }

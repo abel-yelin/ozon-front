@@ -2,22 +2,9 @@ import { respData, respErr } from '@/shared/lib/resp';
 import { getUserInfo } from '@/shared/models/user';
 import { aiPlaygroundDb } from '@/lib/db/ai-playground';
 import { submitImageStudioJob } from '@/lib/api/image-studio-server';
-
-function buildJobView(job: any) {
-  const cfg = (job.config || {}) as Record<string, any>;
-  return {
-    id: job.id,
-    mode: cfg.mode || job.type,
-    sku: cfg.sku || '',
-    stem: cfg.stem || null,
-    status: job.status,
-    cancel_requested: job.status === 'cancelled',
-    created_at: job.createdAt,
-    started_at: job.startedAt,
-    finished_at: job.completedAt,
-    error: job.errorMessage || null,
-  };
-}
+import { getUserGalleryImages } from '@/shared/services/gallery';
+import { getFileNameFromUrl, getStemFromFilename } from '@/shared/lib/image-studio';
+import { buildJobView, syncImageStudioJobs } from '@/app/api/image-studio/jobs/helpers';
 
 // GET /api/image-studio/jobs
 export async function GET(req: Request) {
@@ -34,7 +21,8 @@ export async function GET(req: Request) {
       limit,
       type: 'image_studio',
     });
-    const jobViews = jobs.map(buildJobView);
+    const syncedJobs = await syncImageStudioJobs(user.id, jobs);
+    const jobViews = syncedJobs.map(buildJobView);
     const runningJobs = jobViews.filter((j) => j.status === 'processing');
     const running = runningJobs.length ? runningJobs[0] : null;
     const queuedCount = jobViews.filter((j) => j.status === 'pending').length;
@@ -63,114 +51,223 @@ export async function POST(req: Request) {
     const mode = String(body?.mode || '').trim();
     const sku = String(body?.sku || '').trim();
     const stem = body?.stem ? String(body.stem).trim() : '';
-    const options = body?.options || {};
+    const rawOptions = body?.options || {};
 
     if (!mode || !sku) {
       return respErr('mode/sku required');
     }
 
-    let workflowState = await aiPlaygroundDb.getWorkflowStateByName(user.id, sku);
-    if (!workflowState) {
-      workflowState = await aiPlaygroundDb.createWorkflowState({
-        userId: user.id,
-        name: sku,
-        state: 'pending',
-        imagePairs: [],
-        config: { mode },
-      });
+    const [prefs, promptGroups, galleryImages] = await Promise.all([
+      aiPlaygroundDb.getUserPromptPreferences(user.id),
+      aiPlaygroundDb.getPromptGroups(user.id),
+      getUserGalleryImages(user.id, { limit: 500 }),
+    ]);
+
+    const activeGroupId = prefs?.activePromptGroupId || promptGroups?.[0]?.id || '';
+    const activeGroup = activeGroupId
+      ? await aiPlaygroundDb.getPromptGroupWithTemplates(activeGroupId)
+      : null;
+
+    const additional = (prefs?.additionalSettings || {}) as Record<string, any>;
+    const { settings: clientSettings, ...options } = rawOptions;
+    const size = typeof clientSettings?.imageSize === 'string' ? clientSettings.imageSize : '';
+    const [sizeW, sizeH] = size.split('x').map((value: string) => parseInt(value, 10));
+
+    const targetWidth = Number.isFinite(sizeW) ? sizeW : prefs?.targetWidth || 1500;
+    const targetHeight = Number.isFinite(sizeH) ? sizeH : prefs?.targetHeight || 2000;
+    const outputFormat = clientSettings?.imageFormat || prefs?.imageFormat || options.output_format || 'png';
+    const defaultTemperature = typeof prefs?.defaultTemperature === 'number'
+      ? Math.max(0, Math.min(1, prefs.defaultTemperature / 100))
+      : 0.5;
+
+    const baseOptions = {
+      api_key: additional.api_key || '',
+      api_base: additional.api_base || '',
+      model: additional.model || '',
+      target_width: targetWidth,
+      target_height: targetHeight,
+      default_temperature: defaultTemperature,
+      output_format: outputFormat,
+      use_english: Boolean(prefs?.useEnglish),
+      prompt_templates: activeGroup?.prompt_templates || {},
+    };
+
+    const jobOptions = { ...options, ...baseOptions };
+    const isBatchMode = mode.startsWith('batch_');
+    const isFolderMode = mode === 'folder_generate';
+    const isSingleMode = ['image_regenerate', 'image_optimize_current', 'image_custom_generate'].includes(mode);
+
+    const galleryBySku = new Map<string, typeof galleryImages>();
+    for (const image of galleryImages) {
+      const list = galleryBySku.get(image.article) || [];
+      list.push(image);
+      galleryBySku.set(image.article, list);
+    }
+
+    const buildSourceImages = (images: typeof galleryImages) =>
+      images
+        .map((image) => {
+          const name = getFileNameFromUrl(image.url);
+          const stemValue = getStemFromFilename(name);
+          return {
+            url: image.url,
+            name,
+            stem: stemValue,
+          };
+        })
+        .filter((item) => item.url);
+
+    let resolvedStem = stem;
+    let sourceUrl = String(options.source_url || '');
+    let sourceImageUrls: string[] = [];
+    let workflowStateId: string | null = null;
+    let workflowStateIds: Record<string, string> | null = null;
+
+    if (isBatchMode) {
+      const skus = Array.isArray(options.skus)
+        ? options.skus.map((value: any) => String(value).trim()).filter(Boolean)
+        : [];
+      const skuList = skus.length ? skus : (sku && sku !== '__batch__' ? [sku] : []);
+      if (!skuList.length) {
+        return respErr('skus required');
+      }
+
+      const workflowStates = await aiPlaygroundDb.getUserWorkflowStates(user.id, { limit: 500 });
+      const stateByName = new Map(workflowStates.map((state) => [state.name, state]));
+      workflowStateIds = {};
+
+      const skuImagesMap: Record<string, any[]> = {};
+      for (const skuName of skuList) {
+        const sources = buildSourceImages(galleryBySku.get(skuName) || []);
+        if (sources.length) {
+          skuImagesMap[skuName] = sources;
+          sourceImageUrls.push(...sources.map((item) => item.url));
+        }
+
+        let state = stateByName.get(skuName);
+        if (!state) {
+          state = await aiPlaygroundDb.createWorkflowState({
+            userId: user.id,
+            name: skuName,
+            state: 'pending',
+            imagePairs: [],
+            config: {},
+          });
+        }
+        workflowStateIds[skuName] = state.id;
+      }
+
+      jobOptions.sku_images_map = skuImagesMap;
+      jobOptions.skus = skuList;
+    } else if (isFolderMode) {
+      const sources = buildSourceImages(galleryBySku.get(sku) || []);
+      jobOptions.source_images = sources;
+      sourceImageUrls = sources.map((item) => item.url);
+    } else if (isSingleMode) {
+      if (!sourceUrl && stem) {
+        const pair = await aiPlaygroundDb.getImagePair(stem, user.id);
+        if (pair?.sourceUrl) {
+          sourceUrl = pair.sourceUrl;
+          if (mode === 'image_optimize_current' && pair.resultUrl) {
+            sourceUrl = pair.resultUrl;
+          }
+        }
+      }
+
+      if (!sourceUrl) {
+        const sources = buildSourceImages(galleryBySku.get(sku) || []);
+        const match = sources.find((item) => item.stem === stem || item.name === stem);
+        sourceUrl = match?.url || '';
+      }
+
+      if (!sourceUrl) {
+        return respErr('source_url required');
+      }
+
+      const derivedStem = getStemFromFilename(getFileNameFromUrl(sourceUrl));
+      resolvedStem = derivedStem || resolvedStem;
+      jobOptions.source_url = sourceUrl;
+      sourceImageUrls = [sourceUrl];
+    }
+
+    if (!isBatchMode) {
+      let state = await aiPlaygroundDb.getWorkflowStateByName(user.id, sku);
+      if (!state) {
+        state = await aiPlaygroundDb.createWorkflowState({
+          userId: user.id,
+          name: sku,
+          state: 'pending',
+          imagePairs: [],
+          config: { mode },
+        });
+      }
+      workflowStateId = state.id;
+    }
+
+    const jobConfig: Record<string, any> = {
+      mode,
+      sku,
+      stem: resolvedStem || null,
+      options: jobOptions,
+    };
+    if (workflowStateId) {
+      jobConfig.workflowStateId = workflowStateId;
+    }
+    if (workflowStateIds) {
+      jobConfig.workflowStateIds = workflowStateIds;
     }
 
     const job = await aiPlaygroundDb.createJob({
       userId: user.id,
       type: 'image_studio',
-      config: { mode, sku, stem, options, workflowStateId: workflowState.id },
-      sourceImageUrls: [],
+      config: jobConfig,
+      sourceImageUrls,
     });
 
-    await aiPlaygroundDb.updateJob(job.id, user.id, {
-      status: 'processing',
-      startedAt: new Date(),
-    });
-
-    submitImageStudioJob({
-      job_id: job.id,
-      user_id: user.id,
-      mode,
-      sku,
-      stem: stem || null,
-      options,
-      workflow_state_id: workflowState.id,
-    })
-      .then(async (response: any) => {
-        if (!response || response.success === false) {
-          await aiPlaygroundDb.updateJob(job.id, user.id, {
-            status: 'failed',
-            errorMessage: response?.error || 'Job failed',
-            completedAt: new Date(),
-          });
-          await aiPlaygroundDb.createJobLog({
-            jobId: job.id,
-            level: 'error',
-            message: response?.error || 'Job failed',
-          });
-          return;
-        }
-
-        await aiPlaygroundDb.updateJob(job.id, user.id, {
-          status: 'completed',
-          progress: 100,
-          completedAt: new Date(),
-        });
-
-        const items: any[] = response?.data?.items || response?.items || [];
-        if (items.length) {
-          const existingPairs = await aiPlaygroundDb.getUserImagePairs(user.id, {
-            workflowStateId: workflowState.id,
-            limit: 10000,
-          });
-          const bySource = new Map(existingPairs.map((p) => [p.sourceUrl, p]));
-          for (const item of items) {
-            const sourceUrl = item.source_url || item.sourceUrl;
-            const resultUrl = item.result_url || item.resultUrl;
-            if (!sourceUrl) continue;
-            const existing = bySource.get(sourceUrl);
-            if (existing) {
-              await aiPlaygroundDb.updateImagePair(existing.id, user.id, {
-                resultUrl: resultUrl || existing.resultUrl || null,
-                metadata: item.metadata || existing.metadata || undefined,
-              });
-            } else {
-              await aiPlaygroundDb.createImagePair({
-                userId: user.id,
-                workflowStateId: workflowState.id,
-                jobId: job.id,
-                sourceUrl,
-                resultUrl,
-                metadata: item.metadata || undefined,
-              });
-            }
-          }
-        }
-
-        await aiPlaygroundDb.createJobLog({
-          jobId: job.id,
-          level: 'info',
-          message: 'Job completed successfully.',
-        });
-      })
-      .catch(async (error: any) => {
-        console.error('ImageStudio job failed:', error);
-        await aiPlaygroundDb.updateJob(job.id, user.id, {
-          status: 'failed',
-          errorMessage: error instanceof Error ? error.message : 'Unknown error',
-          completedAt: new Date(),
-        });
-        await aiPlaygroundDb.createJobLog({
-          jobId: job.id,
-          level: 'error',
-          message: error instanceof Error ? error.message : 'Unknown error',
-        });
+    let response: any;
+    try {
+      response = await submitImageStudioJob({
+        job_id: job.id,
+        user_id: user.id,
+        mode,
+        sku,
+        stem: resolvedStem || null,
+        options: jobOptions,
       });
+    } catch (error) {
+      console.error('Submit ImageStudio job error:', error);
+      await aiPlaygroundDb.updateJob(job.id, user.id, {
+        status: 'failed',
+        errorMessage: error instanceof Error ? error.message : 'Job submission failed',
+        completedAt: new Date(),
+      });
+      await aiPlaygroundDb.createJobLog({
+        jobId: job.id,
+        level: 'error',
+        message: error instanceof Error ? error.message : 'Job submission failed',
+      });
+      return respErr(error instanceof Error ? error.message : 'Job submission failed');
+    }
+
+    if (!response || response.success === false) {
+      await aiPlaygroundDb.updateJob(job.id, user.id, {
+        status: 'failed',
+        errorMessage: response?.error || 'Job failed',
+        completedAt: new Date(),
+      });
+      await aiPlaygroundDb.createJobLog({
+        jobId: job.id,
+        level: 'error',
+        message: response?.error || 'Job failed',
+      });
+      return respErr(response?.error || 'Job failed');
+    }
+
+    await aiPlaygroundDb.createJobLog({
+      jobId: job.id,
+      level: 'info',
+      message: 'Job queued.',
+    });
 
     return respData({ job_id: job.id });
   } catch (error) {

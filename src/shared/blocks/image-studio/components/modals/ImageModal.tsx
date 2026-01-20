@@ -7,7 +7,7 @@
 
 import { useEffect } from 'react';
 import { useImageStudio } from '@/app/hooks/use-image-studio';
-import { Dialog, DialogContent } from '@/shared/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Button } from '@/shared/components/ui/button';
 import { X, Download } from 'lucide-react';
 
@@ -37,6 +37,9 @@ export function ImageModal() {
   return (
     <Dialog open={isOpen} onOpenChange={closeModal}>
       <DialogContent className="max-h-[90vh] max-w-[90vw] p-0">
+        <DialogHeader className="sr-only">
+          <DialogTitle>Image preview</DialogTitle>
+        </DialogHeader>
         <div className="relative flex h-[90vh] items-center justify-center bg-black">
           {/* Close button */}
           <Button
@@ -60,8 +63,8 @@ export function ImageModal() {
 
           {/* Image */}
           <img
-            src={pair.generated?.url || pair.original.url}
-            alt="Full size"
+            src={pair.outputUrl || pair.inputUrl}
+            alt={pair.outputName || pair.inputName || 'Full size'}
             className="max-h-full max-w-full object-contain"
           />
         </div>
