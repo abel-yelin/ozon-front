@@ -65,4 +65,5 @@ export const localeMessagesPaths = [
   'dashboard/aiplayground-review',
   'dashboard/aiplayground-history',
   'dashboard/aiplayground-settings',
+  'dashboard/imagestudio',
 ];

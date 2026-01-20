@@ -45,6 +45,11 @@
           "icon": "Sparkles"
         },
         {
+          "title": "Image Studio",
+          "url": "/dashboard/imagestudio",
+          "icon": "Wand2"
+        },
+        {
           "title": "Statistics",
           "url": "/dashboard/stats",
           "icon": "BarChart3"

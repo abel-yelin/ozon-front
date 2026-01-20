@@ -45,6 +45,11 @@
           "icon": "Sparkles"
         },
         {
+          "title": "图片工作室",
+          "url": "/dashboard/imagestudio",
+          "icon": "Wand2"
+        },
+        {
           "title": "使用统计",
           "url": "/dashboard/stats",
           "icon": "BarChart3"

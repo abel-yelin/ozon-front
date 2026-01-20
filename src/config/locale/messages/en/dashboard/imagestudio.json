@@ -1,0 +1,14 @@
+{
+  "crumb_dashboard": "Dashboard",
+  "crumb": "Image Studio",
+  "title": "Image Studio",
+  "description": "AI-powered batch image processing and enhancement",
+  "page": {
+    "title": "Image Studio",
+    "description": "AI-powered batch image processing and enhancement"
+  },
+  "metadata": {
+    "title": "Image Studio - AI Batch Image Processing",
+    "description": "Process and enhance multiple images with AI-powered batch operations"
+  }
+}
