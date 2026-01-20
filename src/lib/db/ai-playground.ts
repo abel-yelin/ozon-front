@@ -992,18 +992,33 @@ export class AiPlaygroundDb {
       imageFormat?: string;
       quality?: number;
       preserveOriginal?: boolean;
+      additionalSettings?: Record<string, any>;
     }
   ) {
     const [prefs] = await db()
       .update(aiUserPromptPreference)
       .set({
         ...updates,
+        additionalSettings: updates.additionalSettings as any,
         updatedAt: new Date(),
       })
       .where(eq(aiUserPromptPreference.userId, userId))
       .returning();
 
     return prefs;
+  }
+
+  /**
+   * Get workflow state by name
+   */
+  async getWorkflowStateByName(userId: string, name: string) {
+    const [state] = await db()
+      .select()
+      .from(aiWorkflowState)
+      .where(and(eq(aiWorkflowState.userId, userId), eq(aiWorkflowState.name, name)))
+      .limit(1);
+
+    return state;
   }
 }
 

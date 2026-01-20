@@ -8,7 +8,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { X } from 'lucide-react';
 import { useImageStudio } from '@/app/hooks/use-image-studio';
-import { Dialog, DialogContent } from '@/shared/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Button } from '@/shared/components/ui/button';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Input } from '@/shared/components/ui/input';
@@ -81,8 +81,11 @@ export function EditImageModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={closeModal}>
-      <DialogContent className="max-w-[980px] p-0">
-        <div className="flex flex-col">
+      <DialogContent className="w-[92vw] max-w-[1040px] overflow-hidden p-0">
+        <DialogHeader className="sr-only">
+          <DialogTitle>编辑图片</DialogTitle>
+        </DialogHeader>
+        <div className="flex max-h-[92vh] flex-col bg-white">
           <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-4">
             <div className="text-sm font-medium text-neutral-800">{title}</div>
             <button
@@ -95,14 +98,14 @@ export function EditImageModal() {
             </button>
           </div>
 
-          <div className="grid gap-6 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_320px]">
-            <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
+          <div className="grid flex-1 gap-6 overflow-y-auto px-6 py-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+            <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow-sm">
               <div className="flex h-full min-h-[420px] items-center justify-center overflow-hidden rounded-xl bg-white">
                 {data.imageUrl ? (
                   <img
                     src={data.imageUrl}
                     alt={data.filename || 'preview'}
-                    className="max-h-[460px] w-full object-contain"
+                    className="max-h-[480px] w-full object-contain"
                   />
                 ) : (
                   <div className="text-sm text-neutral-400">暂无预览</div>
@@ -110,7 +113,7 @@ export function EditImageModal() {
               </div>
             </div>
 
-            <div className="space-y-5 text-sm text-neutral-700">
+            <div className="space-y-5 text-[13px] text-neutral-700">
               <div className="space-y-3">
                 <div className="text-xs font-semibold text-neutral-500">生成类提示</div>
                 <label className="flex items-center gap-2">
@@ -236,6 +239,7 @@ export function EditImageModal() {
                 <Input
                   type="file"
                   accept="image/*"
+                  className="cursor-pointer text-xs file:mr-3 file:rounded-md file:border-0 file:bg-neutral-100 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-neutral-700 hover:file:bg-neutral-200"
                   onChange={(e) => setRefFileName(e.target.files?.[0]?.name || '')}
                 />
                 {refFileName ? (
@@ -252,16 +256,17 @@ export function EditImageModal() {
                     setOptions((prev) => ({ ...prev, extraPrompt: e.target.value }))
                   }
                   rows={3}
+                  className="text-sm"
                 />
               </div>
             </div>
           </div>
 
           <div className="flex items-center justify-end gap-3 border-t border-neutral-200 px-6 py-4">
-            <Button variant="secondary">
+            <Button variant="secondary" className="min-w-[140px]">
               {secondaryLabel}
             </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="min-w-[140px] bg-blue-600 hover:bg-blue-700">
               {primaryLabel}
             </Button>
           </div>
