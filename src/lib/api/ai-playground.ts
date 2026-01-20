@@ -10,7 +10,7 @@ import { envConfigs } from '@/config';
 // ========================================
 
 export type AiJobType = 'background_replacement' | 'batch_optimization' | 'image_enhancement';
-export type AiJobStatus = 'pending' | 'processing' | 'completed' | 'failed';
+export type AiJobStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
 export type AiQuality = 'low' | 'standard' | 'high';
 export type AiFormat = 'png' | 'jpg' | 'webp';
 export type AiWorkflowState = 'pending' | 'approved' | 'archived';
@@ -67,11 +67,12 @@ export interface AiJobResult {
   source_image_urls: string[];
   processing_time_ms: number;
   metadata: Array<{
-    source_url: string;
-    result_url: string;
-    dimensions: { width: number; height: number };
-    size_bytes: number;
-    processing_time_ms: number;
+    source_url?: string;
+    result_url?: string;
+    dimensions?: { width: number; height: number };
+    size_bytes?: number;
+    processing_time_ms?: number;
+    details?: Record<string, any>;
   }>;
 }
 
@@ -90,7 +91,7 @@ export interface AiErrorResponse {
 }
 
 export interface AiSSEEvent {
-  event: 'progress' | 'completed' | 'error';
+  event: 'progress' | 'completed' | 'failed' | 'cancelled' | 'error';
   data: AiJobProgress | AiJobResult | { error: string };
 }
 
@@ -98,11 +99,12 @@ export interface AiSSEEvent {
 // API Client
 // ========================================
 
-const PYTHON_API_URL = envConfigs.python_api_url || 'http://localhost:8000';
-const PYTHON_API_KEY = envConfigs.python_api_key || '';
+// Use the local onzon-image backend server
+const PYTHON_API_URL = envConfigs.python_service_url || 'http://localhost:8000';
+const PYTHON_API_KEY = envConfigs.python_service_api_key || 'dev-api-key-123';
 
 if (!PYTHON_API_KEY) {
-  console.warn('WARNING: PYTHON_API_KEY is not set in environment variables');
+  console.warn('WARNING: PYTHON_SERVICE_API_KEY is not set in environment variables');
 }
 
 export class AiPlaygroundApiClient {
@@ -289,7 +291,7 @@ export class AiPlaygroundApiClient {
     }
 
     const eventSource = new EventSource(
-      `${this.baseUrl}/api/v1/ai/job/${jobId}/stream?api_key=${this.apiKey}`
+      `${this.baseUrl}/api/v1/ai/job/${jobId}/stream?api_key=${encodeURIComponent(this.apiKey)}`
     );
 
     eventSource.addEventListener('progress', (event) => {
@@ -310,6 +312,20 @@ export class AiPlaygroundApiClient {
         console.error('Failed to parse completed event:', error);
       }
     });
+
+    const handleFailure = (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data) as { error: string };
+        onError(data.error || 'Job failed');
+      } catch (error) {
+        console.error('Failed to parse failure event:', error);
+        onError('Job failed');
+      }
+      eventSource.close();
+    };
+
+    eventSource.addEventListener('failed', handleFailure);
+    eventSource.addEventListener('cancelled', handleFailure);
 
     eventSource.addEventListener('error', (event: any) => {
       try {

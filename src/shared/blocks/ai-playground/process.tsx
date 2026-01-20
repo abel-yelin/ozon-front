@@ -148,7 +148,7 @@ function ProcessTab() {
 // ========================================
 
 function ReviewTab() {
-  const t = useTranslations('dashboard.aiplayground.review');
+  const t = useTranslations('dashboard.aiplayground-review');
 
   return (
     <div className="text-center py-12">
@@ -162,7 +162,7 @@ function ReviewTab() {
 // ========================================
 
 function HistoryTab() {
-  const t = useTranslations('dashboard.aiplayground.history');
+  const t = useTranslations('dashboard.aiplayground-history');
 
   return (
     <div className="text-center py-12">
@@ -176,7 +176,7 @@ function HistoryTab() {
 // ========================================
 
 function SettingsTab() {
-  const t = useTranslations('dashboard.aiplayground.settings');
+  const t = useTranslations('dashboard.aiplayground-settings');
 
   return (
     <div className="space-y-6">

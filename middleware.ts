@@ -6,8 +6,28 @@ import { routing } from '@/core/i18n/config';
 
 const intlMiddleware = createIntlMiddleware(routing);
 
+const proxyTarget =
+  process.env.PYTHON_SERVICE_URL || process.env.PYTHON_API_URL || '';
+
+function buildProxyUrl(request: NextRequest) {
+  if (!proxyTarget) {
+    return null;
+  }
+
+  const targetUrl = new URL(proxyTarget);
+  const basePath = targetUrl.pathname.replace(/\/$/, '');
+
+  targetUrl.pathname = `${basePath}${request.nextUrl.pathname}`;
+  targetUrl.search = request.nextUrl.search;
+
+  return targetUrl;
+}
+
 export const config = {
-  matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)',
+  matcher: [
+    '/api/v1/:path*',
+    '/((?!api|trpc|_next|_vercel|.*\\..*).*)',
+  ],
 };
 
 export const runtime = 'edge';
@@ -15,7 +35,22 @@ export const runtime = 'edge';
 export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Handle internationalization first
+  // Proxy API requests to Python backend
+  if (pathname.startsWith('/api/v1/')) {
+    const proxyUrl = buildProxyUrl(request);
+    if (proxyUrl) {
+      return NextResponse.rewrite(proxyUrl);
+    }
+  }
+
+  // Redirect root to default locale
+  if (pathname === '/') {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${routing.defaultLocale}`;
+    return NextResponse.redirect(url);
+  }
+
+  // Handle internationalization
   const intlResponse = intlMiddleware(request);
 
   // Extract locale from pathname
