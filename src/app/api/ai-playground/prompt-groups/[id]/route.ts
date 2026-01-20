@@ -7,6 +7,12 @@ const updatePromptGroupSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional(),
   isActive: z.boolean().optional(),
+  templates: z.array(z.object({
+    key: z.string(),
+    content: z.string(),
+    language: z.string().optional(),
+    category: z.string().optional(),
+  })).optional(),
 });
 
 // GET /api/ai-playground/prompt-groups/[id] - Get single group with templates
@@ -52,6 +58,16 @@ export async function PATCH(
       return respErr(validatedData.error.issues[0].message);
     }
 
+    // If templates are being updated, use the full update method
+    if (validatedData.data.templates) {
+      const group = await aiPlaygroundDb.updatePromptGroupWithTemplates(
+        params.id,
+        validatedData.data
+      );
+      return respData({ group });
+    }
+
+    // Otherwise just update basic fields
     const group = await aiPlaygroundDb.updatePromptGroup(
       params.id,
       validatedData.data

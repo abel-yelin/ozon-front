@@ -853,6 +853,72 @@ export class AiPlaygroundDb {
     return group;
   }
 
+  /**
+   * Delete prompt group (soft delete)
+   */
+  async deletePromptGroup(groupId: string) {
+    const [group] = await db()
+      .update(aiPromptGroup)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(aiPromptGroup.id, groupId))
+      .returning();
+
+    return group;
+  }
+
+  /**
+   * Update prompt group with templates (replaces all templates)
+   */
+  async updatePromptGroupWithTemplates(
+    groupId: string,
+    updates: {
+      name?: string;
+      description?: string;
+      isActive?: boolean;
+      templates?: Array<{ key: string; content: string; language?: string; category?: string }>;
+    }
+  ) {
+    const { templates, ...groupUpdates } = updates;
+
+    // Update group basic info
+    if (Object.keys(groupUpdates).length > 0) {
+      await db()
+        .update(aiPromptGroup)
+        .set({
+          ...groupUpdates,
+          updatedAt: new Date(),
+        })
+        .where(eq(aiPromptGroup.id, groupId));
+    }
+
+    // Update templates if provided
+    if (templates) {
+      // Delete all existing templates for this group
+      await db()
+        .delete(aiPromptTemplateV2)
+        .where(eq(aiPromptTemplateV2.promptGroupId, groupId));
+
+      // Insert new templates
+      if (templates.length > 0) {
+        await db()
+          .insert(aiPromptTemplateV2)
+          .values(
+            templates.map((template) => ({
+              id: getUuid(),
+              promptGroupId: groupId,
+              templateKey: template.key,
+              templateContent: template.content,
+              language: template.language || 'cn',
+              category: template.category || null,
+            }))
+          );
+      }
+    }
+
+    // Return updated group with templates
+    return await this.getPromptGroupWithTemplates(groupId);
+  }
+
   // ========================================
   // Prompt Template Operations
   // ========================================
