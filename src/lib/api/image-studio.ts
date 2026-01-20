@@ -17,6 +17,52 @@ import type {
 
 const API_BASE = '/api/image-studio';
 
+// Mock data for development when backend is unavailable
+const mockSKUs: SKU[] = [
+  {
+    id: '1',
+    article: '052-01-1',
+    thumbnail: '/placeholder-image.jpg',
+    status: 'done',
+    isMainImage: true,
+    isApproved: true,
+  },
+  {
+    id: '2',
+    article: '052-01-2',
+    thumbnail: '/placeholder-image.jpg',
+    status: 'not_generated',
+    isMainImage: false,
+    isApproved: false,
+  },
+  {
+    id: '3',
+    article: '052-01-3',
+    thumbnail: '/placeholder-image.jpg',
+    status: 'main_generated',
+    isMainImage: false,
+    isApproved: false,
+  },
+];
+
+const mockImagePairs: ImagePair[] = [
+  {
+    id: 'pair-1',
+    inputImage: {
+      id: 'img-1',
+      url: 'https://via.placeholder.com/400',
+      filename: 'input-1.jpg',
+    },
+    outputImage: {
+      id: 'img-2',
+      url: 'https://via.placeholder.com/400/00FF00/000000?text=Output',
+      filename: 'output-1.jpg',
+    },
+    status: 'completed',
+    processingTime: 1500,
+  },
+];
+
 // ========================================
 // Helper functions
 // ========================================
@@ -24,9 +70,26 @@ const API_BASE = '/api/image-studio';
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const error = await response.text();
+    // If backend is not available, return mock data in development
+    if (response.status === 404) {
+      console.warn('Backend not available, using mock data');
+      throw new Error('MOCK_DATA');
+    }
     throw new Error(error || `HTTP error! status: ${response.status}`);
   }
   return response.json() as Promise<T>;
+}
+
+async function fetchWithMock<T>(url: string, options?: RequestInit, mockData?: T): Promise<T> {
+  try {
+    const response = await fetch(url, options);
+    return await handleResponse<T>(response);
+  } catch (error) {
+    if (error instanceof Error && error.message === 'MOCK_DATA' && mockData) {
+      return mockData;
+    }
+    throw error;
+  }
 }
 
 // ========================================
@@ -51,16 +114,26 @@ export async function fetchSKUs(filters?: SKUFilters): Promise<SKU[]> {
     params.append('approvedOnly', 'true');
   }
 
-  const response = await fetch(`${API_BASE}/skus?${params.toString()}`);
-  return handleResponse<SKU[]>(response);
+  return fetchWithMock<SKU[]>(
+    `${API_BASE}/skus?${params.toString()}`,
+    undefined,
+    mockSKUs
+  );
 }
 
 /**
  * Fetch a single SKU by ID
  */
 export async function fetchSKU(id: string): Promise<SKU> {
-  const response = await fetch(`${API_BASE}/skus/${id}`);
-  return handleResponse<SKU>(response);
+  const sku = mockSKUs.find(s => s.id === id);
+  if (!sku) {
+    throw new Error('SKU not found');
+  }
+  return fetchWithMock<SKU>(
+    `${API_BASE}/skus/${id}`,
+    undefined,
+    sku
+  );
 }
 
 /**
@@ -95,8 +168,11 @@ export async function updateSKUMainImage(id: string, isMainImage: boolean): Prom
  * Fetch image pairs for a SKU
  */
 export async function fetchImagePairs(skuId: string): Promise<ImagePair[]> {
-  const response = await fetch(`${API_BASE}/skus/${skuId}/images`);
-  return handleResponse<ImagePair[]>(response);
+  return fetchWithMock<ImagePair[]>(
+    `${API_BASE}/skus/${skuId}/images`,
+    undefined,
+    mockImagePairs
+  );
 }
 
 /**
@@ -215,8 +291,17 @@ export async function cancelBatch(jobId: string): Promise<void> {
  * Get batch statistics
  */
 export async function getBatchStats(): Promise<BatchStats> {
-  const response = await fetch(`${API_BASE}/batch/stats`);
-  return handleResponse<BatchStats>(response);
+  const mockStats: BatchStats = {
+    total: 10,
+    completed: 5,
+    failed: 1,
+    pending: 4,
+  };
+  return fetchWithMock<BatchStats>(
+    `${API_BASE}/batch/stats`,
+    undefined,
+    mockStats
+  );
 }
 
 // ========================================
@@ -227,20 +312,39 @@ export async function getBatchStats(): Promise<BatchStats> {
  * Get studio settings
  */
 export async function getSettings(): Promise<StudioSettings> {
-  const response = await fetch(`${API_BASE}/settings`);
-  return handleResponse<StudioSettings>(response);
+  const mockSettings: StudioSettings = {
+    imageSize: '1536x1536',
+    imageFormat: 'png',
+    quality: 90,
+    preserveOriginal: true,
+  };
+  return fetchWithMock<StudioSettings>(
+    `${API_BASE}/settings`,
+    undefined,
+    mockSettings
+  );
 }
 
 /**
  * Update studio settings
  */
 export async function updateSettings(settings: Partial<StudioSettings>): Promise<StudioSettings> {
-  const response = await fetch(`${API_BASE}/settings`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(settings),
-  });
-  return handleResponse<StudioSettings>(response);
+  const mockSettings: StudioSettings = {
+    imageSize: '1536x1536',
+    imageFormat: 'png',
+    quality: 90,
+    preserveOriginal: true,
+    ...settings,
+  };
+  return fetchWithMock<StudioSettings>(
+    `${API_BASE}/settings`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(settings),
+    },
+    mockSettings
+  );
 }
 
 // ========================================

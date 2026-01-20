@@ -10,6 +10,7 @@ import { useImageStudio } from '@/app/hooks/use-image-studio';
 import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Input } from '@/shared/components/ui/input';
+import { Button } from '@/shared/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -17,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import { Search, ChevronDown } from 'lucide-react';
+import { Search } from 'lucide-react';
 import type { SKUStatus } from '@/shared/blocks/image-studio/types';
 
 export function LeftSidebar() {
@@ -69,25 +70,25 @@ export function LeftSidebar() {
     }
   };
 
-  const getStatusColor = (status: SKUStatus) => {
-    switch (status) {
-      case 'not_generated':
-        return 'bg-neutral-200 text-neutral-700';
-      case 'main_generated':
-        return 'bg-blue-100 text-blue-700';
-      case 'done':
-        return 'bg-green-100 text-green-700';
-    }
-  };
-
   const getStatusLabel = (status: SKUStatus) => {
     switch (status) {
       case 'not_generated':
-        return 'Not Generated';
+        return '未生成';
       case 'main_generated':
-        return 'Main Generated';
+        return '主图已生成';
       case 'done':
-        return 'Done';
+        return '已归档';
+    }
+  };
+
+  const getStatusColor = (status: SKUStatus) => {
+    switch (status) {
+      case 'not_generated':
+        return 'text-gray-500';
+      case 'main_generated':
+        return 'text-blue-500';
+      case 'done':
+        return 'text-green-500';
     }
   };
 
@@ -109,48 +110,56 @@ export function LeftSidebar() {
 
       {/* Filters */}
       <div className="border-b border-gray-200 bg-white px-4 py-3">
-        {/* Checkbox Filters */}
-        <div className="mb-3 flex flex-col gap-2">
-          <label className="flex items-center gap-2 text-sm text-gray-700">
-            <Checkbox
-              checked={filters.onlyMainImages}
-              onCheckedChange={checked => updateFilters({ onlyMainImages: !!checked })}
-            />
-            <span>全选</span>
-            <span className="ml-auto text-xs text-gray-500">{skus.length}</span>
-          </label>
-          <label className="flex items-center gap-2 text-sm text-gray-700">
-            <Checkbox
-              checked={filters.onlyMainImages}
-              onCheckedChange={checked => updateFilters({ onlyMainImages: !!checked })}
-            />
-            <span>仅主图</span>
-          </label>
+        {/* Filter Buttons */}
+        <div className="mb-3 flex gap-2">
+          <button
+            onClick={() => {
+              if (selectedSKUIds.size === skus.length) {
+                clearSelection();
+              } else {
+                selectMultipleSKUs(skus.map(s => s.id));
+              }
+            }}
+            className={`flex-1 rounded-md px-3 py-2 text-sm transition-colors ${
+              selectedSKUIds.size === skus.length && skus.length > 0
+                ? 'border border-gray-300 bg-white text-gray-700'
+                : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            全选 ({skus.length})
+          </button>
+          <button
+            onClick={() => updateFilters({ onlyMainImages: !filters.onlyMainImages })}
+            className={`flex-1 rounded-md px-3 py-2 text-sm transition-colors ${
+              filters.onlyMainImages
+                ? 'bg-blue-500 text-white'
+                : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            仅主图
+          </button>
         </div>
 
         {/* Status Dropdown */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-700">状态:</span>
-          <Select
-            value={filters.status || 'all'}
-            onValueChange={(value: SKUStatus | 'all') => updateFilters({ status: value })}
-          >
-            <SelectTrigger className="h-8 flex-1 border-gray-300 text-sm">
-              <SelectValue placeholder="全部状态" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">全部状态</SelectItem>
-              <SelectItem value="not_generated">未生成</SelectItem>
-              <SelectItem value="main_generated">主图已生成</SelectItem>
-              <SelectItem value="done">已完成</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <Select
+          value={filters.status || 'all'}
+          onValueChange={(value: SKUStatus | 'all') => updateFilters({ status: value })}
+        >
+          <SelectTrigger className="h-9 w-full border-gray-300 bg-white text-sm">
+            <SelectValue placeholder="全部状态" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">全部状态</SelectItem>
+            <SelectItem value="not_generated">未生成</SelectItem>
+            <SelectItem value="main_generated">主图已生成</SelectItem>
+            <SelectItem value="done">已归档</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* File List */}
       <ScrollArea className="flex-1">
-        <div className="bg-white p-2">
+        <div className="bg-white">
           {filteredSKUs.length === 0 ? (
             <div className="py-8 text-center text-sm text-gray-500">
               暂无文件
@@ -159,7 +168,7 @@ export function LeftSidebar() {
             filteredSKUs.map(sku => (
               <div
                 key={sku.id}
-                className={`mb-1 flex cursor-pointer items-center gap-2 rounded-lg p-2 transition-colors ${
+                className={`flex cursor-pointer items-center gap-3 border-b border-gray-100 px-4 py-3 transition-colors ${
                   isCurrent(sku.id)
                     ? 'bg-blue-50'
                     : 'hover:bg-gray-50'
@@ -170,22 +179,15 @@ export function LeftSidebar() {
                   checked={isSelected(sku.id)}
                   onCheckedChange={checked => handleToggleSelect(sku.id, !!checked)}
                   onClick={e => e.stopPropagation()}
+                  className="h-5 w-5"
                 />
 
-                <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded bg-gray-100">
-                  <img
-                    src={sku.thumbnail}
-                    alt={sku.article}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-medium text-gray-900">{sku.article}</div>
-                  <div className="mt-0.5 flex items-center gap-1">
-                    <span className={`text-xs ${getStatusColor(sku.status)}`}>
-                      {getStatusLabel(sku.status)}
-                    </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-base font-medium text-gray-900">{sku.article}</span>
+                    {sku.status === 'done' && (
+                      <span className="text-sm text-green-500">(已归档)</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -194,15 +196,19 @@ export function LeftSidebar() {
         </div>
       </ScrollArea>
 
-      {/* Footer */}
-      <div className="border-t border-gray-200 bg-white p-4">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600">
-            已选择: {selectedSKUIds.size}
+      {/* Footer with Activate Button */}
+      <div className="border-t border-gray-200 bg-gray-100 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-gray-600">
+            已选择 {selectedSKUIds.size} 项
           </span>
-          <span className="text-gray-500">
-            共 {filteredSKUs.length} 项
-          </span>
+          <Button
+            size="sm"
+            className="bg-blue-500 hover:bg-blue-600"
+            disabled={selectedSKUIds.size === 0}
+          >
+            激活
+          </Button>
         </div>
       </div>
     </div>
