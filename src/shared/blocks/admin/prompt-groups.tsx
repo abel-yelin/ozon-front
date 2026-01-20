@@ -139,6 +139,9 @@ function PromptGroupDialog({
 
           <div>
             <Label>Templates</Label>
+            <p className="text-xs text-gray-500 mb-2">
+              Add prompt templates with their keys (e.g., common_cn, main_en)
+            </p>
             <div className="mt-2 space-y-2">
               {templates.map((template, index) => (
                 <div key={index} className="border rounded p-3 space-y-2">
@@ -150,7 +153,7 @@ function PromptGroupDialog({
                         newTemplates[index].key = e.target.value;
                         setTemplates(newTemplates);
                       }}
-                      placeholder="Template key (e.g., common_cn)"
+                      placeholder="Template key (e.g., common_cn, main_en)"
                       className="flex-1"
                     />
                     <Button
@@ -279,23 +282,47 @@ export function PromptGroupsAdmin() {
   };
 
   const handleSave = async (data: any) => {
+    console.log('handleSave called with data:', data);
+    console.log('selectedGroup:', selectedGroup);
+
+    // Filter out empty templates
+    const validTemplates = data.templates?.filter(
+      (t: PromptTemplate) => t.key && t.key.trim() !== '' && t.content && t.content.trim() !== ''
+    ) || [];
+
+    console.log('Valid templates:', validTemplates);
+    console.log('Filtered out templates:', data.templates?.length || 0 - validTemplates.length);
+
+    const dataToSend = {
+      ...data,
+      templates: validTemplates,
+    };
+
     const method = selectedGroup ? 'PATCH' : 'POST';
     const url = selectedGroup
       ? `/api/ai-playground/prompt-groups/${selectedGroup.id}`
       : '/api/ai-playground/prompt-groups';
 
+    console.log('Sending', method, 'to', url);
+    console.log('Request body:', JSON.stringify(dataToSend, null, 2));
+
     const res = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body: JSON.stringify(dataToSend),
     });
+
+    console.log('Response status:', res.status);
 
     if (!res.ok) {
       const errorData = await res.json();
+      console.error('Error response:', errorData);
       throw new Error(errorData.message || 'Failed to save');
     }
 
-    return await res.json();
+    const result = await res.json();
+    console.log('Success response:', result);
+    return result;
   };
 
   return (
