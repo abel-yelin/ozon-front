@@ -36,6 +36,7 @@ interface ImageStudioContextValue {
   batchStats: BatchStats | null;
   isLoading: boolean;
   error: string | null;
+  activePromptGroup: any;
 
   // Actions
   loadSKUs: () => Promise<void>;
@@ -87,6 +88,7 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
   const [batchStats, setBatchStats] = useState<BatchStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activePromptGroup, setActivePromptGroup] = useState<any>(null);
 
   // Refs
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -96,10 +98,16 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
   // Effects
   // ========================================
 
-  // Load settings on mount
+  // Load settings, prompt group, and SKUs on mount
   useEffect(() => {
     api.getSettings().then(setSettings).catch(console.error);
     loadBatchStats();
+    loadSKUs(); // Load SKUs on mount
+
+    // Load active prompt group
+    api.getActivePromptGroup()
+      .then(setActivePromptGroup)
+      .catch(console.error);
   }, []);
 
   // Poll batch progress when processing
@@ -329,6 +337,7 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
     batchStats,
     isLoading,
     error,
+    activePromptGroup,
     loadSKUs,
     selectSKU,
     selectMultipleSKUs,
