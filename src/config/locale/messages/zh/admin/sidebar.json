@@ -87,6 +87,11 @@
           "title": "AI 对话",
           "url": "/admin/chats",
           "icon": "MessageCircle"
+        },
+        {
+          "title": "提示词组",
+          "url": "/admin/prompt-groups",
+          "icon": "FileCode"
         }
       ]
     }

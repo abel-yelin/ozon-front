@@ -87,6 +87,11 @@
           "title": "AI Chats",
           "url": "/admin/chats",
           "icon": "MessageCircle"
+        },
+        {
+          "title": "Prompt Groups",
+          "url": "/admin/prompt-groups",
+          "icon": "FileCode"
         }
       ]
     }

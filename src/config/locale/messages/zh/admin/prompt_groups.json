@@ -1,0 +1,44 @@
+{
+  "crumb_admin": "管理",
+  "crumb": "提示词组",
+  "title": "AI 提示词模板",
+  "description": "管理系统 AI 提示词模板组",
+  "fields": {
+    "name": "名称",
+    "description": "描述",
+    "type": "类型",
+    "templates": "模板",
+    "created_at": "创建时间",
+    "actions": "操作"
+  },
+  "buttons": {
+    "new_group": "新建组",
+    "edit": "编辑",
+    "delete": "删除",
+    "save": "保存",
+    "cancel": "取消",
+    "add_template": "添加模板",
+    "remove": "移除"
+  },
+  "types": {
+    "system": "系统",
+    "user": "用户"
+  },
+  "dialog": {
+    "new_title": "新建提示词组",
+    "edit_title": "编辑提示词组",
+    "confirm_delete": "确定要删除此提示词组吗？此操作无法撤销。",
+    "delete_title": "删除提示词组"
+  },
+  "placeholders": {
+    "name": "例如：默认提示词",
+    "description": "可选描述",
+    "template_key": "模板键名（例如：common_cn）",
+    "template_content": "模板内容..."
+  },
+  "messages": {
+    "loading": "加载中...",
+    "no_groups": "未找到提示词组",
+    "saving": "保存中..."
+  }
+}
