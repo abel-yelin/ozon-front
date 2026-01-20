@@ -10,6 +10,9 @@ import {
   aiPromptTemplate,
   aiUserSetting,
   aiDownloadQueue,
+  aiPromptGroup,
+  aiPromptTemplateV2,
+  aiUserPromptPreference,
 } from '@/config/db/schema';
 import { eq, desc, and, SQL, isNull, not } from 'drizzle-orm';
 import { getUuid } from '@/shared/lib/hash';
@@ -718,6 +721,223 @@ export class AiPlaygroundDb {
       jobs: stats.jobs,
       completed: stats.completed,
     }));
+  }
+
+  // ========================================
+  // Prompt Group Operations
+  // ========================================
+
+  /**
+   * Create prompt group with templates
+   */
+  async createPromptGroup(input: {
+    userId?: string;
+    name: string;
+    description?: string;
+    templates: Array<{ key: string; content: string; language?: string; category?: string }>;
+    isSystemDefault?: boolean;
+  }) {
+    const groupId = input.userId ? getUuid() : `g${Date.now()}`;
+
+    const [group] = await db()
+      .insert(aiPromptGroup)
+      .values({
+        id: groupId,
+        userId: input.userId || null,
+        name: input.name,
+        description: input.description || null,
+        isSystemDefault: input.isSystemDefault || false,
+        isActive: true,
+      })
+      .returning();
+
+    // Bulk insert templates
+    if (input.templates.length > 0) {
+      await db()
+        .insert(aiPromptTemplateV2)
+        .values(
+          input.templates.map((template) => ({
+            id: getUuid(),
+            promptGroupId: groupId,
+            templateKey: template.key,
+            templateContent: template.content,
+            language: template.language || 'cn',
+            category: template.category || null,
+          }))
+        );
+    }
+
+    return group;
+  }
+
+  /**
+   * Get all prompt groups (user + system defaults)
+   */
+  async getPromptGroups(userId?: string) {
+    const userGroups = userId
+      ? await db()
+          .select()
+          .from(aiPromptGroup)
+          .where(and(eq(aiPromptGroup.userId, userId), eq(aiPromptGroup.isActive, true)))
+      : [];
+
+    const systemGroups = await db()
+      .select()
+      .from(aiPromptGroup)
+      .where(eq(aiPromptGroup.isSystemDefault, true));
+
+    return [...userGroups, ...systemGroups];
+  }
+
+  /**
+   * Get single prompt group with all templates
+   */
+  async getPromptGroupWithTemplates(groupId: string) {
+    const [group] = await db()
+      .select()
+      .from(aiPromptGroup)
+      .where(eq(aiPromptGroup.id, groupId))
+      .limit(1);
+
+    if (!group) return null;
+
+    const templates = await db()
+      .select()
+      .from(aiPromptTemplateV2)
+      .where(eq(aiPromptTemplateV2.promptGroupId, groupId));
+
+    const promptTemplates: Record<string, string> = {};
+    for (const template of templates) {
+      promptTemplates[template.templateKey as any] = template.templateContent;
+    }
+
+    return {
+      ...group,
+      prompt_templates: promptTemplates,
+    };
+  }
+
+  /**
+   * Update prompt group
+   */
+  async updatePromptGroup(
+    groupId: string,
+    updates: {
+      name?: string;
+      description?: string;
+      isActive?: boolean;
+    }
+  ) {
+    const [group] = await db()
+      .update(aiPromptGroup)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(aiPromptGroup.id, groupId))
+      .returning();
+
+    return group;
+  }
+
+  /**
+   * Delete prompt group (soft delete)
+   */
+  async deletePromptGroup(groupId: string) {
+    const [group] = await db()
+      .update(aiPromptGroup)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(aiPromptGroup.id, groupId))
+      .returning();
+
+    return group;
+  }
+
+  // ========================================
+  // Prompt Template Operations
+  // ========================================
+
+  /**
+   * Update template in a group
+   */
+  async updatePromptTemplate(
+    templateId: string,
+    updates: {
+      templateContent?: string;
+      category?: string;
+    }
+  ) {
+    const [template] = await db()
+      .update(aiPromptTemplateV2)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(aiPromptTemplateV2.id, templateId))
+      .returning();
+
+    return template;
+  }
+
+  // ========================================
+  // User Prompt Preference Operations
+  // ========================================
+
+  /**
+   * Get or create user prompt preferences
+   */
+  async getUserPromptPreferences(userId: string) {
+    let [prefs] = await db()
+      .select()
+      .from(aiUserPromptPreference)
+      .where(eq(aiUserPromptPreference.userId, userId))
+      .limit(1);
+
+    if (!prefs) {
+      [prefs] = await db()
+        .insert(aiUserPromptPreference)
+        .values({
+          id: getUuid(),
+          userId,
+          professionalModeEnabled: false,
+          useEnglish: false,
+          imageFormat: 'png',
+          quality: 90,
+          preserveOriginal: true,
+        })
+        .returning();
+    }
+
+    return prefs;
+  }
+
+  /**
+   * Update user prompt preferences
+   */
+  async updateUserPromptPreferences(
+    userId: string,
+    updates: {
+      activePromptGroupId?: string;
+      professionalModeEnabled?: boolean;
+      useEnglish?: boolean;
+      defaultTemperature?: number;
+      targetWidth?: number;
+      targetHeight?: number;
+      imageFormat?: string;
+      quality?: number;
+      preserveOriginal?: boolean;
+    }
+  ) {
+    const [prefs] = await db()
+      .update(aiUserPromptPreference)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(aiUserPromptPreference.userId, userId))
+      .returning();
+
+    return prefs;
   }
 }
 
