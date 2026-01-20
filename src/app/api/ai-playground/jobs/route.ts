@@ -50,6 +50,13 @@ export async function POST(req: Request) {
 
     const { type, config, sourceImageUrls } = validatedData.data;
 
+    if (type === 'background_replacement') {
+      const backgroundPrompt = (config as { backgroundPrompt?: string }).backgroundPrompt;
+      if (!backgroundPrompt || !backgroundPrompt.trim()) {
+        return respErr('backgroundPrompt is required for background replacement');
+      }
+    }
+
     // 1. Create job record
     const job = await aiPlaygroundDb.createJob({
       userId: user.id,

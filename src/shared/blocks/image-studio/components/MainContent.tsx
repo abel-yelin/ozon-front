@@ -182,63 +182,63 @@ export function MainContent() {
       </ScrollArea>
 
       {/* Bottom Status Bar */}
-      <div className="border-t border-gray-200 bg-gray-50 px-6 py-3">
+      <div className="border-t border-gray-200 bg-white px-6 py-3">
         <div className="flex items-center justify-between">
-          {/* Progress Indicators */}
-          <div className="flex items-center gap-6">
-            {batchProgress ? (
-              <>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-gray-600">进度:</span>
-                  <span className="font-medium text-gray-900">
-                    {batchProgress.completed} / {batchProgress.total}
-                  </span>
-                  <span className="text-gray-500">
-                    ({Math.round(batchProgress.percentage)}%)
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-gray-600">成功:</span>
-                  <span className="font-medium text-green-600">
-                    {batchProgress.completed}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-gray-600">失败:</span>
-                  <span className="font-medium text-red-600">
-                    {batchProgress.failed}
-                  </span>
-                </div>
-              </>
-            ) : (
-              <span className="text-sm text-gray-500">准备就绪</span>
-            )}
+          {/* Left Section - Status and Progress Details */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              {/* Status Icon - Blue Square */}
+              <div className="h-4 w-4 rounded-sm bg-blue-500"></div>
+              <span className="text-sm text-gray-700">等待任务开始</span>
+            </div>
+            <button className="text-xs italic text-gray-500 hover:text-gray-700">
+              进度详情
+            </button>
+            {/* Progress Bar */}
+            <div className="h-2 w-48 overflow-hidden rounded-full bg-gray-200">
+              <div className="h-full w-0 bg-blue-500"></div>
+            </div>
           </div>
 
-          {/* Control Buttons */}
+          {/* Middle Section - Status Metrics */}
+          <div className="flex items-center gap-8">
+            <div className="flex items-baseline gap-2">
+              <span className="text-sm text-gray-600">总任务数</span>
+              <span className="text-base font-semibold text-gray-900">0</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-sm text-gray-600">进行中</span>
+              <span className="text-base font-semibold text-gray-900">0</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-sm text-gray-600">已完成</span>
+              <span className="text-base font-semibold text-gray-900">0</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-sm text-gray-600">异常任务</span>
+              <span className="text-base font-semibold text-gray-900">0</span>
+            </div>
+          </div>
+
+          {/* Right Section - Action Buttons */}
           <div className="flex items-center gap-3">
-            {batchProgress?.status === 'processing' ? (
-              <Button
-                variant="destructive"
-                size="sm"
-                className="gap-2"
-                onClick={cancelBatch}
-              >
-                <Square className="h-4 w-4" />
-                终止
-              </Button>
-            ) : (
-              <Button
-                variant="default"
-                size="sm"
-                className="gap-2 bg-blue-600 hover:bg-blue-700"
-                onClick={() => startBatch()}
-                disabled={!hasImages}
-              >
-                <Play className="h-4 w-4" />
-                开始批量处理
-              </Button>
-            )}
+            <Button
+              variant="default"
+              size="sm"
+              className="bg-orange-500 hover:bg-orange-600"
+            >
+              <Square className="mr-2 h-5 w-5" />
+              终止
+            </Button>
+            <Button
+              variant="default"
+              size="sm"
+              className="bg-teal-600 hover:bg-teal-700"
+              onClick={() => startBatch()}
+            >
+              <Play className="mr-2 h-5 w-5" />
+              开始批量处理
+            </Button>
           </div>
         </div>
       </div>

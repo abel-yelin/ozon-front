@@ -182,11 +182,31 @@ export function LeftSidebar() {
                   className="h-5 w-5"
                 />
 
+                {/* Thumbnail */}
+                <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
+                  <img
+                    src={sku.thumbnail}
+                    alt={sku.article}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="text-base font-medium text-gray-900">{sku.article}</span>
                     {sku.status === 'done' && (
                       <span className="text-sm text-green-500">(已归档)</span>
+                    )}
+                  </div>
+                  <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
+                    <span className={`px-1.5 py-0.5 rounded ${getStatusColor(sku.status)} bg-opacity-10`}>
+                      {getStatusLabel(sku.status)}
+                    </span>
+                    {sku.isMainImage && (
+                      <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-600">
+                        主图
+                      </span>
                     )}
                   </div>
                 </div>

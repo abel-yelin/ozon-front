@@ -4,9 +4,15 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { aiPlaygroundApi } from '@/lib/api/ai-playground';
 import { useAiPlayground } from '@/shared/contexts/ai-playground';
+import {
+  DEFAULT_BACKGROUND_REPLACEMENT_CONFIG,
+  DEFAULT_BATCH_OPTIMIZATION_CONFIG,
+  DEFAULT_IMAGE_ENHANCEMENT_CONFIG,
+} from '@/lib/api/ai-playground';
 import type {
   AiJobProgress,
   AiJobResult,
+  AiJobType,
   BackgroundReplacementConfig,
   BatchOptimizationConfig,
   ImageEnhancementConfig,
@@ -21,8 +27,15 @@ export interface UseAiJobSubmitOptions {
   onError?: (error: string) => void;
 }
 
+type AiPlaygroundJobConfig = {
+  type: AiJobType;
+  backgroundReplacement?: BackgroundReplacementConfig;
+  batchOptimization?: BatchOptimizationConfig;
+  imageEnhancement?: ImageEnhancementConfig;
+};
+
 export function useAiJobSubmit(options?: UseAiJobSubmitOptions) {
-  const { uploadedImages, jobConfig, setCurrentJobId, setJobProgress, clearUploadedImages } =
+  const { uploadedImages, jobConfig, setCurrentJobId, clearUploadedImages } =
     useAiPlayground();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,6 +44,17 @@ export function useAiJobSubmit(options?: UseAiJobSubmitOptions) {
     if (uploadedImages.length === 0) {
       setError('Please upload at least one image');
       options?.onError?.('Please upload at least one image');
+      return;
+    }
+
+    const resolvedConfig = getConfigByType(jobConfig as AiPlaygroundJobConfig);
+    if (
+      jobConfig.type === 'background_replacement' &&
+      !(resolvedConfig as BackgroundReplacementConfig).backgroundPrompt?.trim()
+    ) {
+      const message = 'Background prompt is required for background replacement';
+      setError(message);
+      options?.onError?.(message);
       return;
     }
 
@@ -46,7 +70,7 @@ export function useAiJobSubmit(options?: UseAiJobSubmitOptions) {
         },
         body: JSON.stringify({
           type: jobConfig.type,
-          config: getConfigByType(jobConfig.type),
+          config: resolvedConfig,
           sourceImageUrls: uploadedImages.map((img) => img.url),
         }),
       });
@@ -73,7 +97,7 @@ export function useAiJobSubmit(options?: UseAiJobSubmitOptions) {
     } finally {
       setIsSubmitting(false);
     }
-  }, [uploadedImages, jobConfig, setCurrentJobId, setJobProgress, clearUploadedImages, options]);
+  }, [uploadedImages, jobConfig, setCurrentJobId, clearUploadedImages, options]);
 
   const cancelJob = useCallback(async (jobId: string) => {
     try {
@@ -447,34 +471,25 @@ export function useAiUserSettings() {
 // ========================================
 
 function getConfigByType(
-  type: string
+  jobConfig: AiPlaygroundJobConfig
 ): BackgroundReplacementConfig | BatchOptimizationConfig | ImageEnhancementConfig {
-  switch (type) {
+  switch (jobConfig.type) {
     case 'background_replacement':
       return {
-        backgroundPrompt: '',
-        negativePrompt: '',
-        quality: 'standard',
-        format: 'png',
+        ...DEFAULT_BACKGROUND_REPLACEMENT_CONFIG,
+        ...jobConfig.backgroundReplacement,
       };
     case 'batch_optimization':
       return {
-        quality: 'standard',
-        format: 'webp',
-        maxSize: 1920,
-        maintainAspect: true,
+        ...DEFAULT_BATCH_OPTIMIZATION_CONFIG,
+        ...jobConfig.batchOptimization,
       };
     case 'image_enhancement':
       return {
-        enhancementLevel: 5,
-        sharpen: true,
-        denoise: true,
-        upscale: false,
+        ...DEFAULT_IMAGE_ENHANCEMENT_CONFIG,
+        ...jobConfig.imageEnhancement,
       };
     default:
-      return {
-        quality: 'standard',
-        format: 'png',
-      } as any;
+      return DEFAULT_BACKGROUND_REPLACEMENT_CONFIG;
   }
 }
