@@ -1,6 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { Header, Main, MainHeader } from '@/shared/blocks/admin';
+import { Header, Main, MainHeader } from '@/shared/blocks/dashboard';
 import { Crumb } from '@/shared/types/blocks/common';
 import { PromptGroupsAdmin } from '@/shared/blocks/admin/prompt-groups';
 

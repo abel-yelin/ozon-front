@@ -12,6 +12,7 @@ import { LeftSidebar } from '@/shared/blocks/image-studio/components/LeftSidebar
 import { RightSidebar } from '@/shared/blocks/image-studio/components/RightSidebar';
 import { MainContent } from '@/shared/blocks/image-studio/components/MainContent';
 import { ImageModal } from '@/shared/blocks/image-studio/components/modals/ImageModal';
+import { EditImageModal } from '@/shared/blocks/image-studio/components/modals/EditImageModal';
 import { ProgressModal } from '@/shared/blocks/image-studio/components/modals/ProgressModal';
 import { DownloadModal } from '@/shared/blocks/image-studio/components/modals/DownloadModal';
 import { SettingsModal } from '@/shared/blocks/image-studio/components/modals/SettingsModal';
@@ -24,9 +25,10 @@ function ImageStudioContent() {
       <div className="flex flex-1 overflow-hidden">
         <LeftSidebar />
         <MainContent />
-        <RightSidebar />
+      <RightSidebar />
       </div>
       <ImageModal />
+      <EditImageModal />
       <ProgressModal />
       <DownloadModal />
       <SettingsModal />

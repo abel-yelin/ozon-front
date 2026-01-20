@@ -28,6 +28,7 @@ export function MainContent() {
     startBatch,
     cancelBatch,
     downloadBatch,
+    openModal,
   } = useImageStudio();
 
   if (!currentSKU) {
@@ -109,7 +110,18 @@ export function MainContent() {
                           </Button>
                         </div>
                       </div>
-                      <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
+                      <div
+                        className="aspect-square cursor-pointer overflow-hidden rounded-lg bg-gray-100"
+                        onClick={() =>
+                          openModal('image-edit', {
+                            sku: currentSKU.article,
+                            filename: pair.inputImage.filename,
+                            imageUrl: pair.inputImage.url,
+                            sourceType: 'input',
+                            pairId: pair.id,
+                          })
+                        }
+                      >
                         <img
                           src={pair.inputImage.url}
                           alt={pair.inputImage.filename}
@@ -137,7 +149,18 @@ export function MainContent() {
                           </Button>
                         </div>
                       </div>
-                      <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
+                      <div
+                        className="aspect-square cursor-pointer overflow-hidden rounded-lg bg-gray-100"
+                        onClick={() =>
+                          openModal('image-edit', {
+                            sku: currentSKU.article,
+                            filename: pair.outputImage?.filename || pair.inputImage.filename,
+                            imageUrl: pair.outputImage?.url || null,
+                            sourceType: 'output',
+                            pairId: pair.id,
+                          })
+                        }
+                      >
                         {pair.outputImage ? (
                           <img
                             src={pair.outputImage.url}

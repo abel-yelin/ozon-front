@@ -98,7 +98,7 @@ export interface RegenOptions {
 }
 
 // Modal types
-export type ModalType = 'image' | 'progress' | 'download' | 'settings' | 'opt-prompt' | null;
+export type ModalType = 'image' | 'image-edit' | 'progress' | 'download' | 'settings' | 'opt-prompt' | null;
 
 // Modal state
 export interface ModalState {
