@@ -18,7 +18,7 @@ const updatePromptGroupSchema = z.object({
 // GET /api/ai-playground/prompt-groups/[id] - Get single group with templates
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUserInfo();
@@ -26,7 +26,13 @@ export async function GET(
       return respErr('Unauthorized, please sign in');
     }
 
-    const group = await aiPlaygroundDb.getPromptGroupWithTemplates(params.id);
+    const { id } = await params;
+
+    if (!id || id === 'undefined') {
+      return respErr('Invalid group ID');
+    }
+
+    const group = await aiPlaygroundDb.getPromptGroupWithTemplates(id);
 
     if (!group) {
       return respErr('Prompt group not found');
@@ -42,13 +48,15 @@ export async function GET(
 // PATCH /api/ai-playground/prompt-groups/[id] - Update group
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUserInfo();
     if (!user) {
       return respErr('Unauthorized, please sign in');
     }
+
+    const { id } = await params;
 
     const body = await req.json();
 
@@ -61,7 +69,7 @@ export async function PATCH(
     // If templates are being updated, use the full update method
     if (validatedData.data.templates) {
       const group = await aiPlaygroundDb.updatePromptGroupWithTemplates(
-        params.id,
+        id,
         validatedData.data
       );
       return respData({ group });
@@ -69,7 +77,7 @@ export async function PATCH(
 
     // Otherwise just update basic fields
     const group = await aiPlaygroundDb.updatePromptGroup(
-      params.id,
+      id,
       validatedData.data
     );
 
@@ -83,7 +91,7 @@ export async function PATCH(
 // DELETE /api/ai-playground/prompt-groups/[id] - Soft delete group
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUserInfo();
@@ -91,7 +99,9 @@ export async function DELETE(
       return respErr('Unauthorized, please sign in');
     }
 
-    const group = await aiPlaygroundDb.deletePromptGroup(params.id);
+    const { id } = await params;
+
+    const group = await aiPlaygroundDb.deletePromptGroup(id);
 
     return respData({ group });
   } catch (error) {
