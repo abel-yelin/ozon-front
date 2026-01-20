@@ -90,6 +90,19 @@ export interface AiErrorResponse {
   code?: string;
 }
 
+export interface AiUploadItem {
+  url: string;
+  filename: string;
+  content_type?: string;
+  size: number;
+}
+
+export interface AiUploadResponse {
+  success: boolean;
+  data?: AiUploadItem[];
+  error?: string;
+}
+
 export interface AiSSEEvent {
   event: 'progress' | 'completed' | 'failed' | 'cancelled' | 'error';
   data: AiJobProgress | AiJobResult | { error: string };
@@ -382,6 +395,40 @@ export class AiPlaygroundApiClient {
     } catch (error) {
       console.error('Generate download URL error:', error);
       return null;
+    }
+  }
+
+  /**
+   * Upload images to Python backend for R2 storage
+   */
+  async uploadImages(files: File[]): Promise<AiUploadResponse> {
+    if (!this.apiKey) {
+      throw new Error('PYTHON_API_KEY is not configured');
+    }
+
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append('files', file, file.name);
+    });
+
+    try {
+      const response = await fetch(`${this.baseUrl}/api/v1/ai/upload`, {
+        method: 'POST',
+        headers: {
+          'X-API-Key': this.apiKey,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Upload error ${response.status}: ${errorText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('AI Playground upload error:', error);
+      throw error;
     }
   }
 

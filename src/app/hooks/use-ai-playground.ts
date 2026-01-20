@@ -181,21 +181,40 @@ export function useAiImageUpload(options?: UseAiImageUploadOptions) {
         validFiles.push(file);
       }
 
+      if (validFiles.length === 0) {
+        return;
+      }
+
       setIsUploading(true);
 
       try {
-        const newImages = validFiles.map((file) => {
-          const url = URL.createObjectURL(file);
-          return {
-            id: Math.random().toString(36).substring(7),
-            file,
-            url,
-            name: file.name,
-            size: file.size,
-          };
+        const formData = new FormData();
+        validFiles.forEach((file) => {
+          formData.append('files', file, file.name);
         });
 
-        addUploadedImages(newImages);
+        const response = await fetch('/api/ai-playground/uploads', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to upload images');
+        }
+
+        const data = await response.json();
+        if (data.code !== 0) {
+          throw new Error(data.message || 'Failed to upload images');
+        }
+
+        const uploaded = (data.data || []).map((item: any) => ({
+          id: item.id,
+          url: item.url,
+          name: item.name,
+          size: item.size,
+        }));
+
+        addUploadedImages(uploaded);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Upload failed');
       } finally {
@@ -270,12 +289,19 @@ export function useAiImagePairs(options?: {
   approved?: boolean;
   archived?: boolean;
   limit?: number;
+  enabled?: boolean;
 }) {
   const [imagePairs, setImagePairs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchImagePairs = useCallback(async () => {
+    const enabled = options?.enabled ?? true;
+    if (!enabled) {
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 

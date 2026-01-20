@@ -1,62 +1,132 @@
 /**
  * TopBar Component
- * Header with navigation and action buttons
+ * Header with logo, navigation tabs, and action buttons
  */
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useImageStudio } from '@/app/hooks/use-image-studio';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
 import {
-  Home,
-  RefreshCw,
-  AlertCircle,
+  Download,
+  Settings,
+  Upload,
+  Sparkles,
+  ChevronDown,
 } from 'lucide-react';
 
 export function TopBar() {
-  const { currentSKU, isLoading, error, loadSKUs, refreshCurrentSKU } = useImageStudio();
+  const { currentSKU, isLoading, error, openModal } = useImageStudio();
+  const [activeTab, setActiveTab] = useState<'process' | 'history'>('process');
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatDateTime = (date: Date) => {
+    return date.toLocaleString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+  };
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-neutral-200 bg-white px-4">
-      <div className="flex items-center gap-4">
-        {/* Breadcrumb / Navigation */}
-        <div className="flex items-center gap-2 text-sm">
-          <Home className="h-4 w-4 text-neutral-400" />
-          <span className="text-neutral-600">Dashboard</span>
-          <span className="text-neutral-400">/</span>
-          <span className="font-medium text-neutral-900">Image Studio</span>
+    <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6">
+      {/* Logo Section */}
+      <div className="flex items-center gap-8">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
+              <Sparkles className="h-5 w-5 text-white" />
+            </div>
+            <span className="ml-2 text-lg font-semibold text-gray-900">Image Studio</span>
+          </div>
+          <Badge className="ml-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white">
+            PRO
+          </Badge>
         </div>
 
-        {/* Current SKU indicator */}
-        {currentSKU && (
-          <>
-            <div className="h-6 w-px bg-neutral-200" />
-            <Badge variant="outline" className="gap-1">
-              <span className="text-neutral-600">Current:</span>
-              <span className="font-medium">{currentSKU.article}</span>
-            </Badge>
-          </>
-        )}
+        {/* Navigation Tabs */}
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setActiveTab('process')}
+            className={`rounded-t-lg px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === 'process'
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            图片处理
+          </button>
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`rounded-t-lg px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === 'history'
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            历史记录
+          </button>
+        </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        {/* Error indicator */}
-        {error && (
-          <div className="flex items-center gap-2 rounded-md bg-red-50 px-3 py-1.5 text-sm text-red-600">
-            <AlertCircle className="h-4 w-4" />
-            <span>{error}</span>
-          </div>
-        )}
+      {/* Right Section */}
+      <div className="flex items-center gap-4">
+        {/* Date/Time Display */}
+        <div className="text-sm text-gray-600">
+          {formatDateTime(currentTime)}
+        </div>
 
-        {/* Refresh button */}
+        {/* Action Buttons */}
         <Button
           variant="outline"
           size="sm"
-          onClick={currentSKU ? refreshCurrentSKU : loadSKUs}
-          disabled={isLoading}
+          className="gap-2"
+          onClick={() => openModal('settings')}
         >
-          <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          <Sparkles className="h-4 w-4" />
+          专业模式
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={() => openModal('download')}
+        >
+          <Download className="h-4 w-4" />
+          下载
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={() => openModal('settings')}
+        >
+          <Settings className="h-4 w-4" />
+          设置
+        </Button>
+
+        <Button
+          variant="default"
+          size="sm"
+          className="gap-2 bg-blue-600 hover:bg-blue-700"
+          onClick={() => openModal('upload')}
+        >
+          <Upload className="h-4 w-4" />
+          上传
         </Button>
       </div>
     </header>

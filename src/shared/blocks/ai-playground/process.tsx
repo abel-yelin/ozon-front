@@ -1,11 +1,13 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
-import { Sparkles, Upload, Settings, Clock, CheckCircle2 } from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
+import type { ChangeEvent, DragEvent } from 'react';
+import { Sparkles, Upload, Settings, Clock, CheckCircle2, X } from 'lucide-react';
 
 import { useAiPlayground } from '@/shared/contexts/ai-playground';
 import { AI_JOB_TYPES } from '@/lib/api/ai-playground';
+import { useAiImagePairs, useAiImageUpload, useAiJobProgress, useAiJobSubmit } from '@/app/hooks/use-ai-playground';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Button } from '@/shared/components/ui/button';
 
@@ -61,12 +63,62 @@ export function AiPlaygroundProcess() {
 
 function ProcessTab() {
   const t = useTranslations('dashboard.aiplayground');
-  const { jobConfig, updateJobType } = useAiPlayground();
+  const tReview = useTranslations('dashboard.aiplayground-review');
+  const {
+    jobConfig,
+    updateJobType,
+    uploadedImages,
+    removeUploadedImage,
+    clearUploadedImages,
+    currentJobId,
+    setActiveTab,
+  } = useAiPlayground();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const maxFiles = 50;
+  const maxSize = 10 * 1024 * 1024;
+  const { uploadFiles, isUploading, error, canUpload } = useAiImageUpload({
+    maxFiles,
+    maxSize,
+    allowedTypes: ['image/png', 'image/jpeg', 'image/webp'],
+  });
   const [selectedType, setSelectedType] = useState(jobConfig.type);
+  const { submitJob, isSubmitting, error: submitError, canSubmit } = useAiJobSubmit();
+  const { progress, result, error: progressError } = useAiJobProgress(currentJobId);
+  const imagePairOptions = useMemo(
+    () => ({
+      jobId: currentJobId || undefined,
+      limit: 50,
+      enabled: Boolean(currentJobId),
+    }),
+    [currentJobId]
+  );
+  const { imagePairs, isLoading: isLoadingPairs } = useAiImagePairs(imagePairOptions);
 
   const handleTypeSelect = (type: string) => {
     setSelectedType(type as any);
     updateJobType(type as any);
+  };
+
+  const handleBrowse = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      uploadFiles(event.target.files);
+    }
+    event.target.value = '';
+  };
+
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+      uploadFiles(event.dataTransfer.files);
+    }
+  };
+
+  const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
   };
 
   return (
@@ -99,14 +151,72 @@ function ProcessTab() {
       {/* Upload Area */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">{t('upload.title')}</h3>
-        <div className="border-2 border-dashed rounded-lg p-12 text-center">
+        <div
+          className="border-2 border-dashed rounded-lg p-12 text-center"
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept="image/png,image/jpeg,image/webp"
+            className="hidden"
+            onChange={handleFileChange}
+          />
           <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
           <p className="text-lg font-medium mb-2">{t('upload.drag_drop')}</p>
           <p className="text-sm text-muted-foreground mb-4">
             {t('upload.supported_formats')}
           </p>
-          <Button variant="outline">{t('upload.browse')}</Button>
+          <Button variant="outline" onClick={handleBrowse} disabled={!canUpload || isUploading}>
+            {t('upload.browse')}
+          </Button>
+          <p className="text-xs text-muted-foreground mt-3">
+            {t('upload.max_files', { max: maxFiles })}
+          </p>
         </div>
+        {isUploading ? (
+          <p className="text-sm text-muted-foreground">{t('status.processing')}</p>
+        ) : null}
+        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {uploadedImages.length > 0 ? (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                {t('upload.selected_count', { count: uploadedImages.length })}
+              </p>
+              <Button variant="ghost" size="sm" onClick={clearUploadedImages}>
+                {t('upload.clear_all')}
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {uploadedImages.map((image) => (
+                <div
+                  key={image.id}
+                  className="group relative overflow-hidden rounded-lg border bg-muted/10"
+                >
+                  <img
+                    src={image.url}
+                    alt={image.name}
+                    className="h-28 w-full object-cover"
+                    loading="lazy"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-2 rounded-full bg-background/90 p-1 shadow opacity-0 transition-opacity group-hover:opacity-100"
+                    onClick={() => removeUploadedImage(image.id)}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                  <div className="px-2 py-1 text-xs text-muted-foreground truncate">
+                    {image.name}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </div>
 
       {/* Configuration */}
@@ -134,11 +244,105 @@ function ProcessTab() {
 
       {/* Submit Button */}
       <div className="flex justify-end">
-        <Button size="lg" className="min-w-[200px]">
+        <Button
+          size="lg"
+          className="min-w-[200px]"
+          onClick={submitJob}
+          disabled={!canSubmit || isSubmitting || isUploading}
+        >
           <Sparkles className="h-4 w-4 mr-2" />
           {t('actions.submit')}
         </Button>
       </div>
+
+      {submitError ? <p className="text-sm text-destructive">{submitError}</p> : null}
+      {progressError ? <p className="text-sm text-destructive">{progressError}</p> : null}
+
+      {progress ? (
+        <div className="rounded-lg border p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium">
+              {t(
+                `status.${progress.status === 'cancelled' ? 'failed' : progress.status}`
+              )}
+            </p>
+            <span className="text-sm text-muted-foreground">
+              {t('status.progress', { progress: progress.progress })}
+            </span>
+          </div>
+          <div className="mt-2 h-2 w-full rounded-full bg-muted">
+            <div
+              className="h-2 rounded-full bg-primary transition-all"
+              style={{ width: `${progress.progress}%` }}
+            />
+          </div>
+        </div>
+      ) : null}
+
+      {result ? (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">{t('tabs.review')}</h3>
+            <Button variant="outline" size="sm" onClick={() => setActiveTab('review')}>
+              {t('tabs.review')}
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {result.source_image_urls.map((sourceUrl, index) => {
+              const resultUrl = result.result_image_urls[index];
+              return (
+                <div key={`${sourceUrl}-${index}`} className="rounded-lg border p-3">
+                  <p className="text-xs uppercase text-muted-foreground">
+                    {tReview('image_card.source')}
+                  </p>
+                  <img
+                    src={sourceUrl}
+                    alt="Source"
+                    className="mt-2 h-32 w-full rounded-md object-cover"
+                    loading="lazy"
+                  />
+                  <p className="mt-4 text-xs uppercase text-muted-foreground">
+                    {tReview('image_card.result')}
+                  </p>
+                  {resultUrl ? (
+                    <img
+                      src={resultUrl}
+                      alt="Result"
+                      className="mt-2 h-32 w-full rounded-md object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="mt-2 h-32 w-full rounded-md border border-dashed" />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      {currentJobId && !result && !isLoadingPairs && imagePairs.length > 0 ? (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">{t('tabs.review')}</h3>
+            <Button variant="outline" size="sm" onClick={() => setActiveTab('review')}>
+              {t('tabs.review')}
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {imagePairs.map((pair) => (
+              <div key={pair.id} className="rounded-lg border overflow-hidden">
+                <img
+                  src={pair.resultUrl || pair.sourceUrl}
+                  alt="Result"
+                  className="h-28 w-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -149,10 +353,85 @@ function ProcessTab() {
 
 function ReviewTab() {
   const t = useTranslations('dashboard.aiplayground-review');
+  const { currentJobId } = useAiPlayground();
+  const imagePairOptions = useMemo(
+    () => ({
+      jobId: currentJobId || undefined,
+      limit: 100,
+      enabled: Boolean(currentJobId),
+    }),
+    [currentJobId]
+  );
+  const { imagePairs, isLoading, error, updateImagePair } = useAiImagePairs(imagePairOptions);
+
+  const handleApprove = async (pairId: string) => {
+    await updateImagePair(pairId, { approved: true, archived: false });
+  };
+
+  const handleReject = async (pairId: string) => {
+    await updateImagePair(pairId, { approved: false, archived: true });
+  };
+
+  if (!currentJobId) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">{t('empty.description')}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="text-center py-12">
-      <p className="text-muted-foreground">{t('empty.description')}</p>
+    <div className="space-y-4">
+      {isLoading ? <p className="text-muted-foreground">{t('description')}</p> : null}
+      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {imagePairs.length === 0 && !isLoading ? (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">{t('empty.description')}</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {imagePairs.map((pair) => (
+            <div key={pair.id} className="rounded-lg border p-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs uppercase text-muted-foreground">
+                    {t('image_card.source')}
+                  </p>
+                  <img
+                    src={pair.sourceUrl}
+                    alt="Source"
+                    className="mt-2 h-36 w-full rounded-md object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <div>
+                  <p className="text-xs uppercase text-muted-foreground">
+                    {t('image_card.result')}
+                  </p>
+                  {pair.resultUrl ? (
+                    <img
+                      src={pair.resultUrl}
+                      alt="Result"
+                      className="mt-2 h-36 w-full rounded-md object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="mt-2 h-36 w-full rounded-md border border-dashed" />
+                  )}
+                </div>
+              </div>
+              <div className="mt-3 flex items-center gap-2">
+                <Button size="sm" onClick={() => handleApprove(pair.id)}>
+                  {t('image_card.approve')}
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => handleReject(pair.id)}>
+                  {t('image_card.reject')}
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
