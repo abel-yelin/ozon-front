@@ -68,6 +68,28 @@ function PromptGroupDialog({
   );
   const [saving, setSaving] = useState(false);
 
+  // Update form when group changes
+  useEffect(() => {
+    if (group) {
+      setName(group.name || '');
+      setDescription(group.description || '');
+      setTemplates(
+        group.prompt_templates
+          ? Object.entries(group.prompt_templates).map(([key, content]) => ({
+              key,
+              content: content as string,
+              language: key.endsWith('_cn') ? 'cn' : 'en',
+              category: key.startsWith('opt_') ? 'option' : 'main',
+            }))
+          : []
+      );
+    } else {
+      setName('');
+      setDescription('');
+      setTemplates([]);
+    }
+  }, [group]);
+
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -210,15 +232,30 @@ export function PromptGroupsAdmin() {
   };
 
   const handleEdit = async (group: PromptGroup) => {
+    console.log('Edit button clicked for group:', group);
     try {
       const res = await fetch(`/api/ai-playground/prompt-groups/${group.id}`);
+      console.log('Response status:', res.status);
+
+      if (!res.ok) {
+        console.error('Failed to fetch group:', res.statusText);
+        return;
+      }
+
       const data = await res.json();
+      console.log('Fetched group data:', data);
+
       if (data.code === 0) {
+        console.log('Setting selected group and opening dialog');
         setSelectedGroup(data.data.group);
         setDialogOpen(true);
+      } else {
+        console.error('API returned error:', data);
+        alert(`Failed to load group: ${data.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Failed to fetch group details:', error);
+      alert('Failed to load group details. Check console for details.');
     }
   };
 
@@ -324,14 +361,23 @@ export function PromptGroupsAdmin() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => handleEdit(group)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log('Edit button clicked');
+                          handleEdit(group);
+                        }}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => handleDelete(group.id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDelete(group.id);
+                        }}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
