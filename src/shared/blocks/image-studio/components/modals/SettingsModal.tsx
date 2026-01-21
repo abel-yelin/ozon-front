@@ -9,6 +9,7 @@ import { useImageStudio } from '@/app/hooks/use-image-studio';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Button } from '@/shared/components/ui/button';
 import { Label } from '@/shared/components/ui/label';
+import { Input } from '@/shared/components/ui/input';
 import { Switch } from '@/shared/components/ui/switch';
 import { Slider } from '@/shared/components/ui/slider';
 import {
@@ -101,6 +102,39 @@ export function SettingsModal() {
               checked={settings.preserveOriginal}
               onCheckedChange={checked => updateSettings({ preserveOriginal: checked })}
             />
+          </div>
+
+          {/* Ozon API Credentials */}
+          <div className="space-y-3 pt-3 border-t">
+            <Label className="text-sm font-medium">Ozon API 凭证</Label>
+
+            <div className="space-y-2">
+              <Label htmlFor="ozon-client-id" className="text-xs text-neutral-600">
+                Client ID
+              </Label>
+              <Input
+                id="ozon-client-id"
+                type="text"
+                placeholder="输入 Ozon Client-Id"
+                value={settings.ozonClientId || ''}
+                onChange={(e) => updateSettings({ ozonClientId: e.target.value })}
+                className="text-sm"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="ozon-api-key" className="text-xs text-neutral-600">
+                API Key
+              </Label>
+              <Input
+                id="ozon-api-key"
+                type="password"
+                placeholder="输入 Ozon Api-Key"
+                value={settings.ozonApiKey || ''}
+                onChange={(e) => updateSettings({ ozonApiKey: e.target.value })}
+                className="text-sm"
+              />
+            </div>
           </div>
 
           <Button className="w-full" onClick={handleSave}>
