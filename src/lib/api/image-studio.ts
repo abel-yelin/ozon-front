@@ -163,7 +163,8 @@ export async function regenerateImage(
   skuId: string,
   pairId: string,
   options: RegenOptions
-): Promise<ImagePair> {
+): Promise<{ jobId: string }> {
+  console.info('[ImageStudio] API regenerateImage', { skuId, pairId });
   const response = await fetch(`${API_BASE}/jobs`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -191,9 +192,24 @@ export async function regenerateImage(
 
   const data = await handleResponse<any>(response);
   if (data.code !== 0) {
+    console.error('[ImageStudio] API regenerateImage failed', data);
     throw new Error(data.message || 'Regenerate failed');
   }
-  return await fetchImagePair(skuId, pairId);
+  const jobId = data.data?.job_id || '';
+  console.info('[ImageStudio] API regenerateImage queued', jobId);
+  return { jobId };
+}
+
+export async function getJobStatus(jobId: string): Promise<{ status: string; error?: string | null }> {
+  const response = await fetch(`${API_BASE}/jobs/${jobId}`);
+  const data = await handleResponse<any>(response);
+  if (data.code !== 0) {
+    throw new Error(data.message || 'Failed to get job status');
+  }
+  return {
+    status: data.data?.status || 'pending',
+    error: data.data?.error || null,
+  };
 }
 
 /**

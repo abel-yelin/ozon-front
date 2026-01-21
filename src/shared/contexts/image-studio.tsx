@@ -93,6 +93,7 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
   // Refs
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const currentJobIdRef = useRef<string | null>(null);
+  const singleJobPollRef = useRef<NodeJS.Timeout | null>(null);
 
   // ========================================
   // Effects
@@ -134,6 +135,15 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
       }
     };
   }, [batchProgress?.status]);
+
+  useEffect(() => {
+    return () => {
+      if (singleJobPollRef.current) {
+        clearInterval(singleJobPollRef.current);
+        singleJobPollRef.current = null;
+      }
+    };
+  }, []);
 
   // ========================================
   // Actions
@@ -181,6 +191,38 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
     }
   }, []);
 
+  const stopSingleJobPoll = useCallback(() => {
+    if (singleJobPollRef.current) {
+      clearInterval(singleJobPollRef.current);
+      singleJobPollRef.current = null;
+    }
+  }, []);
+
+  const pollSingleJob = useCallback(async (jobId: string, skuId: string) => {
+    stopSingleJobPoll();
+    let attempts = 0;
+    const maxAttempts = 180;
+
+    singleJobPollRef.current = setInterval(async () => {
+      attempts += 1;
+      try {
+        const job = await api.getJobStatus(jobId);
+        if (job.status === 'completed' || job.status === 'failed' || job.status === 'cancelled') {
+          stopSingleJobPoll();
+          if (currentSKU && currentSKU.id === skuId) {
+            await loadCurrentSKUImagePairs(currentSKU);
+          }
+          await loadSKUs();
+        }
+      } catch (err) {
+        console.error('[ImageStudio] Poll job status failed', err);
+        if (attempts >= maxAttempts) {
+          stopSingleJobPoll();
+        }
+      }
+    }, 2000);
+  }, [currentSKU, loadCurrentSKUImagePairs, loadSKUs, stopSingleJobPoll]);
+
   const handleSetCurrentSKU = useCallback(async (sku: SKU | null) => {
     setCurrentSKU(sku);
     if (sku) {
@@ -211,9 +253,16 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
     if (!currentSKU) return;
     setIsLoading(true);
     try {
-      await api.regenerateImage(currentSKU.id, pairId, options);
-      await loadCurrentSKUImagePairs(currentSKU);
+      console.info('[ImageStudio] Regenerate start', { sku: currentSKU.id, pairId });
+      const { jobId } = await api.regenerateImage(currentSKU.id, pairId, options);
+      console.info('[ImageStudio] Regenerate completed', { sku: currentSKU.id, pairId });
+      if (jobId) {
+        pollSingleJob(jobId, currentSKU.id);
+      } else {
+        await loadCurrentSKUImagePairs(currentSKU);
+      }
     } catch (err) {
+      console.error('[ImageStudio] Regenerate error', err);
       setError(err instanceof Error ? err.message : 'Failed to regenerate image');
     } finally {
       setIsLoading(false);

@@ -53,6 +53,8 @@ export async function POST(req: Request) {
     const stem = body?.stem ? String(body.stem).trim() : '';
     const rawOptions = body?.options || {};
 
+    console.info('[ImageStudio] Create job request', { mode, sku, stem });
+
     if (!mode || !sku) {
       return respErr('mode/sku required');
     }
@@ -91,6 +93,13 @@ export async function POST(req: Request) {
       use_english: Boolean(prefs?.useEnglish),
       prompt_templates: activeGroup?.prompt_templates || {},
     };
+
+    const templateKeys = Object.keys(baseOptions.prompt_templates || {});
+    console.info('[ImageStudio] Prompt templates loaded', {
+      groupId: activeGroup?.id || activeGroupId,
+      templateCount: templateKeys.length,
+      useEnglish: baseOptions.use_english,
+    });
 
     const jobOptions = { ...options, ...baseOptions };
     const isBatchMode = mode.startsWith('batch_');
@@ -250,6 +259,7 @@ export async function POST(req: Request) {
     }
 
     if (!response || response.success === false) {
+      console.error('[ImageStudio] FastAPI submit failed', response?.error || 'unknown');
       await aiPlaygroundDb.updateJob(job.id, user.id, {
         status: 'failed',
         errorMessage: response?.error || 'Job failed',
@@ -263,6 +273,7 @@ export async function POST(req: Request) {
       return respErr(response?.error || 'Job failed');
     }
 
+    console.info('[ImageStudio] Job queued', { jobId: job.id, mode, sku });
     await aiPlaygroundDb.createJobLog({
       jobId: job.id,
       level: 'info',

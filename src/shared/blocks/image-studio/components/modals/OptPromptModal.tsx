@@ -19,6 +19,7 @@ export function OptPromptModal() {
   const pairId = modal.data?.pairId;
 
   const isOpen = modal.type === 'opt-prompt';
+  const canSubmit = Boolean(pairId);
 
   const [options, setOptions] = useState({
     includeCommon: true,
@@ -42,8 +43,14 @@ export function OptPromptModal() {
 
   const handleRegenerate = async () => {
     if (!pairId) return;
-    await regenerateImage(pairId, { ...options, refFile: refFile || undefined });
-    closeModal();
+    try {
+      console.info('[ImageStudio] Regenerate submit', { pairId });
+      await regenerateImage(pairId, { ...options, refFile: refFile || undefined });
+      console.info('[ImageStudio] Regenerate submitted', { pairId });
+      closeModal();
+    } catch (error) {
+      console.error('[ImageStudio] Regenerate failed', error);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -225,7 +232,12 @@ export function OptPromptModal() {
             </div>
           </div>
 
-          <Button className="w-full" onClick={handleRegenerate}>
+          {!canSubmit && (
+            <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+              请选择图片后再生成（请从图片卡片的“生成/重新生成”入口打开此弹窗）。
+            </div>
+          )}
+          <Button className="w-full" onClick={handleRegenerate} disabled={!canSubmit}>
             <Sparkles className="mr-2 h-4 w-4" />
             Regenerate Image
           </Button>

@@ -183,14 +183,14 @@ export function MainContent() {
                       </span>
                     </div>
                     <Button
-                      variant="outline"
+                      variant="default"
                       size="sm"
-                      className="gap-2"
+                      className={`gap-2 text-white ${pair.outputUrl ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700'}`}
                       disabled={pair.status === 'processing'}
                       onClick={() => openModal('opt-prompt', { pairId: pair.id })}
                     >
                       <RefreshCw className="h-4 w-4" />
-                      重新生成
+                      {pair.outputUrl ? '重新生成' : '生成'}
                     </Button>
                   </div>
                 </div>
