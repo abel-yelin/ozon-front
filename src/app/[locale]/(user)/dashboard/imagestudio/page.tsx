@@ -15,6 +15,7 @@ import { ProgressModal } from '@/shared/blocks/image-studio/components/modals/Pr
 import { DownloadModal } from '@/shared/blocks/image-studio/components/modals/DownloadModal';
 import { SettingsModal } from '@/shared/blocks/image-studio/components/modals/SettingsModal';
 import { OptPromptModal } from '@/shared/blocks/image-studio/components/modals/OptPromptModal';
+import { UploadModal } from '@/shared/blocks/image-studio/components/modals/UploadModal';
 
 function ImageStudioContent() {
   return (
@@ -30,6 +31,7 @@ function ImageStudioContent() {
       <DownloadModal />
       <SettingsModal />
       <OptPromptModal />
+      <UploadModal />
     </div>
   );
 }
