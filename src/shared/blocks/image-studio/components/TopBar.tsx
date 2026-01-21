@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { useImageStudio } from '@/app/hooks/use-image-studio';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
+import { PromptGroupSelector } from './PromptGroupSelector';  // NEW import
 import {
   Download,
   Settings,
@@ -55,6 +56,9 @@ export function TopBar() {
             PRO
           </Badge>
         </div>
+
+        {/* NEW: Prompt Group Selector */}
+        <PromptGroupSelector className="ml-4" />
 
         {/* Navigation Tabs */}
         <div className="flex items-center gap-1">
