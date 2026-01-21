@@ -6,6 +6,57 @@ import { getUserGalleryImages } from '@/shared/services/gallery';
 import { getFileNameFromUrl, getStemFromFilename } from '@/shared/lib/image-studio';
 import { buildJobView, syncImageStudioJobs } from '@/app/api/image-studio/jobs/helpers';
 
+// ========================================
+// Prompt Validation
+// ========================================
+
+interface PromptValidationResult {
+  valid: boolean;
+  error?: string;
+  group?: any;
+}
+
+/**
+ * Validate that user has a valid prompt group with required templates
+ * Called before creating any image generation job
+ */
+async function validatePromptForJob(
+  userId: string
+): Promise<PromptValidationResult> {
+  const prefs = await aiPlaygroundDb.getUserPromptPreferences(userId);
+  const activeId = prefs?.activePromptGroupId;
+
+  // Check 1: Active group is set
+  if (!activeId) {
+    return {
+      valid: false,
+      error: '未设置提示词组，请在设置中选择或创建提示词组',
+    };
+  }
+
+  // Check 2: Group exists and has templates
+  const group = await aiPlaygroundDb.getPromptGroupWithTemplates(activeId);
+  if (!group) {
+    return {
+      valid: false,
+      error: '选中的提示词组不存在，请重新选择',
+    };
+  }
+
+  // Check 3: Has at least one common template (required for generation)
+  const templates = group.prompt_templates || {};
+  const hasCommon = templates.common_cn || templates.common_en;
+
+  if (!hasCommon) {
+    return {
+      valid: false,
+      error: '提示词组缺少必需模板（common_cn 或 common_en），请在设置中配置',
+    };
+  }
+
+  return { valid: true, group };
+}
+
 // GET /api/image-studio/jobs
 export async function GET(req: Request) {
   try {
@@ -58,6 +109,17 @@ export async function POST(req: Request) {
     if (!mode || !sku) {
       return respErr('mode/sku required');
     }
+
+    // NEW: Validate prompt configuration before processing
+    const validation = await validatePromptForJob(user.id);
+    if (!validation.valid) {
+      return respErr(validation.error);
+    }
+
+    console.info('[ImageStudio] Prompt validation passed', {
+      groupId: validation.group?.id,
+      groupName: validation.group?.name,
+    });
 
     const [prefs, promptGroups, galleryImages] = await Promise.all([
       aiPlaygroundDb.getUserPromptPreferences(user.id),
@@ -218,6 +280,8 @@ export async function POST(req: Request) {
       sku,
       stem: resolvedStem || null,
       options: jobOptions,
+      // NEW: Include prompt_group_id for tracing/debugging
+      prompt_group_id: validation.group?.id || '',
     };
     if (workflowStateId) {
       jobConfig.workflowStateId = workflowStateId;
