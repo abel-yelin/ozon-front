@@ -41,10 +41,50 @@ export interface Image {
 
 // Settings for the image studio
 export interface StudioSettings {
+  // Existing settings
   imageSize: ImageSize;
   imageFormat: ImageFormat;
   quality: number;
   preserveOriginal: boolean;
+
+  // NEW: Prompt group fields
+  prompt_groups?: PromptGroup[];
+  active_prompt_group_id?: string;
+  active_prompt_group_name?: string;
+  use_english_prompts?: boolean;
+
+  // NEW: Template fields (all 21 from GROUP_PROMPT_KEYS)
+  prompt_common_cn?: string;
+  prompt_main_cn?: string;
+  prompt_secondary_cn?: string;
+  style_main_prompt_cn?: string;
+  style_extract_instruction_cn?: string;
+  title_details_prompt_cn?: string;
+  opt_remove_watermark_cn?: string;
+  opt_remove_logo_cn?: string;
+  opt_text_edit_cn?: string;
+  opt_restructure_cn?: string;
+  opt_recolor_cn?: string;
+  opt_add_markers_cn?: string;
+  prompt_common_en?: string;
+  prompt_main_en?: string;
+  prompt_secondary_en?: string;
+  style_main_prompt_en?: string;
+  style_extract_instruction_en?: string;
+  title_details_prompt_en?: string;
+  opt_remove_watermark_en?: string;
+  opt_remove_logo_en?: string;
+  opt_text_edit_en?: string;
+  opt_restructure_en?: string;
+  opt_recolor_en?: string;
+  opt_add_markers_en?: string;
+  pro_plan_instruction_cn?: string;
+}
+
+// NEW: Prompt group type
+export interface PromptGroup {
+  id: string;
+  name: string;
 }
 
 export type ImageSize = '1024x1024' | '1536x1536' | '2048x2048';
