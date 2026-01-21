@@ -993,8 +993,12 @@ export class AiPlaygroundDb {
 
   /**
    * Get or create user prompt preferences
+   * Ensures system default prompt group exists before creating user prefs
    */
   async getUserPromptPreferences(userId: string) {
+    // NEW: Ensure system default exists first
+    await this.ensureSystemDefaultPromptGroup();
+
     let [prefs] = await db()
       .select()
       .from(aiUserPromptPreference)
