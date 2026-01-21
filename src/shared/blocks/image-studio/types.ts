@@ -12,6 +12,7 @@ export interface SKU {
   inputCount?: number;
   outputCount?: number;
   workflowStateId?: string;
+  productId?: number;
 }
 
 export type SKUStatus = 'not_generated' | 'main_generated' | 'done';
