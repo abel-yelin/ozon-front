@@ -946,6 +946,48 @@ export class AiPlaygroundDb {
   }
 
   // ========================================
+  // System Default Prompt Group
+  // ========================================
+
+  /**
+   * Ensure system default prompt group exists
+   * Creates it if missing, does nothing if already exists
+   * Call this on app startup or when getting user preferences
+   */
+  async ensureSystemDefaultPromptGroup() {
+    // Check if system default already exists
+    const existing = await db()
+      .select()
+      .from(aiPromptGroup)
+      .where(eq(aiPromptGroup.isSystemDefault, true))
+      .limit(1);
+
+    if (existing.length > 0) {
+      return existing[0];
+    }
+
+    // Import defaults
+    const { SYSTEM_DEFAULT_GROUP_CONFIG, DEFAULT_SYSTEM_TEMPLATES, GROUP_PROMPT_KEYS } = await import('@/lib/db/seed/prompt-defaults');
+
+    // Create system default prompt group
+    const group = await this.createPromptGroup({
+      userId: undefined, // System default has no user
+      name: SYSTEM_DEFAULT_GROUP_CONFIG.name,
+      description: SYSTEM_DEFAULT_GROUP_CONFIG.description,
+      isSystemDefault: true,
+      templates: GROUP_PROMPT_KEYS.map(key => ({
+        key,
+        content: DEFAULT_SYSTEM_TEMPLATES[key] || '',
+        language: key.endsWith('_cn') ? 'cn' : 'en',
+        category: 'system',
+      })),
+    });
+
+    console.info('[ImageStudio] System default prompt group created', { groupId: group.id });
+    return group;
+  }
+
+  // ========================================
   // User Prompt Preference Operations
   // ========================================
 
