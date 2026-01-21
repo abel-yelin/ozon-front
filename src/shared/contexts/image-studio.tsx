@@ -101,14 +101,20 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
 
   // Load settings, prompt group, and SKUs on mount
   useEffect(() => {
-    api.getSettings().then(setSettings).catch(console.error);
+    // NEW: Single consolidated request (eliminates waterfall)
+    api.getSettings()
+      .then(data => {
+        setSettings(data);
+        // Active group info is now inline in settings
+        setActivePromptGroup({
+          id: data.active_prompt_group_id || '',
+          name: data.active_prompt_group_name || '',
+        });
+      })
+      .catch(console.error);
+
     loadBatchStats();
     loadSKUs(); // Load SKUs on mount
-
-    // Load active prompt group
-    api.getActivePromptGroup()
-      .then(setActivePromptGroup)
-      .catch(console.error);
   }, []);
 
   // Poll batch progress when processing
