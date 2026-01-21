@@ -1,5 +1,5 @@
 import { aiPlaygroundDb } from '../src/lib/db/ai-playground';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 interface PromptTemplate {
@@ -19,7 +19,11 @@ interface Config {
 async function seedPromptGroups() {
   console.log('Seeding prompt groups from config.json...');
 
-  const configPath = join(process.cwd(), 'dev', 'ozon-backen', 'demo2', 'config.json');
+  const configPath = process.env.IMAGE_STUDIO_PROMPT_CONFIG
+    || join(process.cwd(), 'dev', 'ozon-backen', 'app', 'resources', 'image_studio_config.json');
+  if (!existsSync(configPath)) {
+    throw new Error(`Prompt config not found at ${configPath}`);
+  }
   const configContent = readFileSync(configPath, 'utf-8');
   const config: Config = JSON.parse(configContent);
 

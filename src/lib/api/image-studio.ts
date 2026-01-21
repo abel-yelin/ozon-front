@@ -1,6 +1,6 @@
 /**
  * ImageStudio API client
- * Interfaces with Python backend at dev/ozon-backen/demo2
+ * Interfaces with FastAPI backend
  */
 
 import type {

@@ -187,6 +187,7 @@ export function MainContent() {
                       size="sm"
                       className="gap-2"
                       disabled={pair.status === 'processing'}
+                      onClick={() => openModal('opt-prompt', { pairId: pair.id })}
                     >
                       <RefreshCw className="h-4 w-4" />
                       重新生成

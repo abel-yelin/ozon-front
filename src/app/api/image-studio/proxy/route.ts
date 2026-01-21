@@ -1,6 +1,6 @@
 /**
  * ImageStudio API Proxy Route
- * Proxies requests to Python backend at dev/ozon-backen/demo2
+ * Proxies requests to FastAPI backend
  */
 
 import { NextRequest, NextResponse } from 'next/server';
