@@ -955,19 +955,19 @@ export class AiPlaygroundDb {
    * Call this on app startup or when getting user preferences
    */
   async ensureSystemDefaultPromptGroup() {
-    // Check if system default already exists
+    // Import defaults to get the config name
+    const { SYSTEM_DEFAULT_GROUP_CONFIG, DEFAULT_SYSTEM_TEMPLATES, GROUP_PROMPT_KEYS } = await import('@/lib/db/seed/prompt-defaults');
+
+    // Check if system default already exists by specific name
     const existing = await db()
       .select()
       .from(aiPromptGroup)
-      .where(eq(aiPromptGroup.isSystemDefault, true))
+      .where(eq(aiPromptGroup.name, SYSTEM_DEFAULT_GROUP_CONFIG.name))
       .limit(1);
 
     if (existing.length > 0) {
       return existing[0];
     }
-
-    // Import defaults
-    const { SYSTEM_DEFAULT_GROUP_CONFIG, DEFAULT_SYSTEM_TEMPLATES, GROUP_PROMPT_KEYS } = await import('@/lib/db/seed/prompt-defaults');
 
     // Create system default prompt group
     const group = await this.createPromptGroup({
