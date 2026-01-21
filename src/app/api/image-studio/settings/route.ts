@@ -84,8 +84,14 @@ function buildSettingsResponse(payload: {
 async function resolveActiveGroup(userId: string, prefs: any) {
   const groups = await aiPlaygroundDb.getPromptGroups(userId);
   let activeGroupId = prefs?.activePromptGroupId || '';
+
+  // Fallback to first group (including system default) if none set
   if (!activeGroupId && groups.length) {
     activeGroupId = groups[0].id;
+    // Auto-set it for future requests
+    await aiPlaygroundDb.updateUserPromptPreferences(userId, {
+      activePromptGroupId: activeGroupId,
+    });
   }
 
   let group = null;
