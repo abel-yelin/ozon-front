@@ -69,6 +69,11 @@ export async function getUserGalleryImages(
       const article = typeof item?.article === 'string' ? item.article : 'unknown';
       const productId = typeof item?.product_id === 'number' ? item.product_id : undefined;
 
+      // DEBUG: Log productId extraction
+      if (productId) {
+        console.log(`[getUserGalleryImages] Found article=${article}, productId=${productId}, urls=${urls.length}`);
+      }
+
       for (const url of urls) {
         if (!url || typeof url !== 'string') continue;
         if (seen.has(url)) continue;
@@ -127,6 +132,10 @@ export async function getUserGalleryImages(
       }
     }
   }
+
+  // DEBUG: Log summary
+  const imagesWithProductIds = images.filter(img => img.productId != null);
+  console.log(`[getUserGalleryImages] Total images: ${images.length}, with productId: ${imagesWithProductIds.length}`);
 
   return images;
 }

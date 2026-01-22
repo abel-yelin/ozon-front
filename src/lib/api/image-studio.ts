@@ -57,6 +57,7 @@ export async function fetchSKUs(filters?: SKUFilters): Promise<SKU[]> {
     inputCount: folder.input_count || 0,
     outputCount: folder.output_count || 0,
     workflowStateId: folder.workflow_state_id || undefined,
+    productId: folder.product_id,
   }));
 
   if (filters?.searchQuery) {

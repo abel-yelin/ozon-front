@@ -5,6 +5,7 @@ import { getFileNameFromUrl, getStemFromFilename, isMainStem } from '@/shared/li
 import { getUserGalleryImages } from '@/shared/services/gallery';
 
 // GET /api/image-studio/folders
+// GET /api/image-studio/folders
 export async function GET() {
   try {
     const user = await getUserInfo();
@@ -25,6 +26,10 @@ export async function GET() {
       grouped.set(image.article, list);
     }
 
+    // DEBUG: Log grouped articles
+    console.log(`[API /folders] Grouped ${grouped.size} articles`);
+    console.log(`[API /folders] Articles:`, Array.from(grouped.keys()).slice(0, 10));
+
     const folders = [];
     for (const [article, images] of grouped.entries()) {
       let state = stateByName.get(article);
@@ -41,6 +46,14 @@ export async function GET() {
 
       // Extract productId from images (use first non-null value)
       const productId = images.find(img => img.productId != null)?.productId;
+
+      // DEBUG: Log productId extraction for specific SKU
+      if (article.includes('1685323528') || article.includes('BovQ')) {
+        console.log(`[API /folders] SKU: ${article}`);
+        console.log(`[API /folders]   Images count: ${images.length}`);
+        console.log(`[API /folders]   ProductId: ${productId}`);
+        console.log(`[API /folders]   Images with productId:`, images.filter(img => img.productId != null).map(img => ({ url: img.url, productId: img.productId })));
+      }
 
       const inputStems = new Set<string>();
       const outputStems = new Set<string>();
@@ -93,6 +106,10 @@ export async function GET() {
         product_id: productId,
       });
     }
+
+    // DEBUG: Log folders with productId
+    const foldersWithProductId = folders.filter((f: any) => f.product_id != null);
+    console.log(`[API /folders] Total folders: ${folders.length}, with productId: ${foldersWithProductId.length}`);
 
     return respData({ folders });
   } catch (error) {
