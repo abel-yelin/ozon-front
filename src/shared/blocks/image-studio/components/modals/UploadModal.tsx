@@ -36,6 +36,11 @@ interface PushResult {
     current_images: string[];
   };
   error?: string;
+  errorLink?: {
+    href: string;
+    text: string;
+    target?: string;
+  };
   errors?: Array<{
     field: string;
     index?: number;
@@ -94,7 +99,12 @@ export function UploadModal() {
       if (!product_id) {
         setResult({
           success: false,
-          error: '未找到 Product ID，请先下载商品信息'
+          error: '未找到 Product ID，请先在 Ozon 下载页面获取商品信息',
+          errorLink: {
+            href: '/dashboard/ozon',
+            text: '前往 Ozon 下载页面',
+            target: '_blank'
+          }
         });
         return;
       }
@@ -184,7 +194,20 @@ export function UploadModal() {
             <div className="text-sm p-3 bg-neutral-50 rounded-lg">
               <p className="font-medium">当前商品</p>
               <p className="text-neutral-600">SKU: {currentSKU.article || '未设置'}</p>
-              <p className="text-neutral-600">Product ID: {currentSKU.productId || '未设置'}</p>
+              <p className={`text-neutral-600 ${currentSKU.productId ? 'text-green-700 font-medium' : 'text-amber-600'}`}>
+                Product ID: {currentSKU.productId || '未设置'}
+                {currentSKU.productId && <span className="ml-1">✓</span>}
+              </p>
+              {!currentSKU.productId && (
+                <a
+                  href="/dashboard/ozon"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center mt-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors text-sm font-medium"
+                >
+                  下载商品信息
+                </a>
+              )}
             </div>
           )}
 
@@ -234,6 +257,16 @@ export function UploadModal() {
                     <div>
                       <p className="font-medium">推送失败</p>
                       <p className="text-sm mt-1">{result.error}</p>
+                      {result.errorLink && (
+                        <a
+                          href={result.errorLink.href}
+                          target={result.errorLink.target || '_blank'}
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center mt-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors text-sm font-medium"
+                        >
+                          {result.errorLink.text}
+                        </a>
+                      )}
                       {result.errors && (
                         <ul className="text-sm mt-2 list-disc list-inside">
                           {result.errors.map((err, i) => (

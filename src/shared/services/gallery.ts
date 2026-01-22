@@ -6,6 +6,7 @@ export type GalleryImage = {
   article: string;
   taskId: string;
   createdAt: string;
+  productId?: number;
 };
 
 function parseJson(value: unknown) {
@@ -66,6 +67,7 @@ export async function getUserGalleryImages(
     for (const item of items) {
       const urls = Array.isArray(item?.urls) ? item.urls : [];
       const article = typeof item?.article === 'string' ? item.article : 'unknown';
+      const productId = typeof item?.product_id === 'number' ? item.product_id : undefined;
 
       for (const url of urls) {
         if (!url || typeof url !== 'string') continue;
@@ -77,6 +79,7 @@ export async function getUserGalleryImages(
           article,
           taskId: (task as any).id,
           createdAt: (task as any).createdAt?.toString?.() || '',
+          productId,
         });
 
         if (!keepGoing) {

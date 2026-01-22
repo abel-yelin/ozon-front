@@ -39,6 +39,9 @@ export async function GET() {
         stateByName.set(article, state);
       }
 
+      // Extract productId from images (use first non-null value)
+      const productId = images.find(img => img.productId != null)?.productId;
+
       const inputStems = new Set<string>();
       const outputStems = new Set<string>();
       let thumbnailUrl = "";
@@ -87,6 +90,7 @@ export async function GET() {
         workflow_state_id: state.id,
         thumbnail_url: thumbnailUrl || null,
         has_main: hasMain,
+        product_id: productId,
       });
     }
 
