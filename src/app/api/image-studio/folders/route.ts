@@ -13,9 +13,9 @@ export async function GET() {
     }
 
     const workflowStates = await aiPlaygroundDb.getUserWorkflowStates(user.id, { limit: 500 });
-    const stateByName = new Map(workflowStates.map((s) => [s.name, s]));
+    const stateByName = new Map<string, any>(workflowStates.map((s: any) => [s.name, s]));
     const allPairs = await aiPlaygroundDb.getUserImagePairs(user.id, { limit: 10000 });
-    const pairBySource = new Map(allPairs.map((p) => [p.sourceUrl, p]));
+    const pairBySource = new Map<string, any>(allPairs.map((p: any) => [p.sourceUrl, p]));
     const galleryImages = await getUserGalleryImages(user.id, { limit: 500 });
 
     const grouped = new Map<string, typeof galleryImages>();

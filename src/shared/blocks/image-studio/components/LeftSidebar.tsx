@@ -30,6 +30,8 @@ export function LeftSidebar() {
     loadSKUs,
     selectSKU,
     deselectSKU,
+    selectMultipleSKUs,
+    clearSelection,
     setCurrentSKU,
     updateFilters,
     openModal,

@@ -37,7 +37,7 @@ export async function POST(req: Request) {
 
     // Get workflow states for user
     const workflowStates = await aiPlaygroundDb.getUserWorkflowStates(user.id, { limit: 500 });
-    const stateByName = new Map(workflowStates.map((s) => [s.name, s]));
+    const stateByName = new Map<string, any>(workflowStates.map((s: any) => [s.name, s]));
 
     // Get image pairs for all workflow states
     const allImagePairs = await aiPlaygroundDb.getUserImagePairs(user.id, { limit: 10000 });

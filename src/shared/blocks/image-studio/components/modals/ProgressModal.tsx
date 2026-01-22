@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/compo
 import { Button } from '@/shared/components/ui/button';
 import { Progress } from '@/shared/components/ui/progress';
 import { Badge } from '@/shared/components/ui/badge';
-import { Pause, Play, Square, X } from 'lucide-react';
+import { Pause, Play, Square, RefreshCw, X } from 'lucide-react';
 
 export function ProgressModal() {
   const { modal, batchProgress, closeModal, pauseBatch, resumeBatch, cancelBatch } = useImageStudio();
@@ -56,6 +56,12 @@ export function ProgressModal() {
             <p className="text-sm font-medium capitalize">{batchProgress.status}</p>
             {batchProgress.failed > 0 && (
               <p className="mt-1 text-xs text-red-600">{batchProgress.failed} failed</p>
+            )}
+            {isProcessing && (
+              <p className="mt-1 text-xs text-blue-600">
+                <RefreshCw className="mr-1 inline h-3 w-3 animate-spin" />
+                正在自动更新图片显示
+              </p>
             )}
           </div>
 

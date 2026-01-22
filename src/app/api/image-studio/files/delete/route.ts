@@ -33,7 +33,7 @@ export async function POST(req: Request) {
       limit: 10000,
     });
 
-    const target = pairs.find((pair) => {
+    const target = pairs.find((pair: any) => {
       const inputName = getFileNameFromUrl(pair.sourceUrl);
       const outputName = getFileNameFromUrl(pair.resultUrl);
       const s = getStemFromFilename(inputName || outputName);
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     }
 
     await aiPlaygroundDb.updateImagePair(target.id, user.id, {
-      resultUrl: null,
+      resultUrl: undefined,
     });
     return respData({ ok: true, sku, stem, location, deleted: ['output'] });
   } catch (error) {

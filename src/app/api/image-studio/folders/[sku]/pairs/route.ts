@@ -42,7 +42,7 @@ export async function GET(
       workflowStateId: state.id,
       limit: 10000,
     });
-    const pairBySource = new Map(pairs.map((pair) => [pair.sourceUrl, pair]));
+    const pairBySource = new Map<string, any>(pairs.map((pair: any) => [pair.sourceUrl, pair]));
 
     const formatted = skuImages.map((image) => {
       const inputName = getFileNameFromUrl(image.url);

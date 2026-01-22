@@ -137,6 +137,58 @@ export class OzonApiClient {
     const health = await this.healthCheck();
     return health?.status === 'healthy';
   }
+
+  /**
+   * Push processed images to Ozon product
+   */
+  async pushImages(request: {
+    credential: OzonCredential;
+    product_id: number;
+    images: string[];
+  }): Promise<{
+    success: boolean;
+    data?: {
+      product_id: number;
+      updated: {
+        images: number;
+        images360: number;
+        color_image: boolean;
+      };
+      current_images: string[];
+    };
+    error?: string;
+    errors?: Array<{
+      field: string;
+      index?: number;
+      url?: string;
+      reason: string;
+    }>;
+  }> {
+    if (!this.apiKey) {
+      throw new Error('PYTHON_API_KEY is not configured');
+    }
+
+    try {
+      const response = await fetch(`${this.baseUrl}/api/v1/ozon/push-images`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': this.apiKey,
+        },
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`API Error ${response.status}: ${errorText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Ozon push images API error:', error);
+      throw error;
+    }
+  }
 }
 
 // Singleton export

@@ -854,19 +854,6 @@ export class AiPlaygroundDb {
   }
 
   /**
-   * Delete prompt group (soft delete)
-   */
-  async deletePromptGroup(groupId: string) {
-    const [group] = await db()
-      .update(aiPromptGroup)
-      .set({ isActive: false, updatedAt: new Date() })
-      .where(eq(aiPromptGroup.id, groupId))
-      .returning();
-
-    return group;
-  }
-
-  /**
    * Update prompt group with templates (replaces all templates)
    */
   async updatePromptGroupWithTemplates(
@@ -924,9 +911,9 @@ export class AiPlaygroundDb {
   // ========================================
 
   /**
-   * Update template in a group
+   * Update template in a group (V2)
    */
-  async updatePromptTemplate(
+  async updatePromptTemplateV2(
     templateId: string,
     updates: {
       templateContent?: string;

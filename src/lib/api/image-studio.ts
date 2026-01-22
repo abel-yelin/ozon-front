@@ -446,6 +446,9 @@ export async function getSettings(): Promise<StudioSettings> {
 /**
  * Update studio settings
  */
+/**
+ * Update studio settings
+ */
 export async function updateSettings(settings: Partial<StudioSettings>): Promise<StudioSettings> {
   const response = await fetch(`${API_BASE}/settings`, {
     method: 'POST',

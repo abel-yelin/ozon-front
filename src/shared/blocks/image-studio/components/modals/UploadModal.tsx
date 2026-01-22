@@ -5,11 +5,24 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useImageStudio } from '@/app/hooks/use-image-studio';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Button } from '@/shared/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/select';
 import { Upload, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+
+interface OzonCredential {
+  id: string;
+  name: string;
+  createdAt: string;
+}
 
 interface PushResult {
   success: boolean;
@@ -32,31 +45,50 @@ interface PushResult {
 }
 
 export function UploadModal() {
-  const { modal, closeModal, currentSKU, currentImagePairs, settings } = useImageStudio();
+  const { modal, closeModal, currentSKU, currentImagePairs } = useImageStudio();
   const [pushing, setPushing] = useState(false);
   const [result, setResult] = useState<PushResult | null>(null);
+  const [credentials, setCredentials] = useState<OzonCredential[]>([]);
+  const [selectedCredentialId, setSelectedCredentialId] = useState<string>('');
 
   const isOpen = modal.type === 'upload';
 
+  // Load credentials when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      fetchCredentials();
+    }
+  }, [isOpen]);
+
+  const fetchCredentials = async () => {
+    try {
+      const response = await fetch('/api/ozon/credentials');
+      const data = await response.json();
+      if (data.code === 0 && data.data) {
+        setCredentials(data.data);
+        // Auto-select first credential if available
+        if (data.data.length > 0 && !selectedCredentialId) {
+          setSelectedCredentialId(data.data[0].id);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load credentials:', error);
+    }
+  };
+
   const handlePush = async () => {
+    if (!selectedCredentialId) {
+      setResult({
+        success: false,
+        error: '请先选择 Ozon API 凭证'
+      });
+      return;
+    }
+
     setPushing(true);
     setResult(null);
 
     try {
-      // Get credential from settings
-      const credential = {
-        client_id: settings.ozonClientId || '',
-        api_key: settings.ozonApiKey || ''
-      };
-
-      if (!credential.client_id || !credential.api_key) {
-        setResult({
-          success: false,
-          error: 'Ozon API 凭证未配置，请先在设置中配置 Client ID 和 API Key'
-        });
-        return;
-      }
-
       // Get product_id from currentSKU
       const product_id = currentSKU?.productId;
       if (!product_id) {
@@ -80,12 +112,12 @@ export function UploadModal() {
         return;
       }
 
-      // Call backend API
-      const response = await fetch('/api/v1/ozon/push-images', {
+      // Call backend API with credential ID
+      const response = await fetch('/api/ozon/push-images', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          credential,
+          credentialId: selectedCredentialId,
           product_id,
           images
         })
@@ -107,6 +139,7 @@ export function UploadModal() {
   const handleClose = () => {
     closeModal();
     setResult(null);
+    setSelectedCredentialId('');
   };
 
   return (
@@ -117,6 +150,35 @@ export function UploadModal() {
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Credential Selection */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">选择 Ozon API 凭证</label>
+            {credentials.length === 0 ? (
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-sm text-amber-800">
+                  未找到凭证，请先在{' '}
+                  <a href="/dashboard/credentials" className="underline font-medium">
+                    凭证管理
+                  </a>
+                  {' '}页面添加
+                </p>
+              </div>
+            ) : (
+              <Select value={selectedCredentialId} onValueChange={setSelectedCredentialId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="选择凭证" />
+                </SelectTrigger>
+                <SelectContent>
+                  {credentials.map((cred) => (
+                    <SelectItem key={cred.id} value={cred.id}>
+                      {cred.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+
           {/* Current SKU info */}
           {currentSKU && (
             <div className="text-sm p-3 bg-neutral-50 rounded-lg">
@@ -201,7 +263,7 @@ export function UploadModal() {
             <Button
               className="flex-1"
               onClick={handlePush}
-              disabled={pushing || currentImagePairs.filter(p => p.outputUrl).length === 0}
+              disabled={pushing || !selectedCredentialId || currentImagePairs.filter(p => p.outputUrl).length === 0}
             >
               {pushing ? (
                 <>

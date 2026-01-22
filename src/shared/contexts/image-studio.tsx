@@ -23,7 +23,7 @@ import * as api from '@/lib/api/image-studio';
 // Context types
 // ========================================
 
-interface ImageStudioContextValue {
+export interface ImageStudioContextValue {
   // State
   skus: SKU[];
   selectedSKUIds: Set<string>;
@@ -94,6 +94,7 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const currentJobIdRef = useRef<string | null>(null);
   const singleJobPollRef = useRef<NodeJS.Timeout | null>(null);
+  const currentSKUImagePollRef = useRef<NodeJS.Timeout | null>(null); // NEW: Poll current SKU's images during batch
 
   // ========================================
   // Effects
@@ -122,10 +123,15 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
     if (batchProgress?.status === 'processing' && currentJobIdRef.current) {
       pollIntervalRef.current = setInterval(async () => {
         try {
-          const progress = await api.getBatchProgress(currentJobIdRef.current);
+          const progress = await api.getBatchProgress(currentJobIdRef.current!);
           setBatchProgress(progress);
           if (progress.status === 'completed' || progress.status === 'error') {
             clearInterval(pollIntervalRef.current!);
+            // Stop current SKU image polling when batch completes
+            if (currentSKUImagePollRef.current) {
+              clearInterval(currentSKUImagePollRef.current);
+              currentSKUImagePollRef.current = null;
+            }
             await loadSKUs();
             await loadBatchStats();
           }
@@ -141,6 +147,34 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
       }
     };
   }, [batchProgress?.status]);
+
+  // NEW: Poll current SKU's images during batch processing
+  useEffect(() => {
+    // Start polling when batch is processing AND a SKU is selected
+    if (batchProgress?.status === 'processing' && currentSKU) {
+      currentSKUImagePollRef.current = setInterval(async () => {
+        try {
+          const pairs = await api.fetchImagePairs(currentSKU.id);
+          setCurrentImagePairs(pairs);
+          console.log('[ImageStudio] Refreshed current SKU images during batch', {
+            skuId: currentSKU.id,
+            pairsCount: pairs.length,
+            completedCount: pairs.filter(p => p.outputUrl).length,
+          });
+        } catch (err) {
+          console.error('[ImageStudio] Failed to poll current SKU images:', err);
+        }
+      }, 2000); // Poll every 2 seconds
+    }
+
+    // Cleanup: stop polling when batch stops or SKU changes
+    return () => {
+      if (currentSKUImagePollRef.current) {
+        clearInterval(currentSKUImagePollRef.current);
+        currentSKUImagePollRef.current = null;
+      }
+    };
+  }, [batchProgress?.status, currentSKU?.id]); // Re-run when batch status or current SKU changes
 
   useEffect(() => {
     return () => {
@@ -311,6 +345,11 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
     if (!currentJobIdRef.current) return;
     await api.pauseBatch(currentJobIdRef.current);
     setBatchProgress(prev => prev ? { ...prev, status: 'paused' } : null);
+    // Pause current SKU image polling too
+    if (currentSKUImagePollRef.current) {
+      clearInterval(currentSKUImagePollRef.current);
+      currentSKUImagePollRef.current = null;
+    }
   }, []);
 
   const resumeBatch = useCallback(async () => {
@@ -324,6 +363,11 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
     await api.cancelBatch(currentJobIdRef.current);
     currentJobIdRef.current = null;
     setBatchProgress(null);
+    // Stop current SKU image polling
+    if (currentSKUImagePollRef.current) {
+      clearInterval(currentSKUImagePollRef.current);
+      currentSKUImagePollRef.current = null;
+    }
   }, []);
 
   const downloadImage = useCallback(async (pairId: string, format: 'png' | 'jpg' | 'webp') => {

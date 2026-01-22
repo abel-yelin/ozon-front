@@ -113,7 +113,7 @@ export async function POST(req: Request) {
     // NEW: Validate prompt configuration before processing
     const validation = await validatePromptForJob(user.id);
     if (!validation.valid) {
-      return respErr(validation.error);
+      return respErr(validation.error || 'Prompt validation failed');
     }
 
     console.info('[ImageStudio] Prompt validation passed', {
@@ -206,7 +206,7 @@ export async function POST(req: Request) {
       console.info('[ImageStudio] Batch mode', { skuList, skuCount: skuList.length });
 
       const workflowStates = await aiPlaygroundDb.getUserWorkflowStates(user.id, { limit: 500 });
-      const stateByName = new Map(workflowStates.map((state) => [state.name, state]));
+      const stateByName = new Map<string, any>(workflowStates.map((state: any) => [state.name, state]));
       workflowStateIds = {};
 
       const skuImagesMap: Record<string, any[]> = {};

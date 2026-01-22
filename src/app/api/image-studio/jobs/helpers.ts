@@ -63,7 +63,7 @@ async function applyJobResult(userId: string, job: any, result: any) {
       workflowStateId,
       limit: 10000,
     });
-    const map = new Map(existingPairs.map((p) => [p.sourceUrl, p]));
+    const map = new Map<string, any>(existingPairs.map((p: any) => [p.sourceUrl, p]));
     pairsCache.set(workflowStateId, map);
     return map;
   };

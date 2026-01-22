@@ -5,7 +5,7 @@ try {
   console.log('aiPromptTemplateV2 exists?', !!config.aiPromptTemplateV2);
   console.log('aiUserPromptPreference exists?', !!config.aiUserPromptPreference);
 } catch (e) {
-  console.error('Failed to load schema:', e.message);
+  console.error('Failed to load schema:', e instanceof Error ? e.message : String(e));
 }
 
 console.log('\n=== Test 2: Check Drizzle Config ===');
@@ -14,7 +14,7 @@ try {
   const configPath = './src/core/db/config.ts';
   console.log('Config file exists?', fs.existsSync(configPath));
 } catch (e) {
-  console.error('Error:', e.message);
+  console.error('Error:', e instanceof Error ? e.message : String(e));
 }
 
 console.log('\n=== Test 3: Check Migration Files ===');
@@ -28,7 +28,7 @@ try {
     console.log('No drizzle directory found');
   }
 } catch (e) {
-  console.error('Error:', e.message);
+  console.error('Error:', e instanceof Error ? e.message : String(e));
 }
 
 console.log('\n=== DONE ===');

@@ -23,6 +23,7 @@ export function MainContent() {
   const {
     currentSKU,
     currentImagePairs,
+    batchProgress,
     startBatch,
     openModal,
   } = useImageStudio();
@@ -32,6 +33,7 @@ export function MainContent() {
   }
 
   const hasImages = currentImagePairs.length > 0;
+  const isBatchProcessing = batchProgress?.status === 'processing';
 
   return (
     <div className="flex flex-1 flex-col bg-white">
@@ -45,6 +47,13 @@ export function MainContent() {
             <Badge variant="outline" className="text-gray-600">
               共 {currentImagePairs.length} 张
             </Badge>
+            {/* Auto-refresh indicator during batch processing */}
+            {isBatchProcessing && (
+              <Badge variant="secondary" className="animate-pulse bg-blue-100 text-blue-700">
+                <RefreshCw className="mr-1 h-3 w-3 animate-spin" />
+                自动更新中
+              </Badge>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
@@ -165,12 +174,19 @@ export function MainContent() {
                           />
                         ) : (
                           <div className="flex h-full items-center justify-center text-gray-400">
-                            未生成
+                            {isBatchProcessing ? (
+                              <div className="flex flex-col items-center gap-2">
+                                <RefreshCw className="h-8 w-8 animate-spin text-blue-500" />
+                                <span className="text-sm">生成中...</span>
+                              </div>
+                            ) : (
+                              '未生成'
+                            )}
                           </div>
                         )}
                       </div>
                       <p className="text-sm text-gray-600">
-                        {pair.outputName || '等待生成...'}
+                        {pair.outputName || (isBatchProcessing ? '等待生成...' : '等待生成')}
                       </p>
                     </div>
                   </div>
@@ -186,7 +202,7 @@ export function MainContent() {
                       variant="default"
                       size="sm"
                       className={`gap-2 text-white ${pair.outputUrl ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700'}`}
-                      disabled={pair.status === 'processing'}
+                      disabled={pair.status === 'processing' || isBatchProcessing}
                       onClick={() => openModal('opt-prompt', { pairId: pair.id })}
                     >
                       <RefreshCw className="h-4 w-4" />
@@ -208,14 +224,22 @@ export function MainContent() {
             <div className="flex items-center gap-2">
               {/* Status Icon - Blue Square */}
               <div className="h-4 w-4 rounded-sm bg-blue-500"></div>
-              <span className="text-sm text-gray-700">等待任务开始</span>
+              <span className="text-sm text-gray-700">
+                {isBatchProcessing ? '批量处理中...' : '等待任务开始'}
+              </span>
+              {isBatchProcessing && (
+                <RefreshCw className="h-4 w-4 animate-spin text-blue-500" />
+              )}
             </div>
             <button className="text-xs italic text-gray-500 hover:text-gray-700">
               进度详情
             </button>
             {/* Progress Bar */}
             <div className="h-2 w-48 overflow-hidden rounded-full bg-gray-200">
-              <div className="h-full w-0 bg-blue-500"></div>
+              <div
+                className="h-full bg-blue-500 transition-all duration-300"
+                style={{ width: `${batchProgress?.percentage || 0}%` }}
+              />
             </div>
           </div>
 
@@ -223,19 +247,23 @@ export function MainContent() {
           <div className="flex items-center gap-8">
             <div className="flex items-baseline gap-2">
               <span className="text-sm text-gray-600">总任务数</span>
-              <span className="text-base font-semibold text-gray-900">0</span>
+              <span className="text-base font-semibold text-gray-900">{batchProgress?.total || 0}</span>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-sm text-gray-600">进行中</span>
-              <span className="text-base font-semibold text-gray-900">0</span>
+              <span className="text-base font-semibold text-gray-900">
+                {batchProgress?.total && batchProgress?.completed
+                  ? batchProgress.total - batchProgress.completed - batchProgress.failed
+                  : 0}
+              </span>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-sm text-gray-600">已完成</span>
-              <span className="text-base font-semibold text-gray-900">0</span>
+              <span className="text-base font-semibold text-gray-900">{batchProgress?.completed || 0}</span>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-sm text-gray-600">异常任务</span>
-              <span className="text-base font-semibold text-gray-900">0</span>
+              <span className="text-base font-semibold text-gray-900">{batchProgress?.failed || 0}</span>
             </div>
           </div>
 
@@ -245,6 +273,7 @@ export function MainContent() {
               variant="default"
               size="sm"
               className="bg-orange-500 hover:bg-orange-600"
+              disabled={!isBatchProcessing}
             >
               <Square className="mr-2 h-5 w-5" />
               终止
@@ -253,6 +282,7 @@ export function MainContent() {
               variant="default"
               size="sm"
               className="bg-teal-600 hover:bg-teal-700"
+              disabled={isBatchProcessing}
               onClick={() => startBatch()}
             >
               <Play className="mr-2 h-5 w-5" />

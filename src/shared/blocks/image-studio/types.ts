@@ -80,10 +80,6 @@ export interface StudioSettings {
   opt_recolor_en?: string;
   opt_add_markers_en?: string;
   pro_plan_instruction_cn?: string;
-
-  // Ozon API credentials
-  ozonClientId?: string;
-  ozonApiKey?: string;
 }
 
 // NEW: Prompt group type
