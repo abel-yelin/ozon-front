@@ -427,6 +427,11 @@ export async function getSettings(): Promise<StudioSettings> {
   const response = await fetch(`${API_BASE}/settings`);
   const data = await handleResponse<any>(response);
   if (data.code !== 0) {
+    console.error('[ImageStudio Client] Failed to load settings:', {
+      code: data.code,
+      message: data.message,
+      data: data.data,
+    });
     throw new Error(data.message || 'Failed to load settings');
   }
   const raw = data.data || {};

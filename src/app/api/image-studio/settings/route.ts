@@ -110,16 +110,70 @@ export async function GET() {
   try {
     const user = await getUserInfo();
     if (!user) {
-      return respErr('Unauthorized, please sign in');
+      console.error('[ImageStudio Settings] No user found - not authenticated');
+      // Return default settings instead of error
+      return respData({
+        api_base: envConfigs.python_api_url || '',
+        api_key: '',
+        model: '',
+        target_width: 1500,
+        target_height: 2000,
+        default_temperature: 0.5,
+        resume_mode: false,
+        continuous_view_enabled: false,
+        show_final_prompt_text: false,
+        prompt_groups: [],
+        active_prompt_group_id: '',
+        active_prompt_group_name: '',
+        use_english_prompts: false,
+        prompt_common_cn: '',
+        prompt_main_cn: '',
+        prompt_secondary_cn: '',
+        style_main_prompt_cn: '',
+        style_extract_instruction_cn: '',
+        title_details_prompt_cn: '',
+        opt_remove_watermark_cn: '',
+        opt_remove_logo_cn: '',
+        opt_text_edit_cn: '',
+        opt_restructure_cn: '',
+        opt_recolor_cn: '',
+        opt_add_markers_cn: '',
+        prompt_common_en: '',
+        prompt_main_en: '',
+        prompt_secondary_en: '',
+        style_main_prompt_en: '',
+        style_extract_instruction_en: '',
+        opt_remove_watermark_en: '',
+        opt_remove_logo_en: '',
+        opt_text_edit_en: '',
+        opt_restructure_en: '',
+        opt_recolor_en: '',
+        opt_add_markers_en: '',
+        title_details_prompt_en: '',
+        pro_plan_instruction_cn: '',
+      });
     }
+
+    console.log('[ImageStudio Settings] Fetching settings for user:', user.id);
 
     const prefs = await aiPlaygroundDb.getUserPromptPreferences(user.id);
     const { groups, group } = await resolveActiveGroup(user.id, prefs);
 
+    console.log('[ImageStudio Settings] Settings loaded successfully', {
+      userId: user.id,
+      prefsFound: !!prefs,
+      groupsCount: groups?.length,
+      activeGroup: group?.id,
+    });
+
     return respData(buildSettingsResponse({ prefs, group, groups }));
   } catch (error) {
-    console.error('Get ImageStudio settings error:', error);
-    return respErr('Failed to load settings');
+    console.error('[ImageStudio Settings] Error loading settings:', {
+      error,
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    return respErr(error instanceof Error ? error.message : 'Failed to load settings');
   }
 }
 

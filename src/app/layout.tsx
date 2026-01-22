@@ -2,9 +2,8 @@ import '@/config/style/global.css';
 
 import { JetBrains_Mono, Merriweather, Noto_Sans_Mono } from 'next/font/google';
 import { getLocale, setRequestLocale } from 'next-intl/server';
-import NextTopLoader from 'nextjs-toploader';
-
 import { envConfigs } from '@/config';
+import { TopLoader } from '@/shared/blocks/common/top-loader';
 import { locales } from '@/config/locale';
 import { UtmCapture } from '@/shared/blocks/common/utm-capture';
 import { getAllConfigs } from '@/shared/models/config';
@@ -146,17 +145,7 @@ export default async function RootLayout({
         {/* inject customer service head scripts */}
         {customerServiceHeadScripts}
       </head>
-      <body suppressHydrationWarning className="overflow-x-hidden">
-        <NextTopLoader
-          color="#6466F1"
-          initialPosition={0.08}
-          crawlSpeed={200}
-          height={3}
-          crawl={true}
-          showSpinner={true}
-          easing="ease"
-          speed={200}
-        />
+      <body suppressHydrationWarning className="overflow-x-hidden">        <TopLoader />
 
         <UtmCapture />
 
