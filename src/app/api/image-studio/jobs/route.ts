@@ -203,6 +203,8 @@ export async function POST(req: Request) {
         return respErr('skus required');
       }
 
+      console.info('[ImageStudio] Batch mode', { skuList, skuCount: skuList.length });
+
       const workflowStates = await aiPlaygroundDb.getUserWorkflowStates(user.id, { limit: 500 });
       const stateByName = new Map(workflowStates.map((state) => [state.name, state]));
       workflowStateIds = {};
@@ -210,6 +212,8 @@ export async function POST(req: Request) {
       const skuImagesMap: Record<string, any[]> = {};
       for (const skuName of skuList) {
         const sources = buildSourceImages(galleryBySku.get(skuName) || []);
+        console.info(`[ImageStudio] SKU ${skuName}: ${sources.length} images found`);
+
         if (sources.length) {
           skuImagesMap[skuName] = sources;
           sourceImageUrls.push(...sources.map((item) => item.url));
@@ -227,6 +231,16 @@ export async function POST(req: Request) {
         }
         workflowStateIds[skuName] = state.id;
       }
+
+      if (sourceImageUrls.length === 0) {
+        console.error('[ImageStudio] No source images found for batch SKUs', { skuList });
+        return respErr('所选SKU没有找到可用的图片，请先在Gallery中上传图片');
+      }
+
+      console.info('[ImageStudio] Batch images collected', {
+        skuCount: skuList.length,
+        totalImages: sourceImageUrls.length
+      });
 
       jobOptions.sku_images_map = skuImagesMap;
       jobOptions.skus = skuList;
@@ -297,15 +311,41 @@ export async function POST(req: Request) {
       sourceImageUrls,
     });
 
+    console.info('[ImageStudio] Job created in DB', {
+      jobId: job.id,
+      mode,
+      sku,
+      sourceImageCount: sourceImageUrls.length,
+      hasPromptGroup: !!jobConfig.prompt_group_id,
+    });
+
     let response: any;
     try {
-      response = await submitImageStudioJob({
+      const payload = {
         job_id: job.id,
         user_id: user.id,
         mode,
         sku,
         stem: resolvedStem || null,
         options: jobOptions,
+      };
+
+      // Log payload size for debugging
+      const payloadSize = JSON.stringify(payload).length;
+      console.info('[ImageStudio] Submitting to FastAPI', {
+        jobId: job.id,
+        mode,
+        payloadSizeBytes: payloadSize,
+        hasSkuImagesMap: !!jobOptions.sku_images_map,
+        skuCount: jobOptions.skus?.length || 0,
+      });
+
+      response = await submitImageStudioJob(payload);
+
+      console.info('[ImageStudio] FastAPI response received', {
+        jobId: job.id,
+        hasResponse: !!response,
+        success: response?.success,
       });
     } catch (error) {
       console.error('Submit ImageStudio job error:', error);
@@ -323,19 +363,32 @@ export async function POST(req: Request) {
     }
 
     if (!response || response.success === false) {
-      console.error('[ImageStudio] FastAPI submit failed', response?.error || 'unknown');
+      const errorMsg = response?.error || 'Unknown error';
+      console.error('[ImageStudio] FastAPI submit failed', {
+        response,
+        errorMsg,
+        fullResponse: JSON.stringify(response, null, 2),
+      });
       await aiPlaygroundDb.updateJob(job.id, user.id, {
         status: 'failed',
-        errorMessage: response?.error || 'Job failed',
+        errorMessage: errorMsg,
         completedAt: new Date(),
       });
       await aiPlaygroundDb.createJobLog({
         jobId: job.id,
         level: 'error',
-        message: response?.error || 'Job failed',
+        message: errorMsg,
+        metadata: { response },
       });
-      return respErr(response?.error || 'Job failed');
+      return respErr(errorMsg);
     }
+
+    console.info('[ImageStudio] Job submitted successfully', {
+      jobId: job.id,
+      mode,
+      sku,
+      hasResponseData: !!response?.data,
+    });
 
     console.info('[ImageStudio] Job queued', { jobId: job.id, mode, sku });
     await aiPlaygroundDb.createJobLog({

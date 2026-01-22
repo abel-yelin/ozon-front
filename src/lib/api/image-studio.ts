@@ -9,9 +9,9 @@ import type {
   StudioSettings,
   BatchProgress,
   BatchStats,
+  BatchStatus,
   SKUFilters,
   RegenOptions,
-  Job,
 } from '@/shared/blocks/image-studio/types';
 
 const API_BASE = '/api/image-studio';
@@ -227,17 +227,43 @@ export async function downloadImage(skuId: string, pairId: string, format: 'png'
 
 /**
  * Batch download all approved images
+ * Returns JSON with image URLs, caller must handle ZIP creation
  */
-export async function downloadBatch(skus: string[], format: 'png' | 'jpg' | 'webp'): Promise<Blob> {
+export async function downloadBatch(
+  skus: string[],
+  format: 'png' | 'jpg' | 'webp'
+): Promise<{
+  items: Array<{ sku: string; filename: string; url: string }>;
+  total: number;
+  format: string;
+  message: string;
+}> {
   const response = await fetch(`${API_BASE}/download/batch`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ skus, format }),
   });
+
   if (!response.ok) {
-    throw new Error(`Failed to download batch: ${response.statusText}`);
+    const error = await response.text();
+    throw new Error(error || `Failed to download batch: ${response.statusText}`);
   }
-  return response.blob();
+
+  const data = await handleResponse<{
+    code: number;
+    data?: {
+      items: Array<{ sku: string; filename: string; url: string }>;
+      total: number;
+      format: string;
+      message: string;
+    };
+  }>(response);
+
+  if (data.code !== 0 || !data.data) {
+    throw new Error(data.data?.message || 'Failed to get download list');
+  }
+
+  return data.data;
 }
 
 // ========================================
@@ -247,32 +273,102 @@ export async function downloadBatch(skus: string[], format: 'png' | 'jpg' | 'web
 /**
  * Start batch processing for selected SKUs
  */
-export async function startBatch(skuIds: string[], settings: StudioSettings): Promise<Job> {
+export async function startBatch(skuIds: string[], settings: StudioSettings): Promise<{ id: string }> {
+  console.log('[ImageStudio API] Starting batch', { skuIds, settings });
+
   const response = await fetch(`${API_BASE}/jobs`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ mode: 'batch_series_generate', sku: '__batch__', options: { skus: skuIds, settings } }),
   });
-  return handleResponse<Job>(response);
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('[ImageStudio API] Batch start failed', { status: response.status, error: errorText });
+    throw new Error(errorText || `HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  console.log('[ImageStudio API] Batch start response', data);
+
+  if (data.code !== 0) {
+    throw new Error(data.message || 'Failed to start batch');
+  }
+
+  const jobId = data.data?.job_id;
+  if (!jobId) {
+    throw new Error('No job ID returned from server');
+  }
+
+  return { id: jobId };
 }
 
 /**
  * Get batch progress
  */
 export async function getBatchProgress(jobId: string): Promise<BatchProgress> {
-  const response = await fetch(`${API_BASE}/jobs/${jobId}`);
+  const response = await fetch(`${API_BASE}/jobs`);
   const data = await handleResponse<any>(response);
   if (data.code !== 0) {
     throw new Error(data.message || 'Failed to get progress');
   }
-  const status = data.data?.status || 'pending';
+
+  // Find the current batch job
+  const jobs = data.data?.jobs || [];
+  const batchJob = jobs.find((j: any) => j.id === jobId);
+
+  if (!batchJob) {
+    return {
+      total: 0,
+      completed: 0,
+      failed: 0,
+      percentage: 0,
+      status: 'idle' as BatchStatus,
+    };
+  }
+
+  const cfg = batchJob.config || {};
+  const skuList = cfg.options?.skus || [];
+  const total = skuList.length;
+
+  // For batch jobs, we estimate progress based on job status
+  // When job is processing, we check if there are results
+  const status = batchJob.status || 'pending';
+
+  // If completed, all SKUs are done
+  if (status === 'completed' || status === 'success') {
+    return {
+      total,
+      completed: total,
+      failed: 0,
+      percentage: 100,
+      status: 'completed',
+    };
+  }
+
+  // If failed, show as error
+  if (status === 'failed') {
+    return {
+      total,
+      completed: 0,
+      failed: total,
+      percentage: 0,
+      status: 'error',
+    };
+  }
+
+  // For pending/processing, estimate progress
+  // When processing, we can check how many result URLs we have
+  const resultUrls = batchJob.result_image_urls || [];
+  const completed = resultUrls.length;
+
   return {
-    total: 0,
-    completed: 0,
+    total,
+    completed: Math.min(completed, total),
     failed: 0,
-    percentage: status === 'completed' ? 100 : 0,
-    status,
-  } as BatchProgress;
+    percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
+    status: status as BatchStatus,
+  };
 }
 
 /**

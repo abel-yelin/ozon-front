@@ -277,11 +277,20 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
 
   const startBatch = useCallback(async (skuIds?: string[]) => {
     const ids = skuIds || Array.from(selectedSKUIds);
-    if (ids.length === 0) return;
+    console.log('[ImageStudio] startBatch called', { skuIds, selectedSKUIds: Array.from(selectedSKUIds), ids });
+
+    if (ids.length === 0) {
+      console.warn('[ImageStudio] No SKUs selected for batch processing');
+      setError('请先选择要处理的SKU');
+      return;
+    }
 
     setIsLoading(true);
+    setError(null);
     try {
+      console.log('[ImageStudio] Starting batch job', { ids, settings });
       const job = await api.startBatch(ids, settings);
+      console.log('[ImageStudio] Batch job started', { jobId: job.id, job });
       currentJobIdRef.current = job.id;
       setBatchProgress({
         total: ids.length,
@@ -291,6 +300,7 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
         status: 'processing',
       });
     } catch (err) {
+      console.error('[ImageStudio] Start batch error', err);
       setError(err instanceof Error ? err.message : 'Failed to start batch');
     } finally {
       setIsLoading(false);
@@ -336,15 +346,44 @@ export function ImageStudioProvider({ children }: ImageStudioProviderProps) {
     if (ids.length === 0) return;
 
     try {
-      const blob = await api.downloadBatch(ids, format);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `batch-${Date.now()}.zip`;
-      a.click();
-      URL.revokeObjectURL(url);
+      setIsLoading(true);
+      const result = await api.downloadBatch(ids, format);
+
+      // Download each image individually
+      // Note: For true ZIP functionality, you'd need to add a library like jszip
+      // For now, we'll download files one by one with a small delay between downloads
+      let downloadedCount = 0;
+      for (const item of result.items) {
+        try {
+          const response = await fetch(item.url);
+          if (!response.ok) {
+            console.warn(`Failed to download ${item.filename}`);
+            continue;
+          }
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${item.sku}_${item.filename}`;
+          a.click();
+          URL.revokeObjectURL(url);
+          downloadedCount++;
+
+          // Small delay between downloads to avoid browser blocking
+          if (downloadedCount < result.items.length) {
+            await new Promise(resolve => setTimeout(resolve, 200));
+          }
+        } catch (err) {
+          console.error(`Failed to download ${item.filename}:`, err);
+        }
+      }
+
+      setError(`Downloaded ${downloadedCount} of ${result.total} images`);
+      setTimeout(() => setError(null), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to download batch');
+    } finally {
+      setIsLoading(false);
     }
   }, [selectedSKUIds]);
 

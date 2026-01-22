@@ -38,8 +38,6 @@ export function RightSidebar() {
     batchProgress,
     batchStats,
     startBatch,
-    pauseBatch,
-    resumeBatch,
     cancelBatch,
     downloadBatch,
     openModal,
@@ -97,20 +95,15 @@ export function RightSidebar() {
             </div>
 
             <div className="flex gap-2">
-              {batchProgress.status === 'processing' ? (
-                <Button variant="outline" size="sm" className="flex-1" onClick={pauseBatch}>
-                  <Pause className="mr-1 h-3 w-3" />
-                  Pause
-                </Button>
-              ) : batchProgress.status === 'paused' ? (
-                <Button variant="outline" size="sm" className="flex-1" onClick={resumeBatch}>
-                  <Play className="mr-1 h-3 w-3" />
-                  Resume
-                </Button>
-              ) : null}
-              <Button variant="outline" size="sm" className="flex-1" onClick={cancelBatch}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={cancelBatch}
+                title="Stop and cancel the batch job"
+              >
                 <Square className="mr-1 h-3 w-3" />
-                Cancel
+                Stop
               </Button>
             </div>
           </div>

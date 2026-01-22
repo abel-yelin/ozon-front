@@ -14,18 +14,54 @@ function buildHeaders() {
 }
 
 export async function submitImageStudioJob(payload: Record<string, any>) {
-  const response = await fetch(`${PYTHON_API_URL}/api/v1/image-studio/jobs`, {
-    method: 'POST',
-    headers: buildHeaders(),
-    body: JSON.stringify(payload),
+  console.log('[ImageStudio Server] Submitting job to FastAPI', {
+    jobId: payload.job_id,
+    mode: payload.mode,
+    skuCount: payload.options?.skus?.length || 0,
   });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`ImageStudio API Error ${response.status}: ${errorText}`);
-  }
+  try {
+    // Add timeout controller (60 seconds)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
 
-  return response.json();
+    const response = await fetch(`${PYTHON_API_URL}/api/v1/image-studio/jobs`, {
+      method: 'POST',
+      headers: buildHeaders(),
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[ImageStudio Server] FastAPI response error', {
+        status: response.status,
+        error: errorText,
+      });
+      throw new Error(`ImageStudio API Error ${response.status}: ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log('[ImageStudio Server] FastAPI response success', {
+      jobId: payload.job_id,
+      hasData: !!result.data,
+    });
+
+    return result;
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      console.error('[ImageStudio Server] Request timeout', { jobId: payload.job_id });
+      throw new Error('请求超时：批量任务处理时间过长，请减少SKU数量或联系管理员');
+    }
+
+    console.error('[ImageStudio Server] Request failed', {
+      jobId: payload.job_id,
+      error: error?.message || error,
+    });
+    throw error;
+  }
 }
 
 export async function getImageStudioJobStatus(jobId: string) {
