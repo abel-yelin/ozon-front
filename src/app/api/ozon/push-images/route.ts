@@ -53,8 +53,10 @@ export async function POST(req: Request) {
         'X-API-Key': backendApiKey,
       },
       body: JSON.stringify({
-        client_id: credential.client_id,
-        api_key: credential.api_key,
+        credential: {
+          client_id: credential.client_id,
+          api_key: credential.api_key,
+        },
         product_id,
         images,
       }),

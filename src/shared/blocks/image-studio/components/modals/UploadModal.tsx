@@ -133,7 +133,28 @@ export function UploadModal() {
         })
       });
 
-      const data: PushResult = await response.json();
+      if (!response.ok) {
+        const errorData = await response.json();
+        setResult({
+          success: false,
+          error: errorData.message || '推送请求失败'
+        });
+        return;
+      }
+
+      const resp = await response.json();
+
+      // Handle wrapped response structure: {code, message, data}
+      if (resp.code !== 0) {
+        setResult({
+          success: false,
+          error: resp.message || '推送失败'
+        });
+        return;
+      }
+
+      // Extract actual PushResult from wrapped data
+      const data: PushResult = resp.data;
       setResult(data);
 
     } catch (error) {
