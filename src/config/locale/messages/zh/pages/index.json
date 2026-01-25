@@ -15,13 +15,13 @@
     "sections": {
       "hero": {
         "id": "hero",
-        "title": "一小时快速上线你的 AI 创业项目",
-        "highlight_text": "一小时",
-        "description": "ShipAny 是用于构建 AI SaaS 创业项目的 NextJS 项目模板。<br/>集成常用功能，快速上线你的产品。",
+        "title": "数小时高效运营你的跨境电商业务",
+        "highlight_text": "数小时",
+        "description": "Shop Studio 是强大的多平台电商管理解决方案。<br/>从单一控制台集中管理亚马逊、Ozon、Shopee 店铺。",
         "announcement": {
           "badge": "全新",
-          "title": "🎉 ShipAny 模板二已发布",
-          "url": "/pricing"
+          "title": "🎉 Shop Studio 平台发布",
+          "url": "/dashboard"
         },
         "tip": "🎁 前 1000 名用户特价优惠",
         "buttons": [
@@ -41,7 +41,7 @@
           }
         ],
         "show_avatars": true,
-        "avatars_tip": "999+ 用户在使用 ShipAny 上站",
+        "avatars_tip": "999+ 商家正在使用 Shop Studio",
         "show_award": false,
         "image": {
           "src": "/imgs/features/admin.png",
@@ -61,7 +61,7 @@
         }
       },
       "logos": {
-        "title": "ShipAny 使用以下技术栈构建",
+        "title": "Shop Studio 使用以下技术栈构建",
         "items": [
           {
             "title": "Next.js",
@@ -103,17 +103,17 @@
       "introduce": {
         "block": "features-list",
         "id": "introduce",
-        "title": "ShipAny 是什么？",
+        "title": "Shop Studio 是什么？",
         "label": "产品简介",
-        "description": "ShipAny 是专为 AI SaaS 创业项目打造的 NextJS 脚手架，包括丰富模板、组件及文档。",
+        "description": "Shop Studio 是一站式多平台电商管理平台，为跨境卖家打造。连接亚马逊、Ozon、Shopee 等平台，统一管理。",
         "image": {
           "src": "/imgs/features/landing-page.png",
           "alt": "introduce"
         },
         "items": [
           {
-            "title": "开箱即用的模板",
-            "description": "从数十款生产级 AI SaaS 模板中选择，快速开启你的项目。",
+            "title": "多平台集成",
+            "description": "连接所有电商平台——亚马逊、Ozon、Shopee——从单一控制台统一管理。",
             "icon": "RiNextjsFill",
             "image": {
               "src": "/imgs/features/1.png",
@@ -121,8 +121,8 @@
             }
           },
           {
-            "title": "基础设施搭建",
-            "description": "内置最佳实践，即刻拥有可扩展的基础设施。",
+            "title": "集中订单管理",
+            "description": "在一个统一界面中处理和履行来自所有平台的订单。",
             "icon": "RiDatabase2Line",
             "image": {
               "src": "/imgs/features/2.png",
@@ -130,8 +130,8 @@
             }
           },
           {
-            "title": "极速部署",
-            "description": "AI SaaS 产品快速上线，助力小时级交付。",
+            "title": "实时库存同步",
+            "description": "自动同步所有平台的库存，防止超卖。",
             "icon": "RiCloudyFill",
             "image": {
               "src": "/imgs/features/3.png",
@@ -139,8 +139,8 @@
             }
           },
           {
-            "title": "AI 集成",
-            "description": "通过内置的 AI SDK，轻松为你的项目集成 AI 能力。",
+            "title": "强大数据分析",
+            "description": "获取所有销售渠道的全面洞察和报告。",
             "icon": "RiRobot2Line",
             "image": {
               "src": "/imgs/features/4.png",
@@ -153,13 +153,13 @@
       "benefits": {
         "block": "features-accordion",
         "id": "benefits",
-        "title": "为何选择 ShipAny",
+        "title": "为何选择 Shop Studio",
         "label": "产品优势",
-        "description": "你获得一切 AI 创业所需——从开箱即用的模板到专业技术支持。",
+        "description": "用强大的工具简化多平台电商运营，助力业务增长。",
         "items": [
           {
-            "title": "全栈解决方案",
-            "description": "基于 Next.js，集成认证、支付、AI，一站式开箱即用。",
+            "title": "统一管理",
+            "description": "在一个集中平台管理来自亚马逊、Ozon、Shopee 等的所有店铺。",
             "icon": "RiNextjsFill",
             "image": {
               "src": "/imgs/features/user-billing.png",
@@ -167,8 +167,8 @@
             }
           },
           {
-            "title": "丰富模板库",
-            "description": "多样的 AI SaaS 模板，点击即用，涵盖聊天、图像生成等多场景。",
+            "title": "智能自动化",
+            "description": "自动化订单处理、库存同步和商品上架，节省时间并减少错误。",
             "icon": "RiClapperboardAiLine",
             "image": {
               "src": "/imgs/features/admin-settings.png",
@@ -176,8 +176,8 @@
             }
           },
           {
-            "title": "专属技术指导",
-            "description": "享受专属技术支持与开发者社区，为你的成功保驾护航。",
+            "title": "专家支持",
+            "description": "获得专属支持并加入我们的商家社区，确保你的业务成功。",
             "icon": "RiCodeFill",
             "image": {
               "src": "/imgs/features/landing-page.png",
@@ -189,8 +189,8 @@
       "usage": {
         "block": "features-step",
         "id": "usage",
-        "title": "三步使用 ShipAny 极速上线",
-        "description": "只需三步，快速开启你的 AI SaaS 创业之路：",
+        "title": "三步开启 Shop Studio",
+        "description": "简单三步，转型你的多平台电商运营：",
         "image": {
           "src": "/imgs/features/1.png",
           "alt": "usage"
@@ -199,32 +199,32 @@
         "text_align": "center",
         "items": [
           {
-            "title": "获取 ShipAny",
-            "description": "一次性购买 ShipAny，查收邮件获取代码与文档。",
+            "title": "连接店铺",
+            "description": "将亚马逊、Ozon、Shopee 等电商平台安全地连接到 Shop Studio。",
             "image": {
               "src": "/imgs/features/5.png",
               "alt": "usage"
             }
           },
           {
-            "title": "启动你的项目",
-            "description": "阅读说明文档，克隆 ShipAny 代码，开始开发你的 AI SaaS 项目。",
+            "title": "配置工作流",
+            "description": "设置库存同步、订单路由和适合你业务的自动化规则。",
             "image": {
               "src": "/imgs/features/6.png",
               "alt": "usage"
             }
           },
           {
-            "title": "个性化定制",
-            "description": "根据需求修改模板内容和数据，配置专属 AI 能力。",
+            "title": "优化运营",
+            "description": "使用我们的分析和自动化工具简化电商运营。",
             "image": {
               "src": "/imgs/features/7.png",
               "alt": "usage"
             }
           },
           {
-            "title": "部署上线",
-            "description": "简单几步将你的项目推向生产环境，立刻为客户提供服务。",
+            "title": "扩展业务",
+            "description": "拓展到更多平台，用强大的管理工具发展业务。",
             "image": {
               "src": "/imgs/features/8.png",
               "alt": "usage"
@@ -235,45 +235,45 @@
       },
       "features": {
         "id": "features",
-        "title": "ShipAny 核心功能",
-        "description": "一切你需要的工具，助力 AI SaaS 项目高效上线。",
+        "title": "Shop Studio 核心功能",
+        "description": "管理和增长多平台电商业务所需的一切工具。",
         "items": [
           {
-            "title": "Next.js 项目模板",
-            "description": "生产就绪、支持 SEO 与多语言的 Next.js 脚手架。",
+            "title": "多平台集成",
+            "description": "无缝连接亚马逊、Ozon、Shopee 等主流电商平台。",
             "icon": "RiNextjsFill"
           },
           {
-            "title": "身份认证与支付",
-            "description": "集成谷歌 OAuth、一键登录，以及 Stripe 支付。",
+            "title": "集中订单管理",
+            "description": "在一个统一控制台中处理、跟踪和履行所有平台的订单。",
             "icon": "RiKey2Fill"
           },
           {
-            "title": "数据基础设施",
-            "description": "内置 Supabase，稳定可靠的数据存储。",
+            "title": "实时库存同步",
+            "description": "在所有连接的平台间自动同步库存。",
             "icon": "RiDatabase2Line"
           },
           {
-            "title": "一键部署",
-            "description": "自动化部署到 Vercel 或 Cloudflare，极速上线。",
+            "title": "商品上架自动化",
+            "description": "批量上传和优化多个平台的商品列表。",
             "icon": "RiCloudy2Fill"
           },
           {
-            "title": "商业分析",
-            "description": "集成 Google Analytics、Search Console，助力业务增长。",
+            "title": "高级数据分析",
+            "description": "全面的销售分析和所有渠道的业绩洞察。",
             "icon": "RiBarChart2Line"
           },
           {
-            "title": "AI 原生基础设施",
-            "description": "预置 AI 集成、积分系统和 API 售卖能力。",
+            "title": "智能工作流自动化",
+            "description": "自动化重复性任务，简化电商运营。",
             "icon": "RiRobot2Line"
           }
         ]
       },
       "stats": {
         "id": "stats",
-        "title": "用户喜爱 ShipAny",
-        "description": "因其易用且上线飞快。",
+        "title": "用户喜爱 Shop Studio",
+        "description": "因其强大功能和易用性。",
         "items": [
           {
             "title": "999+",
@@ -292,13 +292,13 @@
       },
       "testimonials": {
         "id": "testimonials",
-        "title": "用户对 ShipAny 的评价",
-        "description": "听听开发者与创始人用 ShipAny 快速上线 AI 创业项目的故事。",
+        "title": "商家对 Shop Studio 的评价",
+        "description": "听听用 Shop Studio 转型多平台运营的电商卖家故事。",
         "items": [
           {
             "name": "David Chen",
-            "role": "AIWallpaper.shop 创始人",
-            "quote": "ShipAny 为我们节省了数月开发时间。2 天上线 AI 壁纸业务，一周内就收到了第一笔付费订单！",
+            "role": "多平台卖家",
+            "quote": "Shop Studio 彻底改变了我们管理亚马逊、Ozon 和 Shopee 店铺的方式。一切集中管理——库存、订单、分析。每天节省数小时！",
             "image": {
               "src": "/imgs/avatars/1.png",
               "alt": "david"
@@ -306,8 +306,8 @@
           },
           {
             "name": "Rachel Kim",
-            "role": "HeyBeauty.ai CTO",
-            "quote": "内置 AI 基础设施颠覆了开发体验，无需担心架构，只需专注核心功能，极快落地。",
+            "role": "电商经理",
+            "quote": "实时库存同步是颠覆性的。不再有超卖或跨平台手动更新。我们的运营现在顺畅多了。",
             "image": {
               "src": "/imgs/avatars/2.png",
               "alt": "rachel"
@@ -315,8 +315,8 @@
           },
           {
             "name": "Marcus Thompson",
-            "role": "独立开发者",
-            "quote": "作为独立开发者，ShipAny 满足了全部需求——认证、支付、AI 集成、美观界面，一个周末上线 SaaS！",
+            "role": "跨境卖家",
+            "quote": "管理 3 个平台的 5 个店铺曾经让人不知所措。Shop Studio 集中了一切——订单、商品、分析。现在我可以专注于业务增长。",
             "image": {
               "src": "/imgs/avatars/3.png",
               "alt": "marcus"
@@ -324,8 +324,8 @@
           },
           {
             "name": "Sofia Garcia",
-            "role": "Melodisco CEO",
-            "quote": "模板高度可定制且生产级。我们几小时内搭建出了 AI 音乐平台，上市周期大大缩短！",
+            "role": "线上零售总监",
+            "quote": "批量上架功能为我们节省了无数时间。我们同时向亚马逊和 Shopee 上传了 500 多个商品。效率大幅提升！",
             "image": {
               "src": "/imgs/avatars/4.png",
               "alt": "sofia"
@@ -333,8 +333,8 @@
           },
           {
             "name": "James Wilson",
-            "role": "GPTs.works 技术负责人",
-            "quote": "ShipAny 基础设施极其稳定。我们从 0 到 1 万用户，无需关心后端维护，是最棒的 AI 创业投资。",
+            "role": "电商创业者",
+            "quote": "Shop Studio 的分析帮助我们找到了表现最佳的平台和商品。我们的收入在短短 2 个月内增长了 40%。对我们业务最好的投资。",
             "image": {
               "src": "/imgs/avatars/5.png",
               "alt": "james"
@@ -342,8 +342,8 @@
           },
           {
             "name": "Anna Zhang",
-            "role": "创业者",
-            "quote": "从想法到上线，仅用 3 天！ShipAny 模板和部署工具让我们极快验证 AI 商业创意。",
+            "role": "全球卖家",
+            "quote": "从手动管理 3 个店铺到完全自动化——Shop Studio 让这一切成为可能。我们已经拓展到 2 个更多平台，销售增长了 60%。强烈推荐！",
             "image": {
               "src": "/imgs/avatars/6.png",
               "alt": "anna"
@@ -353,43 +353,43 @@
       },
       "faq": {
         "id": "faq",
-        "title": "关于 ShipAny 的常见问题",
+        "title": "关于 Shop Studio 的常见问题",
         "description": "还有其他问题？欢迎加入 Discord 或发邮件联系我们。",
         "items": [
           {
-            "question": "ShipAny 是什么？怎么帮到我？",
-            "answer": "ShipAny 是专为 AI SaaS 创业设计的 NextJS 全套脚手架，内含开箱即用的模板、基础设施搭建和部署工具，让你数小时内上线 AI 产品。"
+            "question": "Shop Studio 是什么？如何工作？",
+            "answer": "Shop Studio 是专为多平台卖家设计的一站式电商管理平台。它连接你的亚马逊、Ozon、Shopee 等店铺，提供集中订单管理、库存同步和强大分析——全部在一个地方。"
           },
           {
-            "question": "使用 ShipAny 需要很高的技术水平吗？",
-            "answer": "有基础编程知识即可上手。ShipAny 面向开发者友好，详细文档和模板让初学者也能轻松起步，不需深厚 AI 或云计算背景。"
+            "question": "使用 Shop Studio 需要很高的技术水平吗？",
+            "answer": "完全不需要！Shop Studio 对所有技术水平商家都友好。我们的直观界面和全面文档让即使不精通技术的人也能轻松上手。"
           },
           {
-            "question": "ShipAny 支持哪些类型的 AI SaaS 项目？",
-            "answer": "ShipAny 支持内容生成、数据分析、AI 聊天机器人、图片/内容生成器等多种主流 AI 应用场景。"
+            "question": "Shop Studio 支持哪些电商平台？",
+            "answer": "Shop Studio 支持所有主流电商平台，包括亚马逊、Ozon、Shopee 等。我们根据商家需求不断添加新集成。"
           },
           {
-            "question": "用 ShipAny 一般多久能上线？",
-            "answer": "借助 ShipAny，可在数小时内拿到产品原型并上线生产环境，预配置的一键部署大幅缩短开发周期。"
+            "question": "设置 Shop Studio 通常需要多长时间？",
+            "answer": "大多数商家在数小时内即可完成设置并运行。只需连接店铺、配置设置，即可立即开始管理多平台运营。"
           },
           {
-            "question": "ShipAny 的基础设施包括哪些内容？",
-            "answer": "包含认证、数据库、API 集成、支付、云端部署等全栈解决方案，全部遵循业界最佳实践预配置。"
+            "question": "Shop Studio 的数据安全吗？",
+            "answer": "绝对安全。Shop Studio 使用企业级安全加密连接到所有平台。我们从不存储你的凭证，并符合所有主要电商平台安全标准。"
           },
           {
-            "question": "模板是否支持定制自己的品牌？",
-            "answer": "当然支持！所有模板均可自定义设计、功能和品牌，既保持基础架构稳定，又能满足个性扩展需求。"
+            "question": "可以根据我的业务需求定制 Shop Studio 吗？",
+            "answer": "可以！Shop Studio 提供灵活的配置选项。你可以自定义工作流、自动化规则和报告以匹配特定业务需求，同时保持简单强大的界面。"
           }
         ]
       },
       "cta": {
         "id": "cta",
-        "title": "发布你的第一个 AI SaaS 项目",
-        "description": "从这里出发，用 ShipAny 极速交付。",
+        "title": "今天就转型你的电商业务",
+        "description": "开始用 Shop Studio 从一个地方管理所有店铺。",
         "buttons": [
           {
-            "title": "获取 ShipAny",
-            "url": "https://shipany.ai",
+            "title": "获取 Shop Studio",
+            "url": "/pricing",
             "target": "_blank",
             "icon": "Zap"
           },
@@ -406,7 +406,7 @@
       "subscribe": {
         "id": "subscribe",
         "title": "订阅我们的邮件通知",
-        "description": "获取 ShipAny 最新资讯与产品动态。",
+        "description": "获取最新电商技巧和 Shop Studio 更新。",
         "submit": {
           "input": {
             "placeholder": "输入邮箱"

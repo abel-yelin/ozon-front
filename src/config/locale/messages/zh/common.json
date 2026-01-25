@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "title": "ShipAny 模板二",
-    "description": "ShipAny 是用于构建 AI SaaS 创业项目的 NextJS 脚手架。提供丰富模板和组件，助您快速上线产品。",
-    "keywords": "shipany, shipany-boilerplate, shipany-template-two-demo"
+    "title": "跨境通 Pro",
+    "description": "专业的多平台跨境电商管理解决方案。无缝对接亚马逊、Ozon、Shopee 等主流电商平台，提供集中式订单处理、实时库存同步、智能商品上架、强大数据分析等核心功能，助您轻松拓展全球业务，提升跨境销售效率。",
+    "keywords": "跨境电商, 跨境通, 多平台电商管理, 亚马逊, Ozon, Shopee, 库存同步, 订单管理"
   },
   "sign": {
     "sign_in_title": "登录",

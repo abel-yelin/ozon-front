@@ -2,10 +2,10 @@
   "header": {
     "id": "header",
     "brand": {
-      "title": "ShipAny Two",
+      "title": "跨境通 Pro",
       "logo": {
         "src": "/logo.png",
-        "alt": "ShipAny Two",
+        "alt": "跨境通 Pro - 多平台跨境电商管理解决方案",
         "width": 100,
         "height": 100
       },
@@ -19,64 +19,64 @@
           "icon": "Sparkles"
         },
         {
-          "title": "案例展示",
+          "title": "平台集成",
           "url": "/showcases",
           "icon": "Box"
         },
         {
-          "title": "价格",
+          "title": "价格方案",
           "url": "/pricing",
           "icon": "DollarSign"
         },
         {
-          "title": "AI",
+          "title": "解决方案",
           "icon": "RiRobot2Line",
           "children": [
             {
-              "title": "AI 图片生成器",
-              "description": "使用 AI 生成图片",
+              "title": "订单管理",
+              "description": "集中处理亚马逊、Ozon、Shopee 等平台订单",
               "url": "/ai-image-generator",
               "icon": "RiImage2Line"
             },
             {
-              "title": "AI 音乐生成器",
-              "description": "使用 AI 生成美妙的音乐",
+              "title": "库存同步",
+              "description": "实时同步多平台库存，防止超卖",
               "url": "/ai-music-generator",
               "icon": "RiMusic2Line"
             },
             {
-              "title": "AI 视频生成器",
-              "description": "使用 AI 生成视频",
+              "title": "商品上架",
+              "description": "批量上架和优化商品信息",
               "url": "/ai-video-generator",
               "icon": "RiVideoLine"
             },
             {
-              "title": "AI 聊天机器人",
-              "description": "与 AI 聊天机器人对话",
+              "title": "数据分析",
+              "description": "全面的销售分析和业绩报表",
               "url": "/chat",
               "icon": "RiMessage2Line"
             }
           ]
         },
         {
-          "title": "内容",
+          "title": "资源中心",
           "icon": "FileText",
           "children": [
             {
-              "title": "博客",
-              "description": "阅读博客文章",
+              "title": "跨境电商博客",
+              "description": "跨境电商运营技巧和销售指南",
               "url": "/blog",
               "icon": "Newspaper"
             },
             {
-              "title": "更新日志",
-              "description": "阅读更新日志",
+              "title": "产品动态",
+              "description": "平台更新和新功能发布",
               "url": "/updates",
               "icon": "Clock"
             },
             {
-              "title": "文档",
-              "description": "阅读文档",
+              "title": "帮助中心",
+              "description": "文档和教程",
               "url": "/docs",
               "target": "_blank",
               "icon": "BookOpenText"
@@ -92,12 +92,12 @@
       "show_sign_out": true,
       "items": [
         {
-          "title": "账单",
+          "title": "订阅管理",
           "url": "/settings/billing",
           "icon": "CreditCard"
         },
         {
-          "title": "活动",
+          "title": "订单记录",
           "url": "/activity",
           "icon": "Activity"
         }
@@ -107,26 +107,26 @@
     "show_theme": true,
     "show_locale": true,
     "topbanner": {
-      "text": "此网站是 ShipAny 模板的演示站点，购买 ShipAny 模板，请访问 <a href='https://shipany.ai/zh/pricing' class='text-orange-300' target='_blank'>ShipAny 官网</a>"
+      "text": "🚀 一站式跨境电商管理平台，统一管理亚马逊、Ozon、Shopee 等多平台店铺。立即开始 <a href='/pricing' class='text-orange-300' target='_blank'>免费试用</a>"
     }
   },
   "footer": {
     "id": "footer",
     "brand": {
-      "title": "ShipAny Two",
-      "description": "ShipAny 是专为 AI SaaS 创业项目打造的 NextJS 模板。丰富模板与组件，极速交付你的产品。",
+      "title": "跨境通 Pro",
+      "description": "专业的多平台跨境电商管理解决方案。无缝对接亚马逊、Ozon、Shopee 等主流电商平台，提供集中式订单处理、实时库存同步、智能商品上架、强大数据分析等核心功能，助您轻松拓展全球业务，提升跨境销售效率。",
       "logo": {
         "src": "/logo.png",
-        "alt": "ShipAny Two",
-        "width": 100,
-        "height": 100
+        "alt": "跨境通 Pro - 跨境电商一站式管理平台",
+        "width": 1024,
+        "height": 1024
       },
       "url": "/"
     },
     "nav": {
       "items": [
         {
-          "title": "关于我们",
+          "title": "产品",
           "children": [
             {
               "title": "功能亮点",
@@ -134,12 +134,12 @@
               "target": "_self"
             },
             {
-              "title": "案例展示",
+              "title": "平台集成",
               "url": "/showcases",
               "target": "_self"
             },
             {
-              "title": "价格",
+              "title": "价格方案",
               "url": "/pricing",
               "target": "_self"
             }
@@ -149,19 +149,19 @@
           "title": "资源",
           "children": [
             {
-              "title": "文档",
+              "title": "帮助中心",
               "url": "/docs",
               "target": "_self"
             },
             {
-              "title": "博客",
+              "title": "跨境电商博客",
               "url": "/blog",
               "target": "_self"
             },
             {
-              "title": "对话",
+              "title": "API 文档",
               "url": "/chat",
-              "target": "_blank"
+              "target": "_self"
             }
           ]
         },
@@ -169,18 +169,18 @@
           "title": "合作伙伴",
           "children": [
             {
-              "title": "ShipAny",
-              "url": "https://shipany.ai",
+              "title": "Ozon 入驻",
+              "url": "https://ozonstudio.ru",
               "target": "_blank"
             },
             {
-              "title": "ThinkAny",
-              "url": "https://thinkany.ai",
+              "title": "亚马逊集成",
+              "url": "https://luolink.com",
               "target": "_blank"
             },
             {
-              "title": "MCP.so",
-              "url": "https://mcp.so",
+              "title": "Shopee 解决方案",
+              "url": "https://aibesttop.com",
               "target": "_blank"
             }
           ]
@@ -192,19 +192,19 @@
         {
           "title": "X",
           "icon": "RiTwitterXFill",
-          "url": "https://x.com/your-app-name",
+          "url": "https://x.com/abel_yelin",
           "target": "_blank"
         },
         {
           "title": "Github",
           "icon": "Github",
-          "url": "https://github.com/your-app-name",
+          "url": "https://github.com/abel_yelin",
           "target": "_blank"
         },
         {
           "title": "Discord",
           "icon": "RiDiscordFill",
-          "url": "https://discord.gg/your-app-name",
+          "url": "https://discord.gg/8PRnSj3r",
           "target": "_blank"
         },
         {

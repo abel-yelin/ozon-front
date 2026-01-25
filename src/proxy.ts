@@ -6,51 +6,10 @@ import { routing } from '@/core/i18n/config';
 
 const intlMiddleware = createIntlMiddleware(routing);
 
-const proxyTarget =
-  process.env.PYTHON_SERVICE_URL || process.env.PYTHON_API_URL || '';
-
-function buildProxyUrl(request: NextRequest) {
-  if (!proxyTarget) {
-    return null;
-  }
-
-  const targetUrl = new URL(proxyTarget);
-  const basePath = targetUrl.pathname.replace(/\/$/, '');
-
-  targetUrl.pathname = `${basePath}${request.nextUrl.pathname}`;
-  targetUrl.search = request.nextUrl.search;
-
-  return targetUrl;
-}
-
-export const config = {
-  matcher: [
-    '/api/v1/:path*',
-    '/((?!api|trpc|_next|_vercel|.*\\..*).*)',
-  ],
-};
-
-export const runtime = 'edge';
-
-export default function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Proxy API requests to Python backend
-  if (pathname.startsWith('/api/v1/')) {
-    const proxyUrl = buildProxyUrl(request);
-    if (proxyUrl) {
-      return NextResponse.rewrite(proxyUrl);
-    }
-  }
-
-  // Redirect root to default locale
-  if (pathname === '/') {
-    const url = request.nextUrl.clone();
-    url.pathname = `/${routing.defaultLocale}`;
-    return NextResponse.redirect(url);
-  }
-
-  // Handle internationalization
+  // Handle internationalization first
   const intlResponse = intlMiddleware(request);
 
   // Extract locale from pathname
@@ -60,12 +19,11 @@ export default function middleware(request: NextRequest) {
     ? pathname.slice(locale.length + 1)
     : pathname;
 
-  // Check authentication for protected routes
+  // Only check authentication for admin routes
   if (
     pathWithoutLocale.startsWith('/admin') ||
     pathWithoutLocale.startsWith('/settings') ||
-    pathWithoutLocale.startsWith('/activity') ||
-    pathWithoutLocale.startsWith('/dashboard')
+    pathWithoutLocale.startsWith('/activity')
   ) {
     // Check if session cookie exists
     const sessionCookie = getSessionCookie(request);
@@ -93,12 +51,11 @@ export default function middleware(request: NextRequest) {
   intlResponse.headers.set('x-url', request.url);
 
   // Remove Set-Cookie from public pages to allow caching
-  // We exclude admin, settings, activity, dashboard, and auth pages from this behavior
+  // We exclude admin, settings, activity, and auth pages from this behavior
   if (
     !pathWithoutLocale.startsWith('/admin') &&
     !pathWithoutLocale.startsWith('/settings') &&
     !pathWithoutLocale.startsWith('/activity') &&
-    !pathWithoutLocale.startsWith('/dashboard') &&
     !pathWithoutLocale.startsWith('/sign-') &&
     !pathWithoutLocale.startsWith('/auth')
   ) {
@@ -115,3 +72,7 @@ export default function middleware(request: NextRequest) {
   // For all other routes (including /, /sign-in, /sign-up, /sign-out), just return the intl response
   return intlResponse;
 }
+
+export const config = {
+  matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)',
+};

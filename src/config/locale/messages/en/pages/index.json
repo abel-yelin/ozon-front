@@ -15,12 +15,12 @@
     "sections": {
       "hero": {
         "id": "hero",
-        "title": "Ship AI Startups in hours, not days",
+        "title": "Operate Your E-commerce Business in hours, not days",
         "highlight_text": "in hours",
-        "description": "ShipAny is a NextJS boilerplate for building AI SaaS startups.<br/>Ship Fast with a variety of templates and components.",
+        "description": "Shop Studio is a powerful multi-platform e-commerce management solution.<br/>Manage Amazon, Ozon, Shopee stores from one centralized dashboard.",
         "announcement": {
           "badge": "New",
-          "title": "🎉 ShipAny Template Two",
+          "title": "🎉 Shop Studio Platform Launch",
           "url": "/pricing"
         },
         "tip": "🎁 Special offer for the first 1000 users",
@@ -41,7 +41,7 @@
           }
         ],
         "show_avatars": true,
-        "avatars_tip": "999+ users are using ShipAny",
+        "avatars_tip": "999+ merchants are using Shop Studio",
         "show_award": false,
         "image": {
           "src": "/imgs/features/admin.png",
@@ -62,7 +62,7 @@
       },
       "logos": {
         "id": "logos",
-        "title": "ShipAny is built on the shoulders of giants",
+        "title": "Shop Studio is built on the shoulders of giants",
         "items": [
           {
             "title": "Next.js",
@@ -104,17 +104,17 @@
       "introduce": {
         "block": "features-list",
         "id": "introduce",
-        "title": "What is ShipAny",
+        "title": "What is Shop Studio",
         "label": "Introduce",
-        "description": "ShipAny is a NextJS boilerplate for building AI SaaS startups, including templates, components, and documentation.",
+        "description": "Shop Studio is an all-in-one e-commerce management platform for multi-platform sellers. Connect Amazon, Ozon, Shopee and more in one place.",
         "image": {
           "src": "/imgs/features/landing-page.png",
           "alt": "introduce"
         },
         "items": [
           {
-            "title": "Ready-to-use Templates",
-            "description": "Choose from dozens of production-ready AI SaaS templates to quickly start your project.",
+            "title": "Multi-Platform Integration",
+            "description": "Connect all your e-commerce platforms - Amazon, Ozon, Shopee - and manage them from a single dashboard.",
             "icon": "RiNextjsFill",
             "image": {
               "src": "/imgs/features/1.png",
@@ -122,8 +122,8 @@
             }
           },
           {
-            "title": "Infrastructure Setup",
-            "description": "Get instant access to scalable infrastructure with best practices built-in.",
+            "title": "Centralized Order Management",
+            "description": "Process and fulfill orders from all platforms in one unified interface.",
             "icon": "RiDatabase2Line",
             "image": {
               "src": "/imgs/features/2.png",
@@ -131,8 +131,8 @@
             }
           },
           {
-            "title": "Quick Deployment",
-            "description": "Deploy your AI SaaS application to production in hours, not days.",
+            "title": "Real-time Inventory Sync",
+            "description": "Automatically synchronize inventory across all platforms to prevent overselling.",
             "icon": "RiCloudyFill",
             "image": {
               "src": "/imgs/features/3.png",
@@ -140,8 +140,8 @@
             }
           },
           {
-            "title": "AI Integration",
-            "description": "Integrate AI into your project with ease using our built-in AI SDK.",
+            "title": "Powerful Analytics",
+            "description": "Get comprehensive insights and reports across all your sales channels.",
             "icon": "RiRobot2Line",
             "image": {
               "src": "/imgs/features/4.png",
@@ -154,13 +154,13 @@
       "benefits": {
         "block": "features-accordion",
         "id": "benefits",
-        "title": "Why Choose ShipAny",
+        "title": "Why Choose Shop Studio",
         "label": "Benefits",
-        "description": "Get everything you need to launch your AI startup - from ready-to-use templates to technical support.",
+        "description": "Streamline your multi-platform e-commerce operations with powerful tools designed for growth.",
         "items": [
           {
-            "title": "Complete Framework",
-            "description": "Built on Next.js with authentication, payments, and AI integration - everything works out of the box.",
+            "title": "Unified Management",
+            "description": "Manage all your stores from Amazon, Ozon, Shopee and more in one centralized platform.",
             "icon": "RiNextjsFill",
             "image": {
               "src": "/imgs/features/user-billing.png",
@@ -168,8 +168,8 @@
             }
           },
           {
-            "title": "Rich Templates Library",
-            "description": "Choose from various AI SaaS templates to kickstart your project - chatbots, image generation, and more.",
+            "title": "Smart Automation",
+            "description": "Automate order processing, inventory sync, and product listing to save time and reduce errors.",
             "icon": "RiClapperboardAiLine",
             "image": {
               "src": "/imgs/features/admin-settings.png",
@@ -177,8 +177,8 @@
             }
           },
           {
-            "title": "Technical Guidance",
-            "description": "Get dedicated support and join our developer community to ensure your successful launch.",
+            "title": "Expert Support",
+            "description": "Get dedicated support and join our merchant community to ensure your business success.",
             "icon": "RiCodeFill",
             "image": {
               "src": "/imgs/features/landing-page.png",
@@ -190,8 +190,8 @@
       "usage": {
         "block": "features-step",
         "id": "usage",
-        "title": "How to Launch with ShipAny",
-        "description": "Get your AI SaaS startup running in three simple steps:",
+        "title": "Get Started with Shop Studio",
+        "description": "Transform your multi-platform e-commerce operations in three simple steps:",
         "image": {
           "src": "/imgs/features/1.png",
           "alt": "usage"
@@ -200,32 +200,32 @@
         "text_align": "center",
         "items": [
           {
-            "title": "Get ShipAny",
-            "description": "Buy ShipAny with a one-time payment. Check your email for the code and documentation.",
+            "title": "Connect Your Stores",
+            "description": "Link your Amazon, Ozon, Shopee and other e-commerce platforms to Shop Studio securely.",
             "image": {
               "src": "/imgs/features/5.png",
               "alt": "usage"
             }
           },
           {
-            "title": "Start Your Project",
-            "description": "Read the documentation and clone the code of ShipAny. Start building your AI SaaS startup.",
+            "title": "Configure Your Workflow",
+            "description": "Set up inventory sync, order routing, and automation rules tailored to your business.",
             "image": {
               "src": "/imgs/features/6.png",
               "alt": "usage"
             }
           },
           {
-            "title": "Customize Your Project",
-            "description": "Modify the template with your data and contents. Specific AI functionality needs.",
+            "title": "Optimize Operations",
+            "description": "Use our analytics and automation tools to streamline your e-commerce operations.",
             "image": {
               "src": "/imgs/features/7.png",
               "alt": "usage"
             }
           },
           {
-            "title": "Deploy to Production",
-            "description": "Deploy your project to production with a few steps and start serving customers immediately.",
+            "title": "Scale Your Business",
+            "description": "Expand to more platforms and grow your business with powerful management tools.",
             "image": {
               "src": "/imgs/features/8.png",
               "alt": "usage"
@@ -236,45 +236,45 @@
       },
       "features": {
         "id": "features",
-        "title": "Key Features of ShipAny",
-        "description": "Everything you need to launch your AI SaaS startup quickly and efficiently.",
+        "title": "Key Features of Shop Studio",
+        "description": "Everything you need to manage and grow your multi-platform e-commerce business.",
         "items": [
           {
-            "title": "Next.js Boilerplate",
-            "description": "Production-ready Next.js templates with SEO-friendly structure and i18n support.",
+            "title": "Multi-Platform Integration",
+            "description": "Seamlessly connect Amazon, Ozon, Shopee and other major e-commerce platforms.",
             "icon": "RiNextjsFill"
           },
           {
-            "title": "Authentication & Payments",
-            "description": "Integrated Google OAuth, one-tap login, and Stripe payment processing.",
+            "title": "Centralized Order Management",
+            "description": "Process, track and fulfill orders from all platforms in one unified dashboard.",
             "icon": "RiKey2Fill"
           },
           {
-            "title": "Data Infrastructure",
-            "description": "Built-in Supabase integration for reliable and scalable data storage.",
+            "title": "Real-time Inventory Sync",
+            "description": "Automatic inventory synchronization across all connected platforms.",
             "icon": "RiDatabase2Line"
           },
           {
-            "title": "One-Click Deployment",
-            "description": "Seamless deployment to Vercel or Cloudflare with automated setup.",
+            "title": "Product Listing Automation",
+            "description": "Bulk upload and optimize product listings across multiple platforms.",
             "icon": "RiCloudy2Fill"
           },
           {
-            "title": "Business Analytics",
-            "description": "Integrated Google Analytics and Search Console for tracking growth.",
+            "title": "Advanced Analytics",
+            "description": "Comprehensive sales analytics and performance insights across all channels.",
             "icon": "RiBarChart2Line"
           },
           {
-            "title": "AI-Ready Infrastructure",
-            "description": "Pre-configured AI integration with built-in credits system and API sales.",
+            "title": "Smart Workflow Automation",
+            "description": "Automate repetitive tasks and streamline your e-commerce operations.",
             "icon": "RiRobot2Line"
           }
         ]
       },
       "stats": {
         "id": "stats",
-        "title": "People Love ShipAny",
-        "description": "for it's easy to use and fast to ship.",
+        "title": "People Love Shop Studio",
+        "description": "for its powerful features and ease of use.",
         "items": [
           {
             "title": "999+",
@@ -293,13 +293,13 @@
       },
       "testimonials": {
         "id": "testimonials",
-        "title": "What Users Say About ShipAny",
-        "description": "Hear from developers and founders who launched their AI startups with ShipAny.",
+        "title": "What Merchants Say About Shop Studio",
+        "description": "Hear from e-commerce sellers who transformed their multi-platform operations with Shop Studio.",
         "items": [
           {
             "name": "David Chen",
-            "role": "Founder of AIWallpaper.shop",
-            "quote": "ShipAny saved us months of development time. We launched our AI wallpaper business in just 2 days and got our first paying customer within a week!",
+            "role": "Multi-Platform Seller",
+            "quote": "Shop Studio transformed how we manage our Amazon, Ozon and Shopee stores. Everything in one place - inventory, orders, analytics. Saved us hours every day!",
             "image": {
               "src": "/imgs/avatars/1.png",
               "alt": "david"
@@ -307,8 +307,8 @@
           },
           {
             "name": "Rachel Kim",
-            "role": "CTO at HeyBeauty.ai",
-            "quote": "The pre-built AI infrastructure is a game-changer. We didn't have to worry about architecture - just focused on our AI beauty tech and went live fast.",
+            "role": "E-commerce Manager",
+            "quote": "The real-time inventory sync is a game-changer. No more overselling or manual updates across platforms. Our operations run so much smoother now.",
             "image": {
               "src": "/imgs/avatars/2.png",
               "alt": "rachel"
@@ -316,8 +316,8 @@
           },
           {
             "name": "Marcus Thompson",
-            "role": "Solo Developer",
-            "quote": "As a solo developer, ShipAny gave me everything I needed - auth, payments, AI integration, and beautiful UI. Launched my SaaS in a weekend!",
+            "role": "Cross-border Merchant",
+            "quote": "Managing 5 stores across 3 platforms was overwhelming. Shop Studio centralized everything - orders, products, analytics. Now I can focus on growing my business.",
             "image": {
               "src": "/imgs/avatars/3.png",
               "alt": "marcus"
@@ -325,8 +325,8 @@
           },
           {
             "name": "Sofia Garcia",
-            "role": "CEO of Melodisco",
-            "quote": "The templates are production-ready and highly customizable. We built our AI music platform in hours instead of months. Incredible time-to-market!",
+            "role": "Online Retail Director",
+            "quote": "The bulk listing feature saved us countless hours. We uploaded 500+ products to Amazon and Shopee simultaneously. Incredible efficiency boost!",
             "image": {
               "src": "/imgs/avatars/4.png",
               "alt": "sofia"
@@ -334,8 +334,8 @@
           },
           {
             "name": "James Wilson",
-            "role": "Tech Lead at GPTs.works",
-            "quote": "ShipAny's infrastructure is rock-solid. We scaled from 0 to 10k users without touching the backend. Best investment for our AI startup.",
+            "role": "E-commerce Entrepreneur",
+            "quote": "Shop Studio's analytics helped us identify our best-performing platforms and products. Our revenue grew 40% in just 2 months. Best investment for our business.",
             "image": {
               "src": "/imgs/avatars/5.png",
               "alt": "james"
@@ -343,8 +343,8 @@
           },
           {
             "name": "Anna Zhang",
-            "role": "Startup Founder",
-            "quote": "From idea to launch in 3 days! ShipAny's templates and deployment tools made it possible to test our AI business concept incredibly fast.",
+            "role": "Global Seller",
+            "quote": "From manually managing 3 stores to full automation - Shop Studio made it possible. We've expanded to 2 more platforms and sales are up 60%. Highly recommend!",
             "image": {
               "src": "/imgs/avatars/6.png",
               "alt": "anna"
@@ -354,43 +354,43 @@
       },
       "faq": {
         "id": "faq",
-        "title": "Frequently Asked Questions About ShipAny",
+        "title": "Frequently Asked Questions About Shop Studio",
         "description": "Have another question? Contact us on Discord or by email.",
         "items": [
           {
-            "question": "What exactly is ShipAny and how does it work?",
-            "answer": "ShipAny is a comprehensive NextJS boilerplate designed specifically for building AI SaaS startups. It provides ready-to-use templates, infrastructure setup, and deployment tools that help you launch your AI business in hours instead of days."
+            "question": "What exactly is Shop Studio and how does it work?",
+            "answer": "Shop Studio is an all-in-one e-commerce management platform designed for multi-platform sellers. It connects your Amazon, Ozon, Shopee and other stores, providing centralized order management, inventory synchronization, and powerful analytics - all in one place."
           },
           {
-            "question": "Do I need advanced technical skills to use ShipAny?",
-            "answer": "While basic programming knowledge is helpful, ShipAny is designed to be developer-friendly. Our templates and documentation make it easy to get started, even if you're not an expert in AI or cloud infrastructure."
+            "question": "Do I need technical skills to use Shop Studio?",
+            "answer": "Not at all! Shop Studio is designed to be user-friendly for merchants of all technical levels. Our intuitive interface and comprehensive documentation make it easy to get started, even if you're not tech-savvy."
           },
           {
-            "question": "What types of AI SaaS can I build with ShipAny?",
-            "answer": "ShipAny supports a wide range of AI applications, from content generation to data analysis tools. Our templates cover popular use cases like AI chatbots, content generators, image processing apps, and more."
+            "question": "Which e-commerce platforms does Shop Studio support?",
+            "answer": "Shop Studio supports all major e-commerce platforms including Amazon, Ozon, Shopee, and more. We're constantly adding new integrations based on merchant needs."
           },
           {
-            "question": "How long does it typically take to launch with ShipAny?",
-            "answer": "With ShipAny, you can have a working prototype in hours and a production-ready application in hours. Our one-click deployment and pre-configured infrastructure significantly reduce the traditional months-long development cycle."
+            "question": "How long does it take to set up Shop Studio?",
+            "answer": "Most merchants are fully set up and running within a few hours. Simply connect your stores, configure your settings, and start managing your multi-platform operations immediately."
           },
           {
-            "question": "What's included in the ShipAny infrastructure?",
-            "answer": "ShipAny provides a complete infrastructure stack including authentication, database setup, API integration, payment processing, and scalable cloud deployment. Everything is pre-configured following industry best practices."
+            "question": "Is my data secure with Shop Studio?",
+            "answer": "Absolutely. Shop Studio uses enterprise-grade security with encrypted connections to all platforms. We never store your credentials and comply with all major e-commerce security standards."
           },
           {
-            "question": "Can I customize the templates to match my brand?",
-            "answer": "Absolutely! All ShipAny templates are fully customizable. You can modify the design, features, and functionality to match your brand identity and specific business requirements while maintaining the robust underlying infrastructure."
+            "question": "Can I customize Shop Studio for my business needs?",
+            "answer": "Yes! Shop Studio offers flexible configuration options. You can customize workflows, automation rules, and reporting to match your specific business requirements while maintaining a simple, powerful interface."
           }
         ]
       },
       "cta": {
         "id": "cta",
-        "title": "Ship your first AI SaaS Startup",
-        "description": "Start from here, ship with ShipAny.",
+        "title": "Transform Your E-commerce Business Today",
+        "description": "Start managing all your stores from one place with Shop Studio.",
         "buttons": [
           {
-            "title": "Get ShipAny",
-            "url": "https://shipany.ai",
+            "title": "Get Shop Studio",
+            "url": "/pricing",
             "target": "_blank",
             "icon": "Zap"
           },
@@ -407,7 +407,7 @@
       "subscribe": {
         "id": "subscribe",
         "title": "Subscribe to our newsletter",
-        "description": "Get the latest news and updates from ShipAny.",
+        "description": "Get the latest e-commerce tips and Shop Studio updates.",
         "submit": {
           "input": {
             "placeholder": "Enter your email"

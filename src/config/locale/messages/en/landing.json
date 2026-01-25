@@ -2,10 +2,10 @@
   "header": {
     "id": "header",
     "brand": {
-      "title": "ShipAny Two",
+      "title": "CrossBorder Pro",
       "logo": {
         "src": "/logo.png",
-        "alt": "ShipAny Two",
+        "alt": "CrossBorder Pro - Multi-Platform E-commerce Management Solution",
         "width": 100,
         "height": 100
       },
@@ -19,7 +19,7 @@
           "icon": "Sparkles"
         },
         {
-          "title": "Showcases",
+          "title": "Integrations",
           "url": "/showcases",
           "icon": "Box"
         },
@@ -29,54 +29,54 @@
           "icon": "DollarSign"
         },
         {
-          "title": "AI",
+          "title": "Solutions",
           "icon": "RiRobot2Line",
           "children": [
             {
-              "title": "AI Image Generator",
-              "description": "Use AI to generate images",
+              "title": "Order Management",
+              "description": "Centralized order processing for Amazon, Ozon, Shopee",
               "url": "/ai-image-generator",
               "icon": "RiImage2Line"
             },
             {
-              "title": "AI Music Generator",
-              "description": "Use AI to generate music",
+              "title": "Inventory Sync",
+              "description": "Real-time inventory synchronization across platforms",
               "url": "/ai-music-generator",
               "icon": "RiMusic2Line"
             },
             {
-              "title": "AI Video Generator",
-              "description": "Use AI to generate videos",
+              "title": "Product Listing",
+              "description": "Bulk product listing and optimization tools",
               "url": "/ai-video-generator",
               "icon": "RiVideoLine"
             },
             {
-              "title": "AI Chatbot",
-              "description": "Chat with AI chatbot",
+              "title": "Analytics Dashboard",
+              "description": "Comprehensive sales analytics and reporting",
               "url": "/chat",
               "icon": "RiMessage2Line"
             }
           ]
         },
         {
-          "title": "Content",
+          "title": "Resources",
           "icon": "FileText",
           "children": [
             {
               "title": "Blog",
-              "description": "Read Blog Posts",
+              "description": "E-commerce tips and cross-border selling guides",
               "url": "/blog",
               "icon": "Newspaper"
             },
             {
               "title": "Updates",
-              "description": "Read Update Logs",
+              "description": "Platform updates and new features",
               "url": "/updates",
               "icon": "Clock"
             },
             {
-              "title": "Docs",
-              "description": "Read Documentation",
+              "title": "Help Center",
+              "description": "Documentation and tutorials",
               "url": "/docs",
               "target": "_blank",
               "icon": "BookOpenText"
@@ -92,12 +92,12 @@
       "show_sign_out": true,
       "items": [
         {
-          "title": "Billing",
+          "title": "Subscription",
           "url": "/settings/billing",
           "icon": "CreditCard"
         },
         {
-          "title": "Activity",
+          "title": "Order History",
           "url": "/activity",
           "icon": "Activity"
         }
@@ -107,17 +107,17 @@
     "show_theme": true,
     "show_locale": true,
     "topbanner": {
-      "text": "This website is a demo site for the ShipAny template. To purchase the ShipAny template, please visit the <a href='https://shipany.ai/pricing' class='text-orange-300' target='_blank'>ShipAny website</a>"
+      "text": "🚀 Streamline your cross-border e-commerce business with unified management for Amazon, Ozon, Shopee and more. <a href='/pricing' class='text-orange-300' target='_blank'>Start your free trial</a>"
     }
   },
   "footer": {
     "id": "footer",
     "brand": {
-      "title": "ShipAny Two",
-      "description": "ShipAny is a NextJS boilerplate for building AI SaaS startups. Ship Fast with a variety of templates and components.",
+      "title": "CrossBorder Pro",
+      "description": "All-in-one multi-platform e-commerce management solution. Seamlessly manage Amazon, Ozon, Shopee stores with centralized order processing, inventory synchronization, product listing automation, and powerful analytics to grow your global business.",
       "logo": {
         "src": "/logo.png",
-        "alt": "ShipAny Two",
+        "alt": "CrossBorder Pro - Cross-border E-commerce Management Platform",
         "width": 1024,
         "height": 1024
       },
@@ -126,7 +126,7 @@
     "nav": {
       "items": [
         {
-          "title": "About",
+          "title": "Product",
           "children": [
             {
               "title": "Features",
@@ -134,12 +134,12 @@
               "target": "_self"
             },
             {
-              "title": "Showcases",
+              "title": "Platform Integrations",
               "url": "/showcases",
               "target": "_self"
             },
             {
-              "title": "Pricing",
+              "title": "Pricing Plans",
               "url": "/pricing",
               "target": "_self"
             }
@@ -149,38 +149,38 @@
           "title": "Resources",
           "children": [
             {
-              "title": "Documents",
+              "title": "Help Center",
               "url": "/docs",
               "target": "_self"
             },
             {
-              "title": "Blog",
+              "title": "E-commerce Blog",
               "url": "/blog",
               "target": "_self"
             },
             {
-              "title": "Chat",
+              "title": "API Documentation",
               "url": "/chat",
               "target": "_self"
             }
           ]
         },
         {
-          "title": "Friends",
+          "title": "Partners",
           "children": [
             {
-              "title": "ShipAny",
-              "url": "https://shipany.ai",
+              "title": "Sell on Ozon",
+              "url": "https://ozonstudio.ru",
               "target": "_blank"
             },
             {
-              "title": "ThinkAny",
-              "url": "https://thinkany.ai",
+              "title": "Amazon Integration",
+              "url": "https://luolink.com",
               "target": "_blank"
             },
             {
-              "title": "MCP.so",
-              "url": "https://mcp.so",
+              "title": "Shopee Solutions",
+              "url": "https://aibesttop.com",
               "target": "_blank"
             }
           ]
@@ -192,19 +192,19 @@
         {
           "title": "X",
           "icon": "RiTwitterXFill",
-          "url": "https://x.com/your-app-name",
+          "url": "https://x.com/abel_yelin",
           "target": "_blank"
         },
         {
           "title": "Github",
           "icon": "Github",
-          "url": "https://github.com/your-app-name",
+          "url": "https://github.com/abel-yelin",
           "target": "_blank"
         },
         {
           "title": "Discord",
           "icon": "RiDiscordFill",
-          "url": "https://discord.gg/your-app-name",
+          "url": "https://discord.gg/8PRnSj3r",
           "target": "_blank"
         },
         {
