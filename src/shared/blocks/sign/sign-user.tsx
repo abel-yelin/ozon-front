@@ -174,6 +174,14 @@ export function SignUser({
               </>
             )}
 
+            <DropdownMenuItem asChild>
+              <Link className="w-full cursor-pointer" href="/dashboard">
+                <LayoutDashboard />
+                {t('dashboard_title')}
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+
             {userNav?.show_credits && (
               <>
                 <DropdownMenuItem asChild>

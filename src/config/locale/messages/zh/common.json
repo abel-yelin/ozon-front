@@ -28,6 +28,7 @@
     "name_title": "姓名",
     "name_placeholder": "请输入您的姓名",
     "email_verification_hint": "请输入可正常接收邮件的邮箱。注册后需完成邮箱验证才能正常使用。",
+    "dashboard_title": "控制台",
     "admin_title": "管理后台",
     "credits_title": "积分: {credits}",
     "verify_email_sent": "验证邮件已发送，请前往邮箱完成验证。",

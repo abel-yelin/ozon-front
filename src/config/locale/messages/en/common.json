@@ -28,6 +28,7 @@
     "name_title": "Name",
     "name_placeholder": "Input your name here",
     "email_verification_hint": "Use an email address you can access. You must verify your email after signing up.",
+    "dashboard_title": "Dashboard",
     "admin_title": "Admin System",
     "credits_title": "Credits: {credits}",
     "verify_email_sent": "Verification email sent. Please check your inbox.",
