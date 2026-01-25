@@ -9,7 +9,6 @@ import { useState, useEffect } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useImageStudio } from '@/app/hooks/use-image-studio';
 import { Button } from '@/shared/components/ui/button';
-import { Badge } from '@/shared/components/ui/badge';
 import { PromptGroupSelector } from './PromptGroupSelector';  // NEW import
 import {
   Download,
@@ -50,22 +49,7 @@ export function TopBar() {
     <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6">
       {/* Logo Section */}
       <div className="flex items-center gap-8">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
-              <Sparkles className="h-5 w-5 text-white" />
-            </div>
-            <span className="ml-2 text-lg font-semibold text-gray-900">
-              {t('top_bar.title')}
-            </span>
-          </div>
-          <Badge className="ml-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white">
-            PRO
-          </Badge>
-        </div>
-
-        {/* NEW: Prompt Group Selector */}
-        <PromptGroupSelector className="ml-4" />
+        <PromptGroupSelector />
 
         {/* Navigation Tabs */}
         <div className="flex items-center gap-1">
