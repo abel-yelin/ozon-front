@@ -6,6 +6,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { useImageStudio } from '@/app/hooks/use-image-studio';
 import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import { Checkbox } from '@/shared/components/ui/checkbox';
@@ -22,6 +23,7 @@ import { Search } from 'lucide-react';
 import type { SKUStatus } from '@/shared/blocks/image-studio/types';
 
 export function LeftSidebar() {
+  const t = useTranslations('dashboard.imagestudio');
   const {
     skus,
     selectedSKUIds,
@@ -75,11 +77,11 @@ export function LeftSidebar() {
   const getStatusLabel = (status: SKUStatus) => {
     switch (status) {
       case 'not_generated':
-        return '未生成';
+        return t('left_sidebar.status_not_generated');
       case 'main_generated':
-        return '主图已生成';
+        return t('left_sidebar.status_main_generated');
       case 'done':
-        return '已归档';
+        return t('left_sidebar.status_done');
     }
   };
 
@@ -102,7 +104,7 @@ export function LeftSidebar() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <Input
-            placeholder="搜索..."
+            placeholder={t('left_sidebar.search_placeholder')}
             value={filters.searchQuery || ''}
             onChange={e => updateFilters({ searchQuery: e.target.value })}
             className="border-gray-300 bg-gray-50 pl-9"
@@ -128,7 +130,7 @@ export function LeftSidebar() {
                 : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
-            全选 ({skus.length})
+            {t('left_sidebar.select_all', { count: skus.length })}
           </button>
           <button
             onClick={() => updateFilters({ onlyMainImages: !filters.onlyMainImages })}
@@ -138,7 +140,7 @@ export function LeftSidebar() {
                 : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
-            仅主图
+            {t('left_sidebar.only_main')}
           </button>
         </div>
 
@@ -148,13 +150,17 @@ export function LeftSidebar() {
           onValueChange={(value: SKUStatus | 'all') => updateFilters({ status: value })}
         >
           <SelectTrigger className="h-9 w-full border-gray-300 bg-white text-sm">
-            <SelectValue placeholder="全部状态" />
+            <SelectValue placeholder={t('left_sidebar.status_placeholder')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">全部状态</SelectItem>
-            <SelectItem value="not_generated">未生成</SelectItem>
-            <SelectItem value="main_generated">主图已生成</SelectItem>
-            <SelectItem value="done">已归档</SelectItem>
+            <SelectItem value="all">{t('left_sidebar.status_all')}</SelectItem>
+            <SelectItem value="not_generated">
+              {t('left_sidebar.status_not_generated')}
+            </SelectItem>
+            <SelectItem value="main_generated">
+              {t('left_sidebar.status_main_generated')}
+            </SelectItem>
+            <SelectItem value="done">{t('left_sidebar.status_done')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -164,7 +170,7 @@ export function LeftSidebar() {
         <div className="bg-white">
           {filteredSKUs.length === 0 ? (
             <div className="py-8 text-center text-sm text-gray-500">
-              暂无文件
+              {t('left_sidebar.empty')}
             </div>
           ) : (
             filteredSKUs.map(sku => (
@@ -198,7 +204,9 @@ export function LeftSidebar() {
                   <div className="flex items-center gap-2">
                     <span className="text-base font-medium text-gray-900">{sku.article}</span>
                     {sku.status === 'done' && (
-                      <span className="text-sm text-green-500">(已归档)</span>
+                      <span className="text-sm text-green-500">
+                        {t('left_sidebar.archived_tag')}
+                      </span>
                     )}
                   </div>
                   <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
@@ -207,7 +215,7 @@ export function LeftSidebar() {
                     </span>
                     {sku.isMainImage && (
                       <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-600">
-                        主图
+                        {t('left_sidebar.main_image')}
                       </span>
                     )}
                   </div>
@@ -222,14 +230,14 @@ export function LeftSidebar() {
       <div className="border-t border-gray-200 bg-gray-100 px-4 py-3">
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-600">
-            已选择 {selectedSKUIds.size} 项
+            {t('left_sidebar.selected_count', { count: selectedSKUIds.size })}
           </span>
           <Button
             size="sm"
             className="bg-blue-500 hover:bg-blue-600"
             disabled={selectedSKUIds.size === 0}
           >
-            激活
+            {t('left_sidebar.activate')}
           </Button>
         </div>
       </div>

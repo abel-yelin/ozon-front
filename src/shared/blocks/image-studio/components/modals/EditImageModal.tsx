@@ -7,6 +7,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useImageStudio } from '@/app/hooks/use-image-studio';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Button } from '@/shared/components/ui/button';
@@ -54,6 +55,7 @@ const defaultOptions: EditOptionsState = {
 };
 
 export function EditImageModal() {
+  const t = useTranslations('dashboard.imagestudio');
   const { modal, closeModal } = useImageStudio();
   const isOpen = modal.type === 'image-edit';
   const data = (modal.data || {}) as EditImageModalData;
@@ -67,15 +69,22 @@ export function EditImageModal() {
   }, [isOpen, data.sourceType]);
 
   const title = useMemo(() => {
-    const label = data.sourceType === 'input' ? 'input' : 'output';
-    const name = data.filename ? data.filename : '未命名图片';
+    const label =
+      data.sourceType === 'input'
+        ? t('edit_modal.label_input')
+        : t('edit_modal.label_output');
+    const name = data.filename ? data.filename : t('edit_modal.unnamed');
     if (data.sku) return `${data.sku} / ${name} (${label})`;
     return `${name} (${label})`;
-  }, [data.filename, data.sku, data.sourceType]);
+  }, [data.filename, data.sku, data.sourceType, t]);
 
   const isInput = data.sourceType === 'input';
-  const primaryLabel = isInput ? '微调覆盖原图' : '重新生成';
-  const secondaryLabel = isInput ? '生成' : '当前图片优化';
+  const primaryLabel = isInput
+    ? t('edit_modal.primary_input')
+    : t('edit_modal.primary_output');
+  const secondaryLabel = isInput
+    ? t('edit_modal.secondary_input')
+    : t('edit_modal.secondary_output');
 
   if (!isOpen) return null;
 
@@ -83,7 +92,7 @@ export function EditImageModal() {
     <Dialog open={isOpen} onOpenChange={closeModal}>
       <DialogContent className="w-[92vw] max-w-[1040px] overflow-hidden p-0">
         <DialogHeader className="sr-only">
-          <DialogTitle>编辑图片</DialogTitle>
+          <DialogTitle>{t('edit_modal.dialog_title')}</DialogTitle>
         </DialogHeader>
         <div className="flex max-h-[92vh] flex-col bg-white">
           <div className="flex items-center justify-between border-b border-neutral-200 px-6 py-4">
@@ -92,7 +101,7 @@ export function EditImageModal() {
               type="button"
               onClick={closeModal}
               className="rounded-md p-1 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-800"
-              aria-label="关闭"
+              aria-label={t('edit_modal.close')}
             >
               <X className="h-4 w-4" />
             </button>
@@ -108,14 +117,18 @@ export function EditImageModal() {
                     className="max-h-[480px] w-full object-contain"
                   />
                 ) : (
-                  <div className="text-sm text-neutral-400">暂无预览</div>
+                  <div className="text-sm text-neutral-400">
+                    {t('edit_modal.no_preview')}
+                  </div>
                 )}
               </div>
             </div>
 
             <div className="space-y-5 text-[13px] text-neutral-700">
               <div className="space-y-3">
-                <div className="text-xs font-semibold text-neutral-500">生成类提示</div>
+                <div className="text-xs font-semibold text-neutral-500">
+                  {t('edit_modal.section_generate')}
+                </div>
                 <label className="flex items-center gap-2">
                   <Checkbox
                     checked={options.includeCommon}
@@ -123,7 +136,7 @@ export function EditImageModal() {
                       setOptions((prev) => ({ ...prev, includeCommon: Boolean(checked) }))
                     }
                   />
-                  通用
+                  {t('edit_modal.opt_common')}
                 </label>
                 <label className="flex items-center gap-2">
                   <Checkbox
@@ -132,7 +145,7 @@ export function EditImageModal() {
                       setOptions((prev) => ({ ...prev, includeRole: Boolean(checked) }))
                     }
                   />
-                  主/副图
+                  {t('edit_modal.opt_role')}
                 </label>
                 <label className="flex items-center gap-2">
                   <Checkbox
@@ -141,7 +154,7 @@ export function EditImageModal() {
                       setOptions((prev) => ({ ...prev, includeTitleDetails: Boolean(checked) }))
                     }
                   />
-                  标题详情
+                  {t('edit_modal.opt_title')}
                 </label>
                 <label className="flex items-center gap-2">
                   <Checkbox
@@ -150,7 +163,7 @@ export function EditImageModal() {
                       setOptions((prev) => ({ ...prev, includePlan: Boolean(checked) }))
                     }
                   />
-                  方案
+                  {t('edit_modal.opt_plan')}
                 </label>
                 <label className="flex items-center gap-2">
                   <Checkbox
@@ -159,12 +172,14 @@ export function EditImageModal() {
                       setOptions((prev) => ({ ...prev, includeStyle: Boolean(checked) }))
                     }
                   />
-                  风格（副图可用）
+                  {t('edit_modal.opt_style')}
                 </label>
               </div>
 
               <div className="space-y-3">
-                <div className="text-xs font-semibold text-neutral-500">修改类提示</div>
+                <div className="text-xs font-semibold text-neutral-500">
+                  {t('edit_modal.section_edit')}
+                </div>
                 <label className="flex items-center gap-2">
                   <Checkbox
                     checked={options.optWatermark}
@@ -172,7 +187,7 @@ export function EditImageModal() {
                       setOptions((prev) => ({ ...prev, optWatermark: Boolean(checked) }))
                     }
                   />
-                  去水印
+                  {t('edit_modal.opt_watermark')}
                 </label>
                 <label className="flex items-center gap-2">
                   <Checkbox
@@ -181,7 +196,7 @@ export function EditImageModal() {
                       setOptions((prev) => ({ ...prev, optLogo: Boolean(checked) }))
                     }
                   />
-                  去logo
+                  {t('edit_modal.opt_logo')}
                 </label>
                 <label className="flex items-center gap-2">
                   <Checkbox
@@ -190,7 +205,7 @@ export function EditImageModal() {
                       setOptions((prev) => ({ ...prev, optTextEdit: Boolean(checked) }))
                     }
                   />
-                  文字修改
+                  {t('edit_modal.opt_text_edit')}
                 </label>
                 <label className="flex items-center gap-2">
                   <Checkbox
@@ -199,7 +214,7 @@ export function EditImageModal() {
                       setOptions((prev) => ({ ...prev, optRestructure: Boolean(checked) }))
                     }
                   />
-                  图片重构
+                  {t('edit_modal.opt_restructure')}
                 </label>
                 <label className="flex items-center gap-2">
                   <Checkbox
@@ -208,7 +223,7 @@ export function EditImageModal() {
                       setOptions((prev) => ({ ...prev, optRecolor: Boolean(checked) }))
                     }
                   />
-                  重新配色
+                  {t('edit_modal.opt_recolor')}
                 </label>
                 <label className="flex items-center gap-2">
                   <Checkbox
@@ -217,12 +232,14 @@ export function EditImageModal() {
                       setOptions((prev) => ({ ...prev, optAddMarkers: Boolean(checked) }))
                     }
                   />
-                  增加标记
+                  {t('edit_modal.opt_add_markers')}
                 </label>
               </div>
 
               <div className="space-y-3">
-                <div className="text-xs font-semibold text-neutral-500">一致性增强</div>
+                <div className="text-xs font-semibold text-neutral-500">
+                  {t('edit_modal.section_consistency')}
+                </div>
                 <label className="flex items-center gap-2">
                   <Checkbox
                     checked={options.strongConsistency}
@@ -230,12 +247,14 @@ export function EditImageModal() {
                       setOptions((prev) => ({ ...prev, strongConsistency: Boolean(checked) }))
                     }
                   />
-                  一致性加强
+                  {t('edit_modal.opt_strong_consistency')}
                 </label>
               </div>
 
               <div className="space-y-2">
-                <div className="text-xs font-semibold text-neutral-500">参考图（可选）</div>
+                <div className="text-xs font-semibold text-neutral-500">
+                  {t('edit_modal.reference_image')}
+                </div>
                 <Input
                   type="file"
                   accept="image/*"
@@ -248,9 +267,11 @@ export function EditImageModal() {
               </div>
 
               <div className="space-y-2">
-                <div className="text-xs font-semibold text-neutral-500">额外提示词（可选）</div>
+                <div className="text-xs font-semibold text-neutral-500">
+                  {t('edit_modal.extra_prompt')}
+                </div>
                 <Textarea
-                  placeholder="可在此补充更具体的要求..."
+                  placeholder={t('edit_modal.extra_prompt_placeholder')}
                   value={options.extraPrompt}
                   onChange={(e) =>
                     setOptions((prev) => ({ ...prev, extraPrompt: e.target.value }))

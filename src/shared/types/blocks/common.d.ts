@@ -27,6 +27,7 @@ export interface NavItem {
   text?: string;
   description?: string;
   url?: string;
+  url_key?: string;
   target?: string;
   type?: string;
   icon_url?: string;

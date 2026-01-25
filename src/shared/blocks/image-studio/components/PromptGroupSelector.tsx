@@ -5,6 +5,7 @@
 
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useImageStudio } from '@/shared/contexts/image-studio';
 import {
   Select,
@@ -20,6 +21,7 @@ interface PromptGroupSelectorProps {
 }
 
 export function PromptGroupSelector({ className }: PromptGroupSelectorProps) {
+  const t = useTranslations('dashboard.imagestudio');
   const { settings, updateSettings } = useImageStudio();
 
   const groups = settings.prompt_groups || [];
@@ -63,8 +65,8 @@ export function PromptGroupSelector({ className }: PromptGroupSelectorProps) {
       <Layers className="h-4 w-4 text-neutral-500" />
       <Select value={activeId} onValueChange={handleChange}>
         <SelectTrigger className="w-[180px] h-8">
-          <SelectValue placeholder="选择提示词组">
-            {activeName || '选择提示词组'}
+          <SelectValue placeholder={t('prompt_group.placeholder')}>
+            {activeName || t('prompt_group.placeholder')}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>

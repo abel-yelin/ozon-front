@@ -6,6 +6,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useImageStudio } from '@/app/hooks/use-image-studio';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Button } from '@/shared/components/ui/button';
@@ -15,6 +16,7 @@ import { Switch } from '@/shared/components/ui/switch';
 import { Sparkles, Upload } from 'lucide-react';
 
 export function OptPromptModal() {
+  const t = useTranslations('dashboard.imagestudio');
   const { modal, closeModal, regenerateImage } = useImageStudio();
   const pairId = modal.data?.pairId;
 
@@ -64,16 +66,20 @@ export function OptPromptModal() {
     <Dialog open={isOpen} onOpenChange={closeModal}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Regeneration Options</DialogTitle>
+          <DialogTitle>{t('opt_prompt_modal.title')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* Prompt Components */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Prompt Components</Label>
+            <Label className="text-sm font-medium">
+              {t('opt_prompt_modal.section_prompt_components')}
+            </Label>
             <div className="space-y-2 rounded-lg border p-3">
               <div className="flex items-center justify-between">
-                <Label className="text-sm text-neutral-600">Common</Label>
+                <Label className="text-sm text-neutral-600">
+                  {t('opt_prompt_modal.option_common')}
+                </Label>
                 <Switch
                   checked={options.includeCommon}
                   onCheckedChange={checked =>
@@ -82,7 +88,9 @@ export function OptPromptModal() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label className="text-sm text-neutral-600">Role</Label>
+                <Label className="text-sm text-neutral-600">
+                  {t('opt_prompt_modal.option_role')}
+                </Label>
                 <Switch
                   checked={options.includeRole}
                   onCheckedChange={checked =>
@@ -91,7 +99,9 @@ export function OptPromptModal() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label className="text-sm text-neutral-600">Title Details</Label>
+                <Label className="text-sm text-neutral-600">
+                  {t('opt_prompt_modal.option_title_details')}
+                </Label>
                 <Switch
                   checked={options.includeTitleDetails}
                   onCheckedChange={checked =>
@@ -100,7 +110,9 @@ export function OptPromptModal() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label className="text-sm text-neutral-600">Plan</Label>
+                <Label className="text-sm text-neutral-600">
+                  {t('opt_prompt_modal.option_plan')}
+                </Label>
                 <Switch
                   checked={options.includePlan}
                   onCheckedChange={checked =>
@@ -109,7 +121,9 @@ export function OptPromptModal() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label className="text-sm text-neutral-600">Style</Label>
+                <Label className="text-sm text-neutral-600">
+                  {t('opt_prompt_modal.option_style')}
+                </Label>
                 <Switch
                   checked={options.includeStyle}
                   onCheckedChange={checked =>
@@ -122,10 +136,14 @@ export function OptPromptModal() {
 
           {/* Image Options */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Image Options</Label>
+            <Label className="text-sm font-medium">
+              {t('opt_prompt_modal.section_image_options')}
+            </Label>
             <div className="space-y-2 rounded-lg border p-3">
               <div className="flex items-center justify-between">
-                <Label className="text-sm text-neutral-600">Watermark</Label>
+                <Label className="text-sm text-neutral-600">
+                  {t('opt_prompt_modal.option_watermark')}
+                </Label>
                 <Switch
                   checked={options.optWatermark}
                   onCheckedChange={checked =>
@@ -134,7 +152,9 @@ export function OptPromptModal() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label className="text-sm text-neutral-600">Logo</Label>
+                <Label className="text-sm text-neutral-600">
+                  {t('opt_prompt_modal.option_logo')}
+                </Label>
                 <Switch
                   checked={options.optLogo}
                   onCheckedChange={checked =>
@@ -143,7 +163,9 @@ export function OptPromptModal() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label className="text-sm text-neutral-600">Text Edit</Label>
+                <Label className="text-sm text-neutral-600">
+                  {t('opt_prompt_modal.option_text_edit')}
+                </Label>
                 <Switch
                   checked={options.optTextEdit}
                   onCheckedChange={checked =>
@@ -152,7 +174,9 @@ export function OptPromptModal() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label className="text-sm text-neutral-600">Restructure</Label>
+                <Label className="text-sm text-neutral-600">
+                  {t('opt_prompt_modal.option_restructure')}
+                </Label>
                 <Switch
                   checked={options.optRestructure}
                   onCheckedChange={checked =>
@@ -161,7 +185,9 @@ export function OptPromptModal() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label className="text-sm text-neutral-600">Recolor</Label>
+                <Label className="text-sm text-neutral-600">
+                  {t('opt_prompt_modal.option_recolor')}
+                </Label>
                 <Switch
                   checked={options.optRecolor}
                   onCheckedChange={checked =>
@@ -170,7 +196,9 @@ export function OptPromptModal() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label className="text-sm text-neutral-600">Add Markers</Label>
+                <Label className="text-sm text-neutral-600">
+                  {t('opt_prompt_modal.option_add_markers')}
+                </Label>
                 <Switch
                   checked={options.optAddMarkers}
                   onCheckedChange={checked =>
@@ -179,7 +207,9 @@ export function OptPromptModal() {
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label className="text-sm text-neutral-600">Strong Consistency</Label>
+                <Label className="text-sm text-neutral-600">
+                  {t('opt_prompt_modal.option_strong_consistency')}
+                </Label>
                 <Switch
                   checked={options.strongConsistency}
                   onCheckedChange={checked =>
@@ -192,9 +222,9 @@ export function OptPromptModal() {
 
           {/* Extra Prompt */}
           <div className="space-y-2">
-            <Label>Extra Prompt</Label>
+            <Label>{t('opt_prompt_modal.section_extra_prompt')}</Label>
             <Textarea
-              placeholder="Additional instructions for image generation..."
+              placeholder={t('opt_prompt_modal.extra_prompt_placeholder')}
               value={options.extraPrompt}
               onChange={e =>
                 setOptions(prev => ({ ...prev, extraPrompt: e.target.value }))
@@ -205,12 +235,12 @@ export function OptPromptModal() {
 
           {/* Reference Image */}
           <div className="space-y-2">
-            <Label>Reference Image (Optional)</Label>
+            <Label>{t('opt_prompt_modal.section_reference_image')}</Label>
             <div className="flex items-center gap-2">
               <Button variant="outline" className="flex-1" asChild>
                 <label htmlFor="ref-file" className="cursor-pointer">
                   <Upload className="mr-2 h-4 w-4" />
-                  {refFile ? refFile.name : 'Choose file...'}
+                  {refFile ? refFile.name : t('opt_prompt_modal.choose_file')}
                 </label>
               </Button>
               <input
@@ -226,7 +256,7 @@ export function OptPromptModal() {
                   size="sm"
                   onClick={() => setRefFile(null)}
                 >
-                  Clear
+                  {t('opt_prompt_modal.clear')}
                 </Button>
               )}
             </div>
@@ -234,12 +264,12 @@ export function OptPromptModal() {
 
           {!canSubmit && (
             <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
-              请选择图片后再生成（请从图片卡片的“生成/重新生成”入口打开此弹窗）。
+              {t('opt_prompt_modal.warning_select_image')}
             </div>
           )}
           <Button className="w-full" onClick={handleRegenerate} disabled={!canSubmit}>
             <Sparkles className="mr-2 h-4 w-4" />
-            Regenerate Image
+            {t('opt_prompt_modal.regenerate')}
           </Button>
         </div>
       </DialogContent>

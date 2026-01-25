@@ -46,7 +46,7 @@
         },
         {
           "title": "图片工作室",
-          "url": "/dashboard/imagestudio",
+          "url_key": "dashboard.imagestudio",
           "icon": "Wand2"
         },
         {

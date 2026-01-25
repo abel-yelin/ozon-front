@@ -46,7 +46,7 @@
         },
         {
           "title": "Image Studio",
-          "url": "/dashboard/imagestudio",
+          "url_key": "dashboard.imagestudio",
           "icon": "Wand2"
         },
         {

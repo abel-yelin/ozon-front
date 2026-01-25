@@ -5,6 +5,7 @@
 
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useImageStudio } from '@/app/hooks/use-image-studio';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react';
 
 export function MainContent() {
+  const t = useTranslations('dashboard.imagestudio');
   const {
     currentSKU,
     currentImagePairs,
@@ -34,6 +36,12 @@ export function MainContent() {
 
   const hasImages = currentImagePairs.length > 0;
   const isBatchProcessing = batchProgress?.status === 'processing';
+  const statusMap: Record<string, string> = {
+    done: t('main_content.status_done'),
+    processing: t('main_content.status_processing'),
+    failed: t('main_content.status_failed'),
+    pending: t('main_content.status_pending'),
+  };
 
   return (
     <div className="flex flex-1 flex-col bg-white">
@@ -45,13 +53,13 @@ export function MainContent() {
               {currentSKU.article}
             </h2>
             <Badge variant="outline" className="text-gray-600">
-              共 {currentImagePairs.length} 张
+              {t('main_content.image_count', { count: currentImagePairs.length })}
             </Badge>
             {/* Auto-refresh indicator during batch processing */}
             {isBatchProcessing && (
               <Badge variant="secondary" className="animate-pulse bg-blue-100 text-blue-700">
                 <RefreshCw className="mr-1 h-3 w-3 animate-spin" />
-                自动更新中
+                {t('main_content.auto_refreshing')}
               </Badge>
             )}
           </div>
@@ -64,7 +72,7 @@ export function MainContent() {
                 className="h-4 w-4"
               />
               <label htmlFor="continuous" className="cursor-pointer text-sm text-gray-700">
-                连续处理
+                {t('main_content.continuous')}
               </label>
             </div>
 
@@ -74,7 +82,7 @@ export function MainContent() {
                 className="h-4 w-4"
               />
               <label htmlFor="step-review" className="cursor-pointer text-sm text-gray-700">
-                分步审核
+                {t('main_content.step_review')}
               </label>
             </div>
 
@@ -84,7 +92,7 @@ export function MainContent() {
               className="gap-2"
             >
               <RefreshCw className="h-4 w-4" />
-              强制刷新
+              {t('main_content.force_refresh')}
             </Button>
           </div>
         </div>
@@ -95,7 +103,7 @@ export function MainContent() {
         <div className="p-6">
           {!hasImages ? (
             <div className="flex h-96 items-center justify-center text-gray-500">
-              暂无图像数据
+              {t('main_content.no_images')}
             </div>
           ) : (
             <div className="grid gap-6">
@@ -105,7 +113,9 @@ export function MainContent() {
                     {/* Input Panel */}
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-gray-500 uppercase">input</span>
+                        <span className="text-xs font-medium text-gray-500 uppercase">
+                          {t('main_content.input')}
+                        </span>
                         <div className="flex items-center gap-2">
                           <Badge variant="outline" className="text-xs">
                             #{index + 1}
@@ -139,7 +149,9 @@ export function MainContent() {
                     {/* Output Panel */}
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-gray-500 uppercase">output</span>
+                        <span className="text-xs font-medium text-gray-500 uppercase">
+                          {t('main_content.output')}
+                        </span>
                         <div className="flex items-center gap-2">
                           <Badge variant="outline" className="text-xs">
                             #{index + 1}
@@ -177,16 +189,19 @@ export function MainContent() {
                             {isBatchProcessing ? (
                               <div className="flex flex-col items-center gap-2">
                                 <RefreshCw className="h-8 w-8 animate-spin text-blue-500" />
-                                <span className="text-sm">生成中...</span>
+                                <span className="text-sm">{t('main_content.generating')}</span>
                               </div>
                             ) : (
-                              '未生成'
+                              t('main_content.not_generated')
                             )}
                           </div>
                         )}
                       </div>
                       <p className="text-sm text-gray-600">
-                        {pair.outputName || (isBatchProcessing ? '等待生成...' : '等待生成')}
+                        {pair.outputName ||
+                          (isBatchProcessing
+                            ? t('main_content.waiting_generate_ellipsis')
+                            : t('main_content.waiting_generate'))}
                       </p>
                     </div>
                   </div>
@@ -195,7 +210,9 @@ export function MainContent() {
                   <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3">
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <span>
-                        状态: {pair.status === 'done' ? '已完成' : pair.status === 'processing' ? '处理中' : pair.status === 'failed' ? '异常' : '待处理'}
+                        {t('main_content.status_label', {
+                          status: statusMap[pair.status] || t('main_content.status_pending'),
+                        })}
                       </span>
                     </div>
                     <Button
@@ -206,7 +223,9 @@ export function MainContent() {
                       onClick={() => openModal('opt-prompt', { pairId: pair.id })}
                     >
                       <RefreshCw className="h-4 w-4" />
-                      {pair.outputUrl ? '重新生成' : '生成'}
+                      {pair.outputUrl
+                        ? t('main_content.regenerate')
+                        : t('main_content.generate')}
                     </Button>
                   </div>
                 </div>
@@ -225,14 +244,16 @@ export function MainContent() {
               {/* Status Icon - Blue Square */}
               <div className="h-4 w-4 rounded-sm bg-blue-500"></div>
               <span className="text-sm text-gray-700">
-                {isBatchProcessing ? '批量处理中...' : '等待任务开始'}
+                {isBatchProcessing
+                  ? t('main_content.batch_processing')
+                  : t('main_content.batch_idle')}
               </span>
               {isBatchProcessing && (
                 <RefreshCw className="h-4 w-4 animate-spin text-blue-500" />
               )}
             </div>
             <button className="text-xs italic text-gray-500 hover:text-gray-700">
-              进度详情
+              {t('main_content.progress_detail')}
             </button>
             {/* Progress Bar */}
             <div className="h-2 w-48 overflow-hidden rounded-full bg-gray-200">
@@ -246,11 +267,15 @@ export function MainContent() {
           {/* Middle Section - Status Metrics */}
           <div className="flex items-center gap-8">
             <div className="flex items-baseline gap-2">
-              <span className="text-sm text-gray-600">总任务数</span>
+              <span className="text-sm text-gray-600">
+                {t('main_content.total_tasks')}
+              </span>
               <span className="text-base font-semibold text-gray-900">{batchProgress?.total || 0}</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-sm text-gray-600">进行中</span>
+              <span className="text-sm text-gray-600">
+                {t('main_content.in_progress')}
+              </span>
               <span className="text-base font-semibold text-gray-900">
                 {batchProgress?.total && batchProgress?.completed
                   ? batchProgress.total - batchProgress.completed - batchProgress.failed
@@ -258,11 +283,15 @@ export function MainContent() {
               </span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-sm text-gray-600">已完成</span>
+              <span className="text-sm text-gray-600">
+                {t('main_content.completed')}
+              </span>
               <span className="text-base font-semibold text-gray-900">{batchProgress?.completed || 0}</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-sm text-gray-600">异常任务</span>
+              <span className="text-sm text-gray-600">
+                {t('main_content.failed_tasks')}
+              </span>
               <span className="text-base font-semibold text-gray-900">{batchProgress?.failed || 0}</span>
             </div>
           </div>
@@ -276,7 +305,7 @@ export function MainContent() {
               disabled={!isBatchProcessing}
             >
               <Square className="mr-2 h-5 w-5" />
-              终止
+              {t('main_content.stop')}
             </Button>
             <Button
               variant="default"
@@ -286,7 +315,7 @@ export function MainContent() {
               onClick={() => startBatch()}
             >
               <Play className="mr-2 h-5 w-5" />
-              开始批量处理
+              {t('main_content.start_batch')}
             </Button>
           </div>
         </div>

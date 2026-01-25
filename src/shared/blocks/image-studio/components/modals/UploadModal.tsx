@@ -6,6 +6,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { useImageStudio } from '@/app/hooks/use-image-studio';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Button } from '@/shared/components/ui/button';
@@ -50,6 +51,7 @@ interface PushResult {
 }
 
 export function UploadModal() {
+  const t = useTranslations('dashboard.imagestudio');
   const { modal, closeModal, currentSKU, currentImagePairs } = useImageStudio();
   const [pushing, setPushing] = useState(false);
   const [result, setResult] = useState<PushResult | null>(null);
@@ -85,7 +87,7 @@ export function UploadModal() {
     if (!selectedCredentialId) {
       setResult({
         success: false,
-        error: '请先选择 Ozon API 凭证'
+        error: t('upload_modal.errors.no_credential')
       });
       return;
     }
@@ -99,10 +101,10 @@ export function UploadModal() {
       if (!product_id) {
         setResult({
           success: false,
-          error: '未找到 Product ID，请先在 Ozon 下载页面获取商品信息',
+          error: t('upload_modal.errors.no_product_id'),
           errorLink: {
             href: '/dashboard/ozon',
-            text: '前往 Ozon 下载页面',
+            text: t('upload_modal.errors.go_to_ozon'),
             target: '_blank'
           }
         });
@@ -117,7 +119,7 @@ export function UploadModal() {
       if (images.length === 0) {
         setResult({
           success: false,
-          error: '没有可推送的图片，请先处理图片'
+          error: t('upload_modal.errors.no_images')
         });
         return;
       }
@@ -137,7 +139,7 @@ export function UploadModal() {
         const errorData = await response.json();
         setResult({
           success: false,
-          error: errorData.message || '推送请求失败'
+          error: errorData.message || t('upload_modal.errors.request_failed')
         });
         return;
       }
@@ -148,7 +150,7 @@ export function UploadModal() {
       if (resp.code !== 0) {
         setResult({
           success: false,
-          error: resp.message || '推送失败'
+          error: resp.message || t('upload_modal.errors.push_failed')
         });
         return;
       }
@@ -160,7 +162,7 @@ export function UploadModal() {
     } catch (error) {
       setResult({
         success: false,
-        error: error instanceof Error ? error.message : '未知错误'
+        error: error instanceof Error ? error.message : t('upload_modal.errors.unknown')
       });
     } finally {
       setPushing(false);
@@ -177,27 +179,27 @@ export function UploadModal() {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>推送图片到 Ozon</DialogTitle>
+          <DialogTitle>{t('upload_modal.title')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* Credential Selection */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">选择 Ozon API 凭证</label>
+            <label className="text-sm font-medium">{t('upload_modal.credential_label')}</label>
             {credentials.length === 0 ? (
               <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
                 <p className="text-sm text-amber-800">
-                  未找到凭证，请先在{' '}
+                  {t('upload_modal.credential_empty_prefix')}
                   <a href="/dashboard/credentials" className="underline font-medium">
-                    凭证管理
+                    {t('upload_modal.credential_empty_link')}
                   </a>
-                  {' '}页面添加
+                  {t('upload_modal.credential_empty_suffix')}
                 </p>
               </div>
             ) : (
               <Select value={selectedCredentialId} onValueChange={setSelectedCredentialId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="选择凭证" />
+                  <SelectValue placeholder={t('upload_modal.credential_placeholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {credentials.map((cred) => (
@@ -213,10 +215,16 @@ export function UploadModal() {
           {/* Current SKU info */}
           {currentSKU && (
             <div className="text-sm p-3 bg-neutral-50 rounded-lg">
-              <p className="font-medium">当前商品</p>
-              <p className="text-neutral-600">SKU: {currentSKU.article || '未设置'}</p>
+              <p className="font-medium">{t('upload_modal.current_product')}</p>
+              <p className="text-neutral-600">
+                {t('upload_modal.sku_label', {
+                  value: currentSKU.article || t('upload_modal.not_set'),
+                })}
+              </p>
               <p className={`text-neutral-600 ${currentSKU.productId ? 'text-green-700 font-medium' : 'text-amber-600'}`}>
-                Product ID: {currentSKU.productId || '未设置'}
+                {t('upload_modal.product_id_label', {
+                  value: currentSKU.productId || t('upload_modal.not_set'),
+                })}
                 {currentSKU.productId && <span className="ml-1">✓</span>}
               </p>
               {!currentSKU.productId && (
@@ -226,7 +234,7 @@ export function UploadModal() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center mt-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors text-sm font-medium"
                 >
-                  下载商品信息
+                  {t('upload_modal.product_id_download')}
                 </a>
               )}
             </div>
@@ -236,7 +244,9 @@ export function UploadModal() {
           {currentImagePairs.length > 0 && (
             <div>
               <p className="text-sm font-medium mb-2">
-                待推送图片 ({currentImagePairs.filter(p => p.outputUrl).length} 张)
+                {t('upload_modal.images_to_push', {
+                  count: currentImagePairs.filter(p => p.outputUrl).length,
+                })}
               </p>
               <div className="grid grid-cols-5 gap-2 max-h-48 overflow-y-auto">
                 {currentImagePairs.filter(p => p.outputUrl).map((pair) => (
@@ -268,15 +278,18 @@ export function UploadModal() {
                 <div className="flex-1">
                   {result.success ? (
                     <div>
-                      <p className="font-medium">推送成功!</p>
+                      <p className="font-medium">{t('upload_modal.success_title')}</p>
                       <p className="text-sm mt-1">
-                        已更新 {result.data?.updated.images} 张主图
-                        {result.data?.updated.color_image && '，1 张色彩图'}
+                        {t('upload_modal.success_images', {
+                          count: result.data?.updated.images ?? 0,
+                        })}
+                        {result.data?.updated.color_image &&
+                          t('upload_modal.success_color_image')}
                       </p>
                     </div>
                   ) : (
                     <div>
-                      <p className="font-medium">推送失败</p>
+                      <p className="font-medium">{t('upload_modal.failure_title')}</p>
                       <p className="text-sm mt-1">{result.error}</p>
                       {result.errorLink && (
                         <a
@@ -312,7 +325,7 @@ export function UploadModal() {
               onClick={handleClose}
               disabled={pushing}
             >
-              取消
+              {t('upload_modal.cancel')}
             </Button>
             <Button
               className="flex-1"
@@ -322,12 +335,12 @@ export function UploadModal() {
               {pushing ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  推送中...
+                  {t('upload_modal.pushing')}
                 </>
               ) : (
                 <>
                   <Upload className="mr-2 h-4 w-4" />
-                  确认推送
+                  {t('upload_modal.confirm_push')}
                 </>
               )}
             </Button>

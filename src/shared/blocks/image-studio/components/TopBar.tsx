@@ -6,6 +6,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useImageStudio } from '@/app/hooks/use-image-studio';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
@@ -19,6 +20,8 @@ import {
 } from 'lucide-react';
 
 export function TopBar() {
+  const t = useTranslations('dashboard.imagestudio');
+  const locale = useLocale();
   const { currentSKU, isLoading, error, openModal } = useImageStudio();
   const [activeTab, setActiveTab] = useState<'process' | 'history'>('process');
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -31,7 +34,9 @@ export function TopBar() {
   }, []);
 
   const formatDateTime = (date: Date) => {
-    return date.toLocaleString('zh-CN', {
+    const normalizedLocale =
+      locale === 'zh' || locale === 'zh-CN' ? 'zh-CN' : 'en-US';
+    return date.toLocaleString(normalizedLocale, {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
@@ -50,7 +55,9 @@ export function TopBar() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
               <Sparkles className="h-5 w-5 text-white" />
             </div>
-            <span className="ml-2 text-lg font-semibold text-gray-900">Image Studio</span>
+            <span className="ml-2 text-lg font-semibold text-gray-900">
+              {t('top_bar.title')}
+            </span>
           </div>
           <Badge className="ml-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white">
             PRO
@@ -70,7 +77,7 @@ export function TopBar() {
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            图片处理
+            {t('top_bar.tab_process')}
           </button>
           <button
             onClick={() => setActiveTab('history')}
@@ -80,7 +87,7 @@ export function TopBar() {
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            历史记录
+            {t('top_bar.tab_history')}
           </button>
         </div>
       </div>
@@ -100,7 +107,7 @@ export function TopBar() {
           onClick={() => openModal('settings')}
         >
           <Sparkles className="h-4 w-4" />
-          专业模式
+          {t('top_bar.mode_pro')}
         </Button>
 
         <Button
@@ -110,7 +117,7 @@ export function TopBar() {
           onClick={() => openModal('download')}
         >
           <Download className="h-4 w-4" />
-          下载
+          {t('top_bar.download')}
         </Button>
 
         <Button
@@ -120,7 +127,7 @@ export function TopBar() {
           onClick={() => openModal('settings')}
         >
           <Settings className="h-4 w-4" />
-          设置
+          {t('top_bar.settings')}
         </Button>
 
         <Button
@@ -130,7 +137,7 @@ export function TopBar() {
           onClick={() => openModal('upload')}
         >
           <Upload className="h-4 w-4" />
-          上传
+          {t('top_bar.upload')}
         </Button>
       </div>
     </header>
