@@ -1,10 +1,19 @@
 import { respData, respErr } from '@/shared/lib/resp';
 import { getUserInfo } from '@/shared/models/user';
+import { getRemainingCredits, consumeCredits } from '@/shared/models/credit';
 import { aiPlaygroundDb } from '@/lib/db/ai-playground';
 import { submitImageStudioJob } from '@/lib/api/image-studio-server';
 import { getUserGalleryImages } from '@/shared/services/gallery';
 import { getFileNameFromUrl, getStemFromFilename } from '@/shared/lib/image-studio';
 import { buildJobView, syncImageStudioJobs } from '@/app/api/image-studio/jobs/helpers';
+
+/**
+ * Credit cost for different ImageStudio operations
+ */
+const IMAGE_STUDIO_CREDIT_COSTS = {
+  single_regenerate: 1, // 单张图片重新生成
+  batch_generate: 5, // 批量生成(按SKU)
+} as const;
 
 // ========================================
 // Prompt Validation
@@ -168,6 +177,47 @@ export async function POST(req: Request) {
     const isFolderMode = mode === 'folder_generate';
     const isSingleMode = ['image_regenerate', 'image_optimize_current', 'image_custom_generate'].includes(mode);
 
+    // ========================================
+    // Credit Check & Consumption
+    // ========================================
+
+    // Calculate credit cost based on mode
+    let creditCost = 0;
+    if (isSingleMode) {
+      creditCost = IMAGE_STUDIO_CREDIT_COSTS.single_regenerate;
+    } else if (isBatchMode) {
+      const skuCount = Array.isArray(options.skus) ? options.skus.length : 1;
+      creditCost = IMAGE_STUDIO_CREDIT_COSTS.batch_generate * skuCount;
+    }
+
+    console.info('[ImageStudio] Credit check', {
+      mode,
+      creditCost,
+      isSingleMode,
+      isBatchMode,
+      skuCount: isBatchMode ? (Array.isArray(options.skus) ? options.skus.length : 1) : 0,
+    });
+
+    // Check if user has enough credits
+    if (creditCost > 0) {
+      const remainingCredits = await getRemainingCredits(user.id);
+      console.info('[ImageStudio] User credit balance', {
+        userId: user.id,
+        remainingCredits,
+        required: creditCost,
+      });
+
+      if (remainingCredits < creditCost) {
+        console.warn('[ImageStudio] Insufficient credits', {
+          remainingCredits,
+          required: creditCost,
+        });
+        return respErr(
+          `积分不足。需要 ${creditCost} 积分，当前余额 ${remainingCredits} 积分。请前往充值页面购买更多积分。`
+        );
+      }
+    }
+
     const galleryBySku = new Map<string, typeof galleryImages>();
     for (const image of galleryImages) {
       const list = galleryBySku.get(image.article) || [];
@@ -318,6 +368,58 @@ export async function POST(req: Request) {
       sourceImageCount: sourceImageUrls.length,
       hasPromptGroup: !!jobConfig.prompt_group_id,
     });
+
+    // ========================================
+    // Consume Credits
+    // ========================================
+
+    let consumedCreditId: string | undefined;
+    if (creditCost > 0) {
+      try {
+        console.info('[ImageStudio] Consuming credits', {
+          jobId: job.id,
+          userId: user.id,
+          creditCost,
+        });
+
+        const consumedCredit = await consumeCredits({
+          userId: user.id,
+          credits: creditCost,
+          scene: 'image_studio',
+          description: `ImageStudio ${mode} - ${sku}`,
+          metadata: JSON.stringify({
+            type: 'image-studio',
+            mode: mode,
+            sku: sku,
+            stem: resolvedStem || null,
+            jobId: job.id,
+          }),
+        });
+
+        consumedCreditId = consumedCredit?.id;
+
+        console.info('[ImageStudio] Credits consumed successfully', {
+          creditId: consumedCreditId,
+          creditCost,
+        });
+
+        // Update job record with credit ID
+        await aiPlaygroundDb.updateJob(job.id, user.id, {
+          creditId: consumedCreditId,
+        });
+      } catch (error) {
+        console.error('[ImageStudio] Failed to consume credits', error);
+
+        // Clean up job if credit consumption failed
+        await aiPlaygroundDb.updateJob(job.id, user.id, {
+          status: 'failed',
+          errorMessage: error instanceof Error ? error.message : 'Failed to consume credits',
+          completedAt: new Date(),
+        });
+
+        return respErr(error instanceof Error ? error.message : 'Failed to consume credits');
+      }
+    }
 
     let response: any;
     try {

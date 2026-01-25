@@ -37,47 +37,57 @@ async function handleResponse<T>(response: Response): Promise<T> {
  * Uses gallery API to get real data
  */
 export async function fetchSKUs(filters?: SKUFilters): Promise<SKU[]> {
-  const response = await fetch(`${API_BASE}/folders`);
-  const data = await handleResponse<{ code: number; data?: { folders?: any[] } }>(response);
+  try {
+    const response = await fetch(`${API_BASE}/folders`);
+    const data = await handleResponse<{
+      code: number;
+      message?: string;
+      data?: { folders?: any[] };
+    }>(response);
 
-  if (data.code !== 0 || !data.data?.folders) {
+    if (data.code !== 0 || !data.data?.folders) {
+      console.warn('[ImageStudio] Failed to fetch SKUs:', data.message);
+      return [];
+    }
+
+    let skus = data.data.folders.map((folder) => ({
+      id: folder.sku,
+      article: folder.sku,
+      thumbnail: folder.thumbnail_url || '',
+      status: folder.status || 'not_generated',
+      isMainImage: Boolean(folder.has_main),
+      isApproved: folder.review_status === 'approved',
+      createdAt: '',
+      archived: Boolean(folder.archived),
+      reviewStatus: folder.review_status || '',
+      inputCount: folder.input_count || 0,
+      outputCount: folder.output_count || 0,
+      workflowStateId: folder.workflow_state_id || undefined,
+      productId: folder.product_id,
+    }));
+
+    if (filters?.searchQuery) {
+      const query = filters.searchQuery.toLowerCase();
+      skus = skus.filter((sku) => sku.article.toLowerCase().includes(query));
+    }
+
+    if (filters?.onlyMainImages) {
+      skus = skus.filter((sku) => sku.isMainImage);
+    }
+
+    if (filters?.onlyApproved) {
+      skus = skus.filter((sku) => sku.isApproved);
+    }
+
+    if (filters?.status && filters.status !== 'all') {
+      skus = skus.filter((sku) => sku.status === filters.status);
+    }
+
+    return skus;
+  } catch (error) {
+    console.warn('[ImageStudio] Failed to fetch SKUs:', error);
     return [];
   }
-
-  let skus = data.data.folders.map((folder) => ({
-    id: folder.sku,
-    article: folder.sku,
-    thumbnail: folder.thumbnail_url || '',
-    status: folder.status || 'not_generated',
-    isMainImage: Boolean(folder.has_main),
-    isApproved: folder.review_status === 'approved',
-    createdAt: '',
-    archived: Boolean(folder.archived),
-    reviewStatus: folder.review_status || '',
-    inputCount: folder.input_count || 0,
-    outputCount: folder.output_count || 0,
-    workflowStateId: folder.workflow_state_id || undefined,
-    productId: folder.product_id,
-  }));
-
-  if (filters?.searchQuery) {
-    const query = filters.searchQuery.toLowerCase();
-    skus = skus.filter((sku) => sku.article.toLowerCase().includes(query));
-  }
-
-  if (filters?.onlyMainImages) {
-    skus = skus.filter((sku) => sku.isMainImage);
-  }
-
-  if (filters?.onlyApproved) {
-    skus = skus.filter((sku) => sku.isApproved);
-  }
-
-  if (filters?.status && filters.status !== 'all') {
-    skus = skus.filter((sku) => sku.status === filters.status);
-  }
-
-  return skus;
 }
 
 /**
@@ -403,18 +413,29 @@ export async function cancelBatch(jobId: string): Promise<void> {
  * Get batch statistics
  */
 export async function getBatchStats(): Promise<BatchStats> {
-  const response = await fetch(`${API_BASE}/jobs?limit=200`);
-  const data = await handleResponse<any>(response);
-  if (data.code !== 0) {
-    throw new Error(data.message || 'Failed to load stats');
+  try {
+    const response = await fetch(`${API_BASE}/jobs?limit=200`);
+    const data = await handleResponse<any>(response);
+
+    // Handle unauthorized error gracefully
+    if (data.code !== 0) {
+      console.warn('[ImageStudio] Failed to load stats:', data.message);
+      // Return empty stats instead of throwing error
+      return { total: 0, completed: 0, failed: 0, pending: 0, processing: 0 };
+    }
+
+    const jobs = data.data?.jobs || [];
+    const total = jobs.length;
+    const completed = jobs.filter((j: any) => j.status === 'completed' || j.status === 'success').length;
+    const failed = jobs.filter((j: any) => j.status === 'failed').length;
+    const pending = jobs.filter((j: any) => j.status === 'pending').length;
+    const processing = jobs.filter((j: any) => j.status === 'processing').length;
+    return { total, completed, failed, pending, processing };
+  } catch (error) {
+    console.warn('[ImageStudio] Failed to load batch stats:', error);
+    // Return empty stats on any error
+    return { total: 0, completed: 0, failed: 0, pending: 0, processing: 0 };
   }
-  const jobs = data.data?.jobs || [];
-  const total = jobs.length;
-  const completed = jobs.filter((j: any) => j.status === 'completed' || j.status === 'success').length;
-  const failed = jobs.filter((j: any) => j.status === 'failed').length;
-  const pending = jobs.filter((j: any) => j.status === 'pending').length;
-  const processing = jobs.filter((j: any) => j.status === 'processing').length;
-  return { total, completed, failed, pending, processing };
 }
 
 // ========================================
@@ -425,23 +446,38 @@ export async function getBatchStats(): Promise<BatchStats> {
  * Get studio settings
  */
 export async function getSettings(): Promise<StudioSettings> {
-  const response = await fetch(`${API_BASE}/settings`);
-  const data = await handleResponse<any>(response);
-  if (data.code !== 0) {
-    console.error('[ImageStudio Client] Failed to load settings:', {
-      code: data.code,
-      message: data.message,
-      data: data.data,
-    });
-    throw new Error(data.message || 'Failed to load settings');
+  try {
+    const response = await fetch(`${API_BASE}/settings`);
+    const data = await handleResponse<any>(response);
+
+    if (data.code !== 0) {
+      console.warn('[ImageStudio Client] Failed to load settings:', data.message);
+      // Return default settings on error
+      return {
+        imageSize: '1536x1536',
+        imageFormat: 'png',
+        quality: 90,
+        preserveOriginal: true,
+      };
+    }
+
+    const raw = data.data || {};
+    return {
+      imageSize: `${raw.target_width || 1536}x${raw.target_height || 1536}` as StudioSettings['imageSize'],
+      imageFormat: raw.image_format || 'png',
+      quality: raw.quality || 90,
+      preserveOriginal: Boolean(raw.preserve_original),
+    };
+  } catch (error) {
+    console.warn('[ImageStudio Client] Failed to load settings:', error);
+    // Return default settings on any error
+    return {
+      imageSize: '1536x1536',
+      imageFormat: 'png',
+      quality: 90,
+      preserveOriginal: true,
+    };
   }
-  const raw = data.data || {};
-  return {
-    imageSize: `${raw.target_width || 1536}x${raw.target_height || 1536}` as StudioSettings['imageSize'],
-    imageFormat: raw.image_format || 'png',
-    quality: raw.quality || 90,
-    preserveOriginal: Boolean(raw.preserve_original),
-  };
 }
 
 /**

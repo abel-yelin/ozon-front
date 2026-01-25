@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useImageStudio } from '@/app/hooks/use-image-studio';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
@@ -13,7 +13,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Label } from '@/shared/components/ui/label';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { Switch } from '@/shared/components/ui/switch';
-import { Sparkles, Upload } from 'lucide-react';
+import { Sparkles, Upload, AlertCircle } from 'lucide-react';
 
 export function OptPromptModal() {
   const t = useTranslations('dashboard.imagestudio');
@@ -40,11 +40,32 @@ export function OptPromptModal() {
   });
 
   const [refFile, setRefFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [remainingCredits, setRemainingCredits] = useState<number | null>(null);
+
+  // Fetch user's credit balance when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      fetch('/api/user/get-user-credits')
+        .then(res => res.json())
+        .then(data => {
+          if (data.code === 0) {
+            setRemainingCredits(data.data?.remainingCredits || 0);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   const handleRegenerate = async () => {
     if (!pairId) return;
+
+    setIsLoading(true);
+    setError(null);
+
     try {
       console.info('[ImageStudio] Regenerate submit', { pairId });
       await regenerateImage(pairId, { ...options, refFile: refFile || undefined });
@@ -52,6 +73,16 @@ export function OptPromptModal() {
       closeModal();
     } catch (error) {
       console.error('[ImageStudio] Regenerate failed', error);
+      const errorMsg = error instanceof Error ? error.message : 'Failed to regenerate image';
+
+      // Check if it's an insufficient credits error
+      if (errorMsg.includes('积分不足') || errorMsg.includes('Insufficient credits')) {
+        setError(errorMsg);
+      } else {
+        setError('重新生成失败，请稍后重试');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -267,9 +298,56 @@ export function OptPromptModal() {
               {t('opt_prompt_modal.warning_select_image')}
             </div>
           )}
-          <Button className="w-full" onClick={handleRegenerate} disabled={!canSubmit}>
+
+          {/* Credit Balance Display */}
+          {remainingCredits !== null && (
+            <div className="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-blue-700">当前积分余额：</span>
+                <span className="font-semibold text-blue-900">{remainingCredits}</span>
+              </div>
+              <div className="mt-1 text-blue-600">
+                单张图片重新生成需要 <span className="font-semibold">1</span> 积分
+              </div>
+              {remainingCredits < 1 && (
+                <div className="mt-2 flex items-center gap-1 text-xs text-red-600">
+                  <AlertCircle className="h-3 w-3" />
+                  <span>积分不足，请先充值</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Error Message */}
+          {error && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <div className="font-semibold">生成失败</div>
+                  <div className="mt-1">{error}</div>
+                  {error.includes('积分不足') && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-2 h-7 text-xs"
+                      onClick={() => window.location.href = '/pricing'}
+                    >
+                      前往充值
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <Button
+            className="w-full"
+            onClick={handleRegenerate}
+            disabled={!canSubmit || isLoading || (remainingCredits !== null && remainingCredits < 1)}
+          >
             <Sparkles className="mr-2 h-4 w-4" />
-            {t('opt_prompt_modal.regenerate')}
+            {isLoading ? '提交中...' : t('opt_prompt_modal.regenerate')}
           </Button>
         </div>
       </DialogContent>

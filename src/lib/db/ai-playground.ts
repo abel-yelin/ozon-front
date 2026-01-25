@@ -105,6 +105,7 @@ export class AiPlaygroundDb {
       errorMessage?: string;
       startedAt?: Date;
       completedAt?: Date;
+      creditId?: string; // Credit consumption record ID
     }
   ) {
     const [job] = await db()

@@ -511,6 +511,43 @@ export const aiTask = table(
   ]
 );
 
+export const imageStudioJob = table(
+  'image_studio_job',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    mode: text('mode').notNull(), // image_regenerate, batch_series_generate, etc.
+    sku: text('sku').notNull(),
+    stem: text('stem'), // image stem for single regeneration
+    status: text('status').notNull(), // pending, processing, completed, failed
+    config: text('config'), // job configuration JSON
+    sourceImageUrls: text('source_image_urls'), // JSON array of source image URLs
+    resultImageUrls: text('result_image_urls'), // JSON array of result image URLs
+    errorMessage: text('error_message'),
+    costCredits: integer('cost_credits').notNull().default(0), // credits consumed for this job
+    creditId: text('credit_id'), // credit consumption record id
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+    deletedAt: timestamp('deleted_at'),
+    completedAt: timestamp('completed_at'),
+  },
+  (table) => [
+    // Composite: Query user's ImageStudio jobs by status
+    // Can also be used for: WHERE userId = ? (left-prefix)
+    index('idx_image_studio_job_user_status').on(table.userId, table.status),
+    // Composite: Query jobs by SKU
+    index('idx_image_studio_job_sku').on(table.sku),
+    // Composite: Query jobs by mode
+    index('idx_image_studio_job_mode').on(table.mode),
+    // Composite: Query jobs by credit consumption record
+    index('idx_image_studio_job_credit').on(table.creditId),
+  ]
+);
+
 export const chat = table(
   'chat',
   {
@@ -638,6 +675,7 @@ export const aiJob = table(
     errorMessage: text('error_message'),
     startedAt: timestamp('started_at'),
     completedAt: timestamp('completed_at'),
+    creditId: text('credit_id'), // Credit consumption record id for ImageStudio jobs
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
       .$onUpdate(() => new Date())
@@ -647,6 +685,7 @@ export const aiJob = table(
     index('idx_ai_job_user_status').on(table.userId, table.status),
     index('idx_ai_job_type_status').on(table.type, table.status),
     index('idx_ai_job_created_at').on(table.createdAt),
+    index('idx_ai_job_credit').on(table.creditId),
   ]
 );
 
