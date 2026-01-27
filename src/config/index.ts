@@ -41,5 +41,7 @@ export const envConfigs: ConfigMap = {
   // Ozon Integration
   python_api_url: process.env.PYTHON_API_URL ?? 'http://localhost:8000',
   python_api_key: process.env.PYTHON_API_KEY ?? '',
+  python_service_url: process.env.PYTHON_SERVICE_URL ?? process.env.PYTHON_API_URL ?? 'http://localhost:8000',
+  python_service_api_key: process.env.PYTHON_SERVICE_API_KEY ?? process.env.PYTHON_API_KEY ?? '',
   credential_encryption_key: process.env.CREDENTIAL_ENCRYPTION_KEY ?? '',
 };

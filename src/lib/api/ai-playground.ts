@@ -406,28 +406,57 @@ export class AiPlaygroundApiClient {
       throw new Error('PYTHON_API_KEY is not configured');
     }
 
-    const formData = new FormData();
-    files.forEach((file) => {
-      formData.append('files', file, file.name);
+    const uploadUrl = `${this.baseUrl}/api/v1/ai/upload`;
+
+    console.log('[AI Playground] Uploading files:', {
+      url: uploadUrl,
+      fileCount: files.length,
+      fileNames: files.map((f) => f.name),
+      apiKey: this.apiKey?.substring(0, 10) + '...',
     });
 
     try {
-      const response = await fetch(`${this.baseUrl}/api/v1/ai/upload`, {
+      // Convert Next.js File objects to Blob for Node.js fetch
+      const formData = new FormData();
+      for (const file of files) {
+        // Convert File to Blob to avoid Next.js File serialization issues
+        const arrayBuffer = await file.arrayBuffer();
+        const blob = new Blob([arrayBuffer], { type: file.type });
+        formData.append('files', blob, file.name);
+      }
+
+      const response = await fetch(uploadUrl, {
         method: 'POST',
         headers: {
           'X-API-Key': this.apiKey,
         },
         body: formData,
+        // @ts-ignore - Required for Node.js fetch with streams
+        duplex: 'half',
       });
+
+      console.log('[AI Playground] Upload response status:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
+        console.error('[AI Playground] Upload failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText,
+        });
         throw new Error(`Upload error ${response.status}: ${errorText}`);
       }
 
-      return await response.json();
-    } catch (error) {
-      console.error('AI Playground upload error:', error);
+      const result = await response.json();
+      console.log('[AI Playground] Upload success:', result);
+      return result;
+    } catch (error: any) {
+      console.error('[AI Playground] Upload error details:', {
+        message: error.message,
+        cause: error.cause,
+        code: error.code,
+        stack: error.stack,
+      });
       throw error;
     }
   }
