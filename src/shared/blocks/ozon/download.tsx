@@ -5,8 +5,11 @@
 
 import { useState, useEffect } from 'react';
 import { useOzonDownload } from '@/app/hooks/use-ozon-download';
+import { BrowserUploadButton } from './components/BrowserUploadButton';
+import { useSession } from '@/core/auth/client';
 
 export function OzonDownload() {
+  const { data: session } = useSession();
   const { download, pollTask, isLoading, error, result, reset } =
     useOzonDownload();
 
@@ -18,11 +21,15 @@ export function OzonDownload() {
   );
   const [currentTask, setCurrentTask] = useState<any>(null);
   const [showCredentialForm, setShowCredentialForm] = useState(false);
+  const [useBrowserUpload, setUseBrowserUpload] = useState(false);
+  const [browserUploadImages, setBrowserUploadImages] = useState<Array<{ ozonUrl: string; article: string }>>([]);
   const [newCredential, setNewCredential] = useState({
     name: '',
     client_id: '',
     api_key: '',
   });
+
+  const userId = session?.user?.id || '';
 
   // Load credentials on mount
   useEffect(() => {
@@ -112,19 +119,46 @@ export function OzonDownload() {
       return;
     }
 
-    const downloadResult = await download({
-      credentialId,
-      articles: articleList,
-      field,
-    });
+    if (useBrowserUpload) {
+      // Browser upload mode: get image URLs first
+      const downloadResult = await download({
+        credentialId,
+        articles: articleList,
+        field,
+        useBrowserUpload: true,
+      });
 
-    if (downloadResult?.success && downloadResult.task) {
-      setCurrentTask(downloadResult.task);
+      if (downloadResult?.success && downloadResult.task?.result) {
+        setCurrentTask(downloadResult.task);
 
-      // Poll for completion
-      const pollResult = await pollTask(downloadResult.task.id);
-      if (pollResult?.success) {
-        setCurrentTask(pollResult.task);
+        // Extract image URLs for browser upload
+        const images: Array<{ ozonUrl: string; article: string }> = [];
+        downloadResult.task.result.items.forEach((item: any) => {
+          if (item.status === 'success' && item.urls && item.urls.length > 0) {
+            item.urls.forEach((url: string) => {
+              images.push({ ozonUrl: url, article: item.article });
+            });
+          }
+        });
+
+        setBrowserUploadImages(images);
+      }
+    } else {
+      // Server download mode: original flow
+      const downloadResult = await download({
+        credentialId,
+        articles: articleList,
+        field,
+      });
+
+      if (downloadResult?.success && downloadResult.task) {
+        setCurrentTask(downloadResult.task);
+
+        // Poll for completion
+        const pollResult = await pollTask(downloadResult.task.id);
+        if (pollResult?.success) {
+          setCurrentTask(pollResult.task);
+        }
       }
     }
   };
@@ -275,6 +309,24 @@ export function OzonDownload() {
             </p>
           </div>
 
+          <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded">
+            <input
+              type="checkbox"
+              id="useBrowserUpload"
+              checked={useBrowserUpload}
+              onChange={(e) => setUseBrowserUpload(e.target.checked)}
+              className="w-4 h-4 text-blue-600 rounded"
+            />
+            <label htmlFor="useBrowserUpload" className="text-sm font-medium cursor-pointer">
+              Use Browser Upload Mode
+            </label>
+          </div>
+          {useBrowserUpload && (
+            <div className="text-xs text-gray-600 dark:text-gray-400 ml-7">
+              Downloads will be processed directly in your browser. This bypasses server limitations but requires your browser to stay on this page.
+            </div>
+          )}
+
           {error && (
             <div className="text-sm text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded">
               {error}
@@ -298,12 +350,54 @@ export function OzonDownload() {
             </div>
           )}
 
+          {browserUploadImages.length > 0 && (
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-3">
+                Browser Upload Mode
+              </h3>
+              <p className="text-sm text-blue-700 dark:text-blue-200 mb-4">
+                Found {browserUploadImages.length} images to download. Click the button below to start the browser-based download and upload to R2.
+              </p>
+              <BrowserUploadButton
+                images={browserUploadImages}
+                userId={userId}
+                onComplete={(uploadResults) => {
+                  // Update task with browser upload results
+                  const successCount = uploadResults.filter(r => r.success).length;
+                  const failCount = uploadResults.filter(r => !r.success).length;
+
+                  alert(`Browser upload complete!\nSuccess: ${successCount}\nFailed: ${failCount}`);
+
+                  // Clear browser upload images
+                  setBrowserUploadImages([]);
+                  setUseBrowserUpload(false);
+
+                  // TODO: Update task status in backend
+                  if (currentTask?.id) {
+                    fetch(`/api/ozon/tasks/${currentTask.id}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        status: failCount === 0 ? 'completed' : 'partial_success',
+                        browserUploadResults: uploadResults,
+                      }),
+                    }).catch(console.error);
+                  }
+                }}
+              />
+            </div>
+          )}
+
           <button
             type="submit"
-            disabled={isLoading || !credentialId}
+            disabled={isLoading || !credentialId || (useBrowserUpload && browserUploadImages.length > 0)}
             className="w-full px-4 py-3 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium"
           >
-            {isLoading ? 'Processing...' : 'Start Download'}
+            {isLoading
+              ? 'Processing...'
+              : useBrowserUpload
+              ? 'Get Image URLs'
+              : 'Start Download'}
           </button>
         </form>
       </div>

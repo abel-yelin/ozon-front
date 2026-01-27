@@ -14,6 +14,7 @@ export function respJson(code: number, message: string, data?: any) {
   let json = {
     code: code,
     message: message,
+    success: code === 0,
     data: data,
   };
   if (data) {

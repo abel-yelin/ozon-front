@@ -15,6 +15,7 @@ export interface OzonDownloadRequest {
   articles: string[];
   field?: 'offer_id' | 'sku' | 'vendor_code';
   user_id: string;
+  download_images?: boolean; // If false, only return metadata without downloading images
 }
 
 export interface OzonDownloadItem {
@@ -99,6 +100,46 @@ export class OzonApiClient {
       return await response.json();
     } catch (error) {
       console.error('Ozon download API error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get image URLs from Ozon API without downloading images
+   * Used for browser-based upload mode
+   */
+  async getImageUrls(request: Omit<OzonDownloadRequest, 'download_images'>): Promise<OzonDownloadResult> {
+    if (!this.apiKey) {
+      throw new Error('PYTHON_API_KEY is not configured');
+    }
+
+    try {
+      const response = await fetch(`${this.baseUrl}/api/v1/ozon/download`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': this.apiKey,
+        },
+        body: JSON.stringify({
+          ...request,
+          download_images: false, // Only fetch metadata, don't download images
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`API Error ${response.status}: ${errorText}`);
+      }
+
+      const data: OzonDownloadResponse = await response.json();
+
+      if (!data.success || !data.data) {
+        throw new Error(data.error || 'Failed to get image URLs');
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error('Ozon get image URLs API error:', error);
       throw error;
     }
   }

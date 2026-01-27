@@ -11,6 +11,7 @@ export interface DownloadInput {
   credentialId: string;
   articles: string[];
   field: 'offer_id' | 'sku' | 'vendor_code';
+  useBrowserUpload?: boolean;
 }
 
 export interface DownloadResult {
