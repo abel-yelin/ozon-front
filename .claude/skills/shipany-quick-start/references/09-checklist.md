@@ -1,4 +1,4 @@
-# Minimal checklist (ShipAny Two)
+# Minimal checklist (Shop Studio)
 
 Use this as the default “v1 bootstrap” scope.
 

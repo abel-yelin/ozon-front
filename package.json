@@ -1,17 +1,17 @@
 {
-  "name": "shipany-template-two",
+  "name": "Shop Studio-template-two",
   "version": "1.8.2",
   "private": true,
-  "author": "ShipAny.ai",
-  "homepage": "https://shipany.ai",
+  "author": "aibesttop.com",
+  "homepage": "https://aibesttop.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/shipanyai/shipany-template-two"
+    "url": "https://github.com/Shop Studioai/Shop Studio-template-two"
   },
   "keywords": [
-    "shipany",
-    "shipany-two",
-    "shipany-template-two",
+    "Shop Studio",
+    "Shop Studio-two",
+    "Shop Studio-template-two",
     "ai-saas-boilerplate",
     "ai-saas-template",
     "ai-saas-framework",

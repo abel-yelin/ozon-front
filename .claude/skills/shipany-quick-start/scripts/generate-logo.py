@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate `public/logo.png` and `public/favicon.ico` for ShipAny Quick Start.
+Generate `public/logo.png` and `public/favicon.ico` for Shop Studio Quick Start.
 
 Primary path:
 - Uses Pillow (PIL) to render a simple text mark: first character of brand name.
@@ -38,8 +38,8 @@ def _parse_hex_color(value: str) -> tuple[int, int, int]:
 
 
 def _repo_root_from_this_file() -> Path:
-    # .../.claude/skills/shipany-quick-start/scripts/generate-logo.py
-    # parents[0]=scripts, [1]=shipany-quick-start, [2]=skills, [3]=.claude, [4]=repo root
+    # .../.claude/skills/Shop Studio-quick-start/scripts/generate-logo.py
+    # parents[0]=scripts, [1]=Shop Studio-quick-start, [2]=skills, [3]=.claude, [4]=repo root
     return Path(__file__).resolve().parents[4]
 
 

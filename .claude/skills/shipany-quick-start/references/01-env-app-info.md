@@ -2,7 +2,7 @@
 
 ## Goal
 
-Make app URL/name/description/logo consistent via env files (ShipAny Two follows env → `src/config/index.ts` → `envConfigs`).
+Make app URL/name/description/logo consistent via env files (Shop Studio follows env → `src/config/index.ts` → `envConfigs`).
 
 ## Files
 

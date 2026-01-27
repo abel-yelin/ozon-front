@@ -62,7 +62,7 @@ Constraints:
 
 - The theme reads like a real tweakcn-tuned theme: primary/accent/ring/chart/sidebar feel intentional.
 - Light + dark both have good contrast (buttons, links, focus ring are readable).
-- No “template default look”: do not keep ShipAny’s original primary hue unless it matches the new brand.
+- No “template default look”: do not keep Shop Studio’s original primary hue unless it matches the new brand.
 
 ## Guidance
 

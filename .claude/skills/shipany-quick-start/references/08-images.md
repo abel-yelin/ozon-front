@@ -44,10 +44,10 @@ Hard rule:
   - `/imgs/features/admin.png`
   - `/imgs/features/admin-dark.png`
   - `/imgs/features/landing-page.png`
-  - any other `/imgs/features/*` ShipAny screenshots
+  - any other `/imgs/features/*` Shop Studio screenshots
 - Also do **not** keep template default `public/logo.png` / `public/favicon.ico` as-is; they must be replaced (see logo step).
 
-## Where images are configured (ShipAny Two)
+## Where images are configured (Shop Studio)
 
 Landing images commonly live in `src/config/locale/messages/*/pages/index.json` (page sections), plus branding in `src/config/locale/messages/*/landing.json` (header/footer):
 

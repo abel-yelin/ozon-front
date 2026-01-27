@@ -43,7 +43,7 @@ def _fetch_bytes(url: str, *, timeout: int = 20) -> tuple[bytes, str]:
     req = urllib.request.Request(
         url,
         headers={
-            "User-Agent": "Mozilla/5.0 (compatible; shipany-quick-start/1.0)",
+            "User-Agent": "Mozilla/5.0 (compatible; Shop Studio-quick-start/1.0)",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         },
     )

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Create ShipAny dynamic page JSON files and register them in `localeMessagesPaths`.
+Create Shop Studio dynamic page JSON files and register them in `localeMessagesPaths`.
 
 This script is intentionally conservative:
 - Creates missing directories
@@ -8,7 +8,7 @@ This script is intentionally conservative:
 - Avoids duplicating `localeMessagesPaths` entries
 
 Example:
-  python .claude/skills/shipany-page-builder/scripts/create_dynamic_page.py \
+  python .claude/skills/Shop Studio-page-builder/scripts/create_dynamic_page.py \
     --route "/features/ai-image-generator" \
     --title "AI Image Generator" \
     --description "Generate images with AI models, support text-to-image and image-to-image." \
@@ -28,8 +28,8 @@ from urllib.parse import urlparse
 
 
 def _repo_root_from_this_file() -> Path:
-    # .../.claude/skills/shipany-page-builder/scripts/create_dynamic_page.py
-    # parents[0]=scripts, [1]=shipany-page-builder, [2]=skills, [3]=.claude, [4]=repo root
+    # .../.claude/skills/Shop Studio-page-builder/scripts/create_dynamic_page.py
+    # parents[0]=scripts, [1]=Shop Studio-page-builder, [2]=skills, [3]=.claude, [4]=repo root
     return Path(__file__).resolve().parents[4]
 
 

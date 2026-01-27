@@ -29,9 +29,9 @@ For the first version, **do not change asset formats** and **do not update code 
 Use the bundled script to generate **both** `public/logo.png` and `public/favicon.ico`:
 
 - macOS/Linux:
-  - `python3 ".claude/skills/shipany-quick-start/scripts/generate-logo.py" --brand-name "<brandName>" --primary-color "<#RRGGBB>" --public-dir "public"`
+  - `python3 ".claude/skills/Shop Studio-quick-start/scripts/generate-logo.py" --brand-name "<brandName>" --primary-color "<#RRGGBB>" --public-dir "public"`
 - Windows (PowerShell / cmd):
-  - `py ".claude\\skills\\shipany-quick-start\\scripts\\generate-logo.py" --brand-name "<brandName>" --primary-color "<#RRGGBB>" --public-dir "public"`
+  - `py ".claude\\skills\\Shop Studio-quick-start\\scripts\\generate-logo.py" --brand-name "<brandName>" --primary-color "<#RRGGBB>" --public-dir "public"`
 
 **Compatibility rule:** This script is best-effort. On some systems (commonly Windows) Pillow/fonts may be unavailable. The script will automatically fall back to writing **placeholder** `logo.png` / `favicon.ico` so we still avoid keeping template defaults.
 
@@ -47,7 +47,7 @@ If the user does not provide brand files, generate a simple **text-based** mark 
 - **Letter**: the first character of the brand name (e.g. “Acme” → “A”, “星河” → “星”)
 - **Style**: bold, centered, high-contrast, works at small sizes
 - **Colors**: use the project’s primary brand color as background (or a dark neutral if unknown) + white/near-white letter
-- **No template imagery**: do not keep or copy any ShipAny/logo defaults
+- **No template imagery**: do not keep or copy any Shop Studio/logo defaults
 
 Recommended outputs (still saved to the required filenames):
 

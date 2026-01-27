@@ -1,4 +1,4 @@
-# ShipAny Page Builder — Guide (v1)
+# Shop Studio Page Builder — Guide (v1)
 
 ## Goal
 
@@ -64,7 +64,7 @@ Each section chooses a block by `section.block || section.id || sectionKey`.
 
 Use the bundled script:
 
-- `.claude/skills/shipany-page-builder/scripts/create_dynamic_page.py`
+- `.claude/skills/Shop Studio-page-builder/scripts/create_dynamic_page.py`
 
 It will:
 

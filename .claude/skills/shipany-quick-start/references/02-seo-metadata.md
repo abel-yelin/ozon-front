@@ -25,4 +25,4 @@ Update:
 
 ## Quick check
 
-- Ensure there are no leftover `ShipAny` / template keywords.
+- Ensure there are no leftover `Shop Studio` / template keywords.

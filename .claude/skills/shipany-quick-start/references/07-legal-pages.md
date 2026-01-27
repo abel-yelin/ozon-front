@@ -13,7 +13,7 @@ Remove placeholders and make contact/domain consistent.
 
 ## Replacements
 
-- `YourAppName` → **projectName**
+- `Shop Studio` → **projectName**
 - `your-domain.com` → **domain**
 - `support@your-domain.com` → **socialLinks.supportEmail** (or `support@{domain}`)
 

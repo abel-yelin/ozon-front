@@ -13,7 +13,7 @@ Update landing page content + navigation for the new product, while keeping the 
   - `src/config/locale/messages/en/landing.json`
   - `src/config/locale/messages/zh/landing.json`
 
-## Default scope (ShipAny Quick Start)
+## Default scope (Shop Studio Quick Start)
 
 For the first version, default to these landing sections (in this order):
 
