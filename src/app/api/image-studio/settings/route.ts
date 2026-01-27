@@ -40,7 +40,7 @@ function buildSettingsResponse(payload: {
     : 0.5;
 
   return {
-    api_base: additional.api_base || envConfigs.python_api_url || '',
+    api_base: additional.api_base || envConfigs.python_service_url || envConfigs.python_api_url || '',
     api_key: additional.api_key || '',
     model: additional.model || '',
     target_width: prefs?.targetWidth || 1500,

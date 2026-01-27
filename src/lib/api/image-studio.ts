@@ -25,7 +25,22 @@ async function handleResponse<T>(response: Response): Promise<T> {
     const error = await response.text();
     throw new Error(error || `HTTP error! status: ${response.status}`);
   }
-  return response.json() as Promise<T>;
+
+  // Check if response has content
+  const text = await response.text();
+  if (!text || text.trim() === '') {
+    throw new Error('Empty response from server');
+  }
+
+  try {
+    return JSON.parse(text) as T;
+  } catch (error) {
+    console.error('[handleResponse] Failed to parse JSON:', {
+      error,
+      responseText: text.substring(0, 200),
+    });
+    throw new Error('Invalid JSON response from server');
+  }
 }
 
 // ========================================

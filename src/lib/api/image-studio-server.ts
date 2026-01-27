@@ -1,7 +1,8 @@
 import { envConfigs } from '@/config';
 
-const PYTHON_API_URL = envConfigs.python_api_url || 'http://localhost:8000';
-const PYTHON_API_KEY = envConfigs.python_api_key || '';
+// Use python_service_url for consistency with AI Playground
+const PYTHON_API_URL = envConfigs.python_service_url || envConfigs.python_api_url || 'http://localhost:8000';
+const PYTHON_API_KEY = envConfigs.python_service_api_key || envConfigs.python_api_key || '';
 
 function buildHeaders() {
   if (!PYTHON_API_KEY) {

@@ -23,9 +23,12 @@ export function TopBar() {
   const locale = useLocale();
   const { currentSKU, isLoading, error, openModal } = useImageStudio();
   const [activeTab, setActiveTab] = useState<'process' | 'history'>('process');
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   useEffect(() => {
+    // Set initial time only on client to avoid hydration mismatch
+    setCurrentTime(new Date());
+
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -78,10 +81,12 @@ export function TopBar() {
 
       {/* Right Section */}
       <div className="flex items-center gap-4">
-        {/* Date/Time Display */}
-        <div className="text-sm text-gray-600">
-          {formatDateTime(currentTime)}
-        </div>
+        {/* Date/Time Display - only render on client to avoid hydration mismatch */}
+        {currentTime && (
+          <div className="text-sm text-gray-600" suppressHydrationWarning>
+            {formatDateTime(currentTime)}
+          </div>
+        )}
 
         {/* Action Buttons */}
         <Button
