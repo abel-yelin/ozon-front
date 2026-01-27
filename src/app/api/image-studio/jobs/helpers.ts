@@ -49,6 +49,14 @@ async function resolveWorkflowStateId(
 
 async function applyJobResult(userId: string, job: any, result: any) {
   const items = normalizeItems(result);
+
+  console.log('[ImageStudio] applyJobResult', {
+    jobId: job.id,
+    itemsCount: items.length,
+    hasResult: !!result,
+    resultKeys: result ? Object.keys(result) : [],
+  });
+
   if (!items.length) return [];
 
   const cfg = (job.config || {}) as Record<string, any>;
@@ -70,10 +78,23 @@ async function applyJobResult(userId: string, job: any, result: any) {
 
   const resultUrls: string[] = [];
 
+  console.log('[ImageStudio] Processing items', {
+    totalItems: items.length,
+    sampleItem: items[0] || null,
+  });
+
   for (const item of items) {
     const sku = String(item.sku || cfg.sku || '').trim();
     const sourceUrl = item.source_url || item.sourceUrl;
     const resultUrl = item.result_url || item.resultUrl;
+
+    console.log('[ImageStudio] Processing item', {
+      sku,
+      sourceUrl: sourceUrl?.substring(0, 50),
+      hasResultUrl: !!resultUrl,
+      resultUrl: resultUrl?.substring(0, 50),
+    });
+
     if (!sku || !sourceUrl) continue;
 
     const workflowStateId = await resolveWorkflowStateId(userId, sku, cfg, stateCache);
@@ -130,13 +151,49 @@ export async function syncImageStudioJob(userId: string, job: any) {
 
   const remote = await getImageStudioJobStatus(job.id).catch(() => null);
   if (!remote) {
+    console.log('[ImageStudio] syncImageStudioJob: no remote data', { jobId: job.id });
     return job;
   }
 
   const mappedStatus = QUEUE_STATUS_MAP[String(remote.status || '')] || job.status;
 
+  console.log('[ImageStudio] syncImageStudioJob', {
+    jobId: job.id,
+    localStatus: job.status,
+    remoteStatus: remote.status,
+    mappedStatus,
+    hasResult: !!remote.result,
+  });
+
   if (mappedStatus === 'completed') {
     const resultUrls = await applyJobResult(userId, job, remote.result);
+
+    console.log('[ImageStudio] Job completed', {
+      jobId: job.id,
+      resultUrlsCount: resultUrls.length,
+      resultUrls: resultUrls,
+    });
+
+    // Check if this is a batch job and validate results
+    const cfg = (job.config || {}) as Record<string, any>;
+    const isBatchMode = cfg.mode === 'batch_series_generate';
+    const expectedImageCount = job.sourceImageUrls?.length || 0;
+
+    if (isBatchMode && resultUrls.length < expectedImageCount) {
+      console.warn('[ImageStudio] Batch job incomplete', {
+        jobId: job.id,
+        expected: expectedImageCount,
+        actual: resultUrls.length,
+        missing: expectedImageCount - resultUrls.length,
+      });
+
+      await aiPlaygroundDb.createJobLog({
+        jobId: job.id,
+        level: 'warning',
+        message: `Batch job completed with partial results. Expected ${expectedImageCount} images, got ${resultUrls.length}.`,
+      });
+    }
+
     const updated = await aiPlaygroundDb.updateJob(job.id, userId, {
       status: 'completed',
       progress: 100,
@@ -146,7 +203,7 @@ export async function syncImageStudioJob(userId: string, job: any) {
     await aiPlaygroundDb.createJobLog({
       jobId: job.id,
       level: 'info',
-      message: 'Job completed successfully.',
+      message: `Job completed successfully. Generated ${resultUrls.length} images.`,
     });
     return updated || job;
   }

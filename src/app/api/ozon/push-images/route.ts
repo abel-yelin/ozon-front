@@ -38,11 +38,11 @@ export async function POST(req: Request) {
     const credential = decryptCredential(credentialRecord.encryptedData);
 
     // 3. Call backend API to push images to Ozon
-    const backendUrl = process.env.PYTHON_API_URL || 'http://localhost:8000';
-    const backendApiKey = process.env.PYTHON_API_KEY || '';
+    const backendUrl = process.env.PYTHON_SERVICE_URL || process.env.PYTHON_API_URL || 'http://localhost:8000';
+    const backendApiKey = process.env.PYTHON_SERVICE_API_KEY || process.env.PYTHON_API_KEY || '';
 
     if (!backendApiKey) {
-      console.error('PYTHON_API_KEY is not configured');
+      console.error('PYTHON_SERVICE_API_KEY is not configured');
       return respErr('Backend API key is not configured');
     }
 

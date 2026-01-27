@@ -81,7 +81,23 @@ export async function GET(req: Request) {
       limit,
       type: 'image_studio',
     });
+
+    console.log('[ImageStudio] GET jobs', {
+      totalJobs: jobs.length,
+      jobIds: jobs.map((j: any) => ({ id: j.id, status: j.status })),
+    });
+
     const syncedJobs = await syncImageStudioJobs(user.id, jobs);
+
+    console.log('[ImageStudio] GET jobs after sync', {
+      totalJobs: syncedJobs.length,
+      jobIds: syncedJobs.map((j: any) => ({
+        id: j.id,
+        status: j.status,
+        resultImageUrlsCount: (j.resultImageUrls || []).length,
+      })),
+    });
+
     const jobViews = syncedJobs.map(buildJobView);
     const runningJobs = jobViews.filter((j) => j.status === 'processing');
     const running = runningJobs.length ? runningJobs[0] : null;
@@ -434,12 +450,22 @@ export async function POST(req: Request) {
 
       // Log payload size for debugging
       const payloadSize = JSON.stringify(payload).length;
+
+      // Log detailed payload structure
+      const skuImagesMapKeys = Object.keys(jobOptions.sku_images_map || {});
+      const sampleSkuImages = skuImagesMapKeys.length > 0
+        ? { [skuImagesMapKeys[0]]: (jobOptions.sku_images_map[skuImagesMapKeys[0]] || []).length }
+        : {};
+
       console.info('[ImageStudio] Submitting to FastAPI', {
         jobId: job.id,
         mode,
         payloadSizeBytes: payloadSize,
         hasSkuImagesMap: !!jobOptions.sku_images_map,
+        skuImagesMapKeys,
+        sampleSkuImages,
         skuCount: jobOptions.skus?.length || 0,
+        totalSourceImages: sourceImageUrls.length,
       });
 
       response = await submitImageStudioJob(payload);
