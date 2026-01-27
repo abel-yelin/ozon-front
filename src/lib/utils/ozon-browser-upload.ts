@@ -108,12 +108,10 @@ export async function downloadAndUploadImage(
     console.info('[Browser Upload] Got upload URL:', { upload_url, public_url });
 
     // Step 3: Upload to R2
+    // Note: Don't set Content-Type header - it's already signed in the presigned URL
     const uploadResponse = await fetch(upload_url, {
       method: 'PUT',
       body: blob,
-      headers: {
-        'Content-Type': blob.type || 'image/jpeg',
-      },
     });
 
     if (!uploadResponse.ok) {

@@ -50,7 +50,7 @@ export async function POST(req: Request) {
           'Content-Type': 'application/json',
           'X-API-Key': apiKey,
         },
-        body: JSON.stringify({ path: r2_path }),
+        body: JSON.stringify({ r2_path: r2_path }),
       });
 
       if (!response.ok) {
