@@ -47,14 +47,39 @@ export function OptPromptModal() {
   // Fetch user's credit balance when modal opens
   useEffect(() => {
     if (isOpen) {
-      fetch('/api/user/get-user-credits')
-        .then(res => res.json())
-        .then(data => {
-          if (data.code === 0) {
-            setRemainingCredits(data.data?.remainingCredits || 0);
+      fetch('/api/user/get-user-credits', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(async (res) => {
+          // Check if response has content before parsing
+          const text = await res.text();
+          if (!text || text.trim() === '') {
+            console.warn('[OptPromptModal] Empty credits response');
+            setRemainingCredits(0);
+            return { code: -1, message: 'No response' };
+          }
+          try {
+            return JSON.parse(text);
+          } catch (error) {
+            console.error('[OptPromptModal] Failed to parse credits response:', error);
+            setRemainingCredits(0);
+            return { code: -1, message: 'Invalid response' };
           }
         })
-        .catch(console.error);
+        .then(data => {
+          if (data.code === 0 || data.data) {
+            setRemainingCredits(data.data?.remainingCredits || 0);
+          } else {
+            setRemainingCredits(0);
+          }
+        })
+        .catch(error => {
+          console.error('[OptPromptModal] Failed to fetch credits:', error);
+          setRemainingCredits(0); // Default to 0 on error
+        });
     }
   }, [isOpen]);
 
