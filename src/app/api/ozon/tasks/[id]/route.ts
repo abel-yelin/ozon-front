@@ -3,6 +3,18 @@ import { getUserInfo } from '@/shared/models/user';
 import { ozonDb } from '@/lib/db/ozon';
 import { z } from 'zod';
 
+function parseJson(value: unknown) {
+  if (!value) return null;
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return null;
+    }
+  }
+  return value;
+}
+
 const updateTaskSchema = z.object({
   status: z.enum(['processing', 'completed', 'failed', 'pending_browser_upload', 'partial_success']).optional(),
   result: z.any().optional(),
@@ -75,10 +87,47 @@ export async function PATCH(
       const successCount = results.filter(r => r.success).length;
       const failCount = results.filter(r => !r.success).length;
 
-      // Store in result field as browserUploadResults
+      // Create mapping from Ozon URL to R2 URL
+      const urlMapping = new Map<string, string>();
+      for (const result of results) {
+        if (result.success && result.ozonUrl && result.publicUrl) {
+          urlMapping.set(result.ozonUrl, result.publicUrl);
+          console.log('[Ozon Task] URL mapping:', result.ozonUrl, '->', result.publicUrl);
+        }
+      }
+
+      // Parse existing result
+      const existingResult = parseJson(existingTask.result) || { items: [] };
+
+      // Update task.result.items with R2 URLs
+      const updatedItems = (existingResult.items || []).map((item: any) => {
+        if (!item.urls || !Array.isArray(item.urls)) {
+          return item;
+        }
+
+        // Replace Ozon URLs with R2 URLs
+        const updatedUrls = item.urls.map((url: string) => {
+          const r2Url = urlMapping.get(url);
+          if (r2Url) {
+            console.log('[Ozon Task] Replacing URL:', url, '->', r2Url);
+            return r2Url;
+          }
+          return url;
+        });
+
+        return {
+          ...item,
+          urls: updatedUrls,
+        };
+      });
+
+      console.log('[Ozon Task] Updated', updatedItems.length, 'items with R2 URLs');
+
+      // Store updated result with R2 URLs
       updateData.result = {
-        ...existingTask.result,
-        browserUploadResults: results,
+        ...existingResult,
+        items: updatedItems,
+        browserUploadResults: results, // Keep original results for debugging
       };
       updateData.successImages = successCount;
       updateData.failedImages = failCount;
