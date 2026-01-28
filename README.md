@@ -103,3 +103,43 @@ Copyright © 2025 Shop Studio. All rights reserved.
 !!! This project is proprietary software. Please do not publicly release Shop Studio's code without permission.
 
 [LICENSE](./LICENSE)
+
+📁 创建的文件
+scripts/backup-db-simple.ts - JSON 格式备份脚本
+scripts/backup-db.ts - 备份脚本(通过 with-env)
+backup.bat - Windows 快速备份工具
+restore.bat - Windows 快速恢复工具
+backups/README.md - 完整备份文档
+scripts/backup-db-sql.sh - Linux/Mac SQL 备份脚本
+🚀 推荐的备份方式
+方法 1:Windows 批处理(最简单)
+
+# 双击运行或命令行执行
+
+backup.bat
+方法 2:Node.js JSON 备份
+
+npx tsx scripts/backup-db-simple.ts backup
+方法 3:使用 pg_dump(需要 PostgreSQL 客户端)
+
+# Windows
+
+pg_dump "postgresql://..." --no-owner --no-acl > backups\backup.sql
+
+# Mac/Linux
+
+pg_dump "$DATABASE_URL" --no-owner --no-acl > backups/backup.sql
+📦 恢复备份
+
+# Windows 批处理
+
+restore.bat backups\backup-2025-01-28.sql
+
+# Node.js JSON 恢复
+
+npx tsx scripts/backup-db-simple.ts restore backup-2025-01-28.json
+✅ 已更新的 package.json 命令
+
+npm run db:backup # 快速 JSON 备份
+npm run db:restore # 恢复备份
+所有备份文件将保存在 backups/ 目录中。详细说明请查看 backups/README.md。
